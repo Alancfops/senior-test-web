@@ -19,6 +19,67 @@ Documentação canônica do produto base: [senior-test-funcional/docs/README.md]
 
 ---
 
+## Como funciona — diagrama e URLs
+
+### Fluxo (visão geral)
+
+```mermaid
+flowchart LR
+    subgraph usuarios["Usuários"]
+        ADMIN["Admin\n(fisio chefe)"]
+        FISIO["Fisioterapeuta\n(app mobile)"]
+    end
+
+    subgraph web["Gerenciador Web\n(este repo — Vite SPA)"]
+        SPA["React + TanStack Query\nJWT em sessionStorage"]
+    end
+
+    subgraph stf["Senior Test Funcional"]
+        APP["App Expo\n(RN)"]
+        API["API NestJS\n/auth + /admin"]
+        DB[("PostgreSQL")]
+    end
+
+    ADMIN -->|"HTTPS\nBearer JWT ADMIN"| SPA
+    FISIO --> APP
+    SPA -->|"REST\nVITE_STF_API_URL"| API
+    APP -->|"REST\nJWT THERAPIST"| API
+    API --> DB
+```
+
+> Diagrama detalhado e variantes: [docs/diagrams/system-context.md](docs/diagrams/system-context.md) · [docs/engineering/architecture.md](docs/engineering/architecture.md)
+
+### Modelo de URLs
+
+| Papel | Dev (local) | Produção (exemplo) |
+|-------|-------------|---------------------|
+| **Gerenciador web** | `http://localhost:5173` | `https://admin.seudominio.exemplo.com` |
+| **API STF** | `http://localhost:3000` | `https://api.seudominio.exemplo.com` |
+| **Health check** | `http://localhost:3000/health` | `https://api.seudominio.exemplo.com/health` |
+| **Swagger (admin)** | `http://localhost:3000/api/docs` | `https://api.seudominio.exemplo.com/api/docs` |
+
+**Variável no front:** `VITE_STF_API_URL` → URL da API **sem barra final** (ver [.env.example](.env.example)).
+
+**CORS no STF** (`backend/.env`): incluir a origem do gerenciador — ex. `CORS_ORIGINS=http://localhost:5173` em dev.
+
+### Autenticação (recarga F5)
+
+```
+Login POST /auth/login
+  → user.role === ADMIN ?
+       sim → sessionStorage.setItem('accessToken', …)  →  dashboard
+       não → erro de acesso (não persiste token)
+F5 / recarregar
+  → token ainda em sessionStorage  →  continua logado
+  → TanStack Query refaz fetch das listas
+Logout
+  → remove token + queryClient.clear()
+```
+
+Rotas admin consumidas pelo painel: **`/admin/*`** + **`/auth/*`** — spec em [docs/contracts/admin-api.md](docs/contracts/admin-api.md).
+
+---
+
 ## Público-alvo do gerenciador
 
 | Persona | Descrição |
