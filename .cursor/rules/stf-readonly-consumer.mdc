@@ -1,0 +1,51 @@
+---
+description: STF é somente leitura — consumir API/docs; nunca alterar senior-test-funcional sem pedido explícito
+alwaysApply: true
+---
+
+# Fronteira STF — apenas consumir
+
+Este repo (`stf-gerenciador-web`) é **cliente web**. O produto base vive em **`../senior-test-funcional`** (mobile + API + banco). Spec admin: `docs/contracts/admin-api.md`.
+
+## Regra de ouro
+
+**Não editar, criar, mover ou apagar arquivos em `senior-test-funcional/`** — salvo se o usuário **pedir explicitamente** alteração naquele repositório na mensagem atual.
+
+Explorar o STF para entender contrato, tipos ou comportamento: **somente leitura** (Read, Grep, curl, Swagger).
+
+## Permitido neste repo
+
+- Consumir API via HTTP: `VITE_STF_API_URL` + rotas `/auth/*` e `/admin/*`
+- Gerar tipos a partir do OpenAPI do STF (`/api/docs-json`) **dentro deste repo**
+- Ler docs/código do STF para alinhar UI e integração
+- Documentar lacunas da API em **`stf-gerenciador-web/docs/`** — **não** criar `.md` novos sem o usuário pedir
+
+## Proibido sem pedido explícito do usuário
+
+| Ação | Onde |
+|------|------|
+| Editar backend, Prisma, migrations, seeds | `senior-test-funcional/backend/` |
+| Editar app mobile Expo | `senior-test-funcional/frontend/` |
+| Commits, branches ou PRs no STF | `senior-test-funcional/` |
+| Duplicar scoring, PDF, instrumentos ou regras clínicas no browser | este repo |
+| Copiar/colar serviços Nest/Prisma do STF para cá | este repo |
+| `git` write, patches ou scripts que modifiquem o STF | `senior-test-funcional/` |
+
+## Se faltar algo na API
+
+1. **Não** implementar no STF automaticamente.
+2. Informar o usuário o que falta (endpoint, campo, bug).
+3. Implementar **só aqui** o que for possível como cliente (UI, chamada, tratamento de erro).
+4. Sugerir mudança no STF como tarefa **separada**, aguardando aprovação.
+
+## Rotas corretas
+
+- Admin: **`/admin/*`** — nunca simular domínio com `/patients` do fisio comum
+- Login: `POST /auth/login` — bloquear UI se `user.role !== 'ADMIN'`
+- PDF: `POST /admin/reports/assessments/:id` — não montar PDF no front
+
+## Antes de encerrar a tarefa
+
+- [ ] Nenhum arquivo em `senior-test-funcional/` foi modificado sem pedido explícito
+- [ ] Diff limitado a `stf-gerenciador-web/`
+- [ ] Integração usa contrato documentado, não fork da API

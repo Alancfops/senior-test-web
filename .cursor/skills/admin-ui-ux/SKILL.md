@@ -1,0 +1,126 @@
+---
+name: admin-ui-ux
+description: Constrói UI/UX responsiva e acessível (WCAG 2.1 AA) do gerenciador admin STF (Vite + React) com tokens mobile, layouts admin e estados de tela completos. Use ao criar ou revisar componentes, páginas, layout, CSS, responsividade, a11y, modais, tabelas ou quando o usuário mencionar UI, UX, design, WCAG ou telas.
+---
+
+# Admin UI/UX — STF Gerenciador Web
+
+Painel admin web (não mobile). Stack: Vite, React, TS, TanStack Query, RHF + Zod.
+
+## Base de trabalho
+
+### Rules — ler e aplicar
+
+| Rule | Escopo nesta skill |
+|------|-------------------|
+| `.cursor/rules/stf-design-tokens.mdc` | **Obrigatória** — cores, CSS variables, paridade mobile |
+| `.cursor/rules/code-review-clean-code.mdc` | Componentes legíveis, sem debug, estados de tela |
+| `.cursor/rules/lgpd-admin-panel.mdc` | Modais destrutivos, mínimo de dados na UI, PDF transitório |
+| `.cursor/rules/stf-readonly-consumer.mdc` | Tokens mobile só leitura em `senior-test-funcional/` |
+
+### Documentação
+
+| Doc | Uso |
+|-----|-----|
+| `docs/engineering/theming.md` | Mapeamento tokens web |
+| `docs/product/features.md` | GW001–GW010, layout por tela |
+| `docs/product/PRD.md` | RNF003 confirmações, RNF005 responsividade |
+| `docs/contracts/admin-api.md` | Campos exibidos, estados empty/error |
+
+### Skills relacionadas
+
+| Skill | Quando acionar |
+|-------|----------------|
+| `stf-api-integration` | Dados, loading/error vindos da API |
+| `clean-architecture-engineering` | Estrutura pages/components, testes de componente |
+| `git-workflow` | Commit/PR de UI (só se o usuário pedir) |
+
+Tokens STF em CSS variables (`--stf-primary`, etc.) — nunca paleta paralela do UI kit.
+
+## Princípios UX (admin)
+
+- **Desktop-first** (PRD RNF005): tabelas e sidebar; tablet aceitável; mobile secundário
+- **Densidade:** linhas ~40–44px; modais compactos; não copiar touch 48px do app
+- **Hierarquia:** ações destrutivas (`--stf-error`) sempre com confirmação explícita
+- **Estados obrigatórios:** loading, empty, error, success — em toda lista/detalhe
+- **Spec:** telas em `docs/product/features.md`; rotas em `docs/contracts/admin-api.md`
+
+## WCAG 2.1 — nível AA (alvo)
+
+Painel admin usado por profissionais — conformidade **WCAG 2.1 Level AA** em telas novas e revisões.
+
+### Perceivable (1.x)
+
+- Contraste **4.5:1** texto normal; **3:1** texto grande (≥18pt / 14pt bold) — tokens `--stf-text` / `--stf-page-bg`
+- **Não depender só de cor** para classificação clínica — usar texto/ícone de `classificationMeta` (1.4.1)
+- `alt` em avatares; gráficos com título ou `aria-label` (1.1.1)
+- Zoom 200% sem perda de conteúdo — layout fluido, não largura fixa (1.4.10)
+
+### Operable (2.x)
+
+- **Teclado:** tab order lógico; modais com focus trap; Esc fecha modal se seguro (2.1.1, 2.1.2)
+- **Focus visible** em links, botões, inputs — outline ≥ 2px, cor `--stf-primary` (2.4.7)
+- Alvo tocável **≥ 44×44px** em mobile (2.5.5)
+- Sem auto-play; timeouts de sessão com aviso se aplicável (2.2.x)
+
+### Understandable (3.x)
+
+- `<label htmlFor>` em todo input; erros RHF ligados via `aria-describedby` / `aria-invalid` (3.3.1, 3.3.2)
+- Linguagem clara em confirmações destrutivas — consequência explícita (3.3.4)
+- Navegação consistente entre telas admin (3.2.3)
+
+### Robust (4.x)
+
+- HTML semântico: `main`, `nav`, `table`/`thead`/`th`, `button` vs `div` clicável (4.1.1)
+- Modais: `role="dialog"`, `aria-modal="true"`, `aria-labelledby` no título
+- Anúncios dinâmicos (toast/erro): `role="status"` ou `aria-live="polite"`
+
+Checklist detalhado: [reference.md](reference.md#wcag-21-checklist)
+
+## Workflow
+
+```
+- [ ] 1. Ler GW + rules/docs da base acima
+- [ ] 2. Layout shell + tokens STF
+- [ ] 3. Estados loading/empty/error
+- [ ] 4. Responsividade (3 breakpoints)
+- [ ] 5. WCAG 2.1 AA (teclado, contraste, labels, modais)
+- [ ] 6. Code review (code-review-clean-code)
+```
+
+## Responsividade (resumo)
+
+| Breakpoint | Comportamento |
+|------------|---------------|
+| ≥1280px | Sidebar fixa + tabela completa |
+| 768–1279px | Sidebar colapsável ou top nav; tabela com scroll horizontal |
+| <768px | Nav drawer; cards empilhados; modais full-width |
+
+Detalhes: [reference.md](reference.md)
+
+## Padrões React
+
+- Componentes funcionais pequenos; hooks para lógica (`useAuth`, `useMediaQuery`)
+- Listas: TanStack Query — skeleton no loading, mensagem no empty
+- Forms (login, transferir): RHF + Zod; erros inline + a11y
+- Modais destrutivos: título claro + consequência + Cancelar / Confirmar + focus trap
+
+```tsx
+// ❌ Evitar — layout fixo, cor hardcoded, botão sem nome
+<div style={{ width: 1200, background: '#6366f1' }}>
+  <button onClick={onDelete}><TrashIcon /></button>
+
+// ✅ Preferir — tokens, semântica, acessível
+<div className="min-h-screen bg-[var(--stf-page-bg)] max-w-[1400px] mx-auto px-4 md:px-6">
+  <button type="button" aria-label="Excluir paciente" onClick={onDelete}>...</button>
+```
+
+## Antes de concluir
+
+- [ ] Tokens STF (sem hex soltos)
+- [ ] Responsivo nos 3 breakpoints
+- [ ] Loading / empty / error
+- [ ] Modais destrutivos com confirmação (LGPD)
+- [ ] WCAG 2.1 AA: contraste, teclado, labels, focus, modais
+- [ ] Sem `console.log`; code-review ok
+- [ ] Não criou `.md` novo sem pedido do usuário
