@@ -1,0 +1,80 @@
+@import './styles/tokens.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  html {
+    font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background-color: var(--stf-page-bg);
+    color: var(--stf-text);
+    line-height: 1.5;
+  }
+
+  #root {
+    min-height: 100vh;
+  }
+
+  a {
+    color: var(--stf-link);
+    text-decoration: none;
+  }
+
+  a:hover {
+    text-decoration: underline;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--stf-primary);
+    outline-offset: 2px;
+  }
+}
+
+@layer components {
+  .stf-card {
+    @apply rounded-stf border bg-[var(--stf-surface)] shadow-stf;
+    border-color: var(--stf-border);
+  }
+
+  .stf-table {
+    @apply w-full border-collapse text-sm;
+  }
+
+  .stf-table th {
+    @apply border-b px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide;
+    border-color: transparent;
+    background-color: var(--stf-table-head-bg);
+    color: var(--stf-on-primary);
+    height: var(--stf-row-height);
+  }
+
+  .stf-table td {
+    @apply border-b px-4 py-3;
+    border-color: color-mix(in srgb, var(--stf-border) 60%, transparent);
+    height: var(--stf-row-height);
+    vertical-align: middle;
+    background-color: var(--stf-surface);
+  }
+
+  .stf-auth-primary {
+    @apply rounded-full;
+  }
+
+  .stf-table tbody tr:hover {
+    background-color: color-mix(in srgb, var(--stf-primary) 4%, var(--stf-surface));
+  }
+}

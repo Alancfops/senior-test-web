@@ -1,0 +1,223 @@
+import { useState } from 'react';
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import { AppShell } from '@/components/layout/AppShell';
+import { IconEye, IconTrash, IconTransfer } from '@/components/icons/ActionIcons';
+import { DeletePatientModal } from '@/components/patients/DeletePatientModal';
+import { TransferPatientModal } from '@/components/patients/TransferPatientModal';
+import { DeleteTherapistModal } from '@/components/therapists/DeleteTherapistModal';
+import { Button } from '@/components/ui/Button';
+import { EmptyState } from '@/components/ui/EmptyState';
+import { ErrorState } from '@/components/ui/ErrorState';
+import { Spinner } from '@/components/ui/Spinner';
+import { ActionButton, ActionLink, TableActions } from '@/components/ui/TableActions';
+import { useDeletePatient, useTransferPatient } from '@/features/patients/usePatients';
+import { useDeleteTherapist, useTherapist } from '@/features/therapists/useTherapistMutations';
+import { useTherapists } from '@/features/therapists/useTherapists';
+import { formatDateTime, formatGender } from '@/lib/format';
+import { ApiError } from '@/lib/api/errors';
+
+type PatientAction = {
+  id: string;
+  fullName: string;
+};
+
+export function TherapistDetailPage() {
+  const { id = '' } = useParams();
+  const navigate = useNavigate();
+  const { data, isLoading, isError, error, refetch } = useTherapist(id);
+  const { data: therapistsList } = useTherapists();
+  const deleteTherapist = useDeleteTherapist();
+  const deletePatient = useDeletePatient();
+  const transferPatient = useTransferPatient();
+
+  const [deleteTherapistOpen, setDeleteTherapistOpen] = useState(false);
+  const [deletePatientTarget, setDeletePatientTarget] = useState<PatientAction | null>(null);
+  const [transferTarget, setTransferTarget] = useState<PatientAction | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
+
+  const errorMessage =
+    error instanceof ApiError ? error.message : 'Não foi possível carregar o fisioterapeuta.';
+
+  const therapistOptions =
+    therapistsList?.data
+      .filter((therapist) => therapist.id !== id && therapist.role === 'THERAPIST')
+      .map((therapist) => ({ value: therapist.id, label: therapist.fullName })) ?? [];
+
+  return (
+    <AppShell
+      title={data?.fullName ?? 'Fisioterapeuta'}
+      description={data?.email}
+      breadcrumbs={
+        <Link to="/therapists" className="text-[var(--stf-primary)] no-underline hover:underline">
+          Fisioterapeutas
+        </Link>
+      }
+      actions={
+        data ? (
+          <Button variant="destructive" onClick={() => setDeleteTherapistOpen(true)}>
+            <IconTrash />
+            Excluir fisioterapeuta
+          </Button>
+        ) : null
+      }
+    >
+      {actionError ? (
+        <p role="alert" className="mb-4 text-sm text-[var(--stf-error)]">
+          {actionError}
+        </p>
+      ) : null}
+
+      <div className="stf-card overflow-hidden">
+        {isLoading ? <Spinner label="Carregando detalhes…" /> : null}
+        {isError ? <ErrorState message={errorMessage} onRetry={() => void refetch()} /> : null}
+
+        {data ? (
+          <>
+            <div className="grid gap-4 border-b border-[var(--stf-border)] px-5 py-4 md:grid-cols-3">
+              <InfoItem label="Cadastro" value={formatDateTime(data.createdAt)} />
+              <InfoItem label="Pacientes" value={String(data.meta.patientCount)} />
+              <InfoItem label="Avaliações" value={String(data.meta.assessmentCount)} />
+            </div>
+
+            {data.patients.length === 0 ? (
+              <EmptyState
+                title="Nenhum paciente vinculado"
+                description="Este fisioterapeuta ainda não possui pacientes cadastrados."
+              />
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="stf-table">
+                  <thead>
+                    <tr>
+                      <th scope="col">Nome</th>
+                      <th scope="col">Idade</th>
+                      <th scope="col">Sexo</th>
+                      <th scope="col">Avaliações</th>
+                      <th scope="col">Última avaliação</th>
+                      <th scope="col">Ações</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {data.patients.map((patient) => (
+                      <tr key={patient.id}>
+                        <td className="font-medium text-[var(--stf-text)]">{patient.fullName}</td>
+                        <td>{patient.age}</td>
+                        <td>{formatGender(patient.gender)}</td>
+                        <td>{patient.assessmentCount}</td>
+                        <td className="text-[var(--stf-text-muted)]">
+                          {formatDateTime(patient.lastAssessmentAt)}
+                        </td>
+                        <td>
+                          <TableActions>
+                            <ActionLink
+                              to={`/patients/${patient.id}`}
+                              icon={<IconEye />}
+                            >
+                              Ver perfil
+                            </ActionLink>
+                            <ActionButton
+                              icon={<IconTransfer />}
+                              onClick={() =>
+                                setTransferTarget({ id: patient.id, fullName: patient.fullName })
+                              }
+                            >
+                              Transferir
+                            </ActionButton>
+                            <ActionButton
+                              variant="destructive"
+                              icon={<IconTrash />}
+                              onClick={() =>
+                                setDeletePatientTarget({
+                                  id: patient.id,
+                                  fullName: patient.fullName,
+                                })
+                              }
+                            >
+                              Excluir
+                            </ActionButton>
+                          </TableActions>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </>
+        ) : null}
+      </div>
+
+      {data ? (
+        <DeleteTherapistModal
+          open={deleteTherapistOpen}
+          therapistName={data.fullName}
+          patientCount={data.meta.patientCount}
+          loading={deleteTherapist.isPending}
+          onClose={() => setDeleteTherapistOpen(false)}
+          onConfirm={async () => {
+            setActionError(null);
+            try {
+              await deleteTherapist.mutateAsync(data.id);
+              navigate('/dashboard', { replace: true });
+            } catch (err) {
+              setActionError(err instanceof ApiError ? err.message : 'Erro ao excluir.');
+            }
+          }}
+        />
+      ) : null}
+
+      <DeletePatientModal
+        open={Boolean(deletePatientTarget)}
+        patientName={deletePatientTarget?.fullName ?? ''}
+        loading={deletePatient.isPending}
+        onClose={() => setDeletePatientTarget(null)}
+        onConfirm={async () => {
+          if (!deletePatientTarget) return;
+          setActionError(null);
+          try {
+            await deletePatient.mutateAsync(deletePatientTarget.id);
+            setDeletePatientTarget(null);
+            void refetch();
+          } catch (err) {
+            setActionError(err instanceof ApiError ? err.message : 'Erro ao excluir paciente.');
+          }
+        }}
+      />
+
+      {data && transferTarget ? (
+        <TransferPatientModal
+          open={Boolean(transferTarget)}
+          patientName={transferTarget.fullName}
+          fromTherapistName={data.fullName}
+          therapistOptions={therapistOptions}
+          loading={transferPatient.isPending}
+          onClose={() => setTransferTarget(null)}
+          onConfirm={async (targetTherapistId) => {
+            setActionError(null);
+            try {
+              await transferPatient.mutateAsync({
+                patientId: transferTarget.id,
+                targetTherapistId,
+              });
+              setTransferTarget(null);
+              void refetch();
+            } catch (err) {
+              setActionError(err instanceof ApiError ? err.message : 'Erro ao transferir.');
+            }
+          }}
+        />
+      ) : null}
+    </AppShell>
+  );
+}
+
+function InfoItem({ label, value }: { label: string; value: string }) {
+  return (
+    <div>
+      <p className="text-xs font-medium uppercase tracking-wide text-[var(--stf-text-muted)]">
+        {label}
+      </p>
+      <p className="mt-1 text-sm font-medium text-[var(--stf-text)]">{value}</p>
+    </div>
+  );
+}
