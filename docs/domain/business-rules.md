@@ -11,7 +11,9 @@ Regras administrativas do gerenciador web. Complementam (não substituem) os RFs
 | RB-01.1 | Apenas usuários com `role = ADMIN` acessam o gerenciador web |
 | RB-01.2 | JWT de admin contém claim `role`; guards da API validam em toda rota `/admin/*` |
 | RB-01.3 | Fisioterapeuta comum (`THERAPIST`) mantém isolamento total no app mobile |
-| RB-01.4 | Um fisio pode ser promovido a admin apenas por operação privilegiada (seed, migration ou endpoint futuro) |
+| RB-01.4 | Conta `ADMIN` é **exclusiva do gerenciador web** — não vinculada a conta `THERAPIST` do app mobile (mesmo que a mesma pessoa use ambos) |
+| RB-01.5 | Listagens de fisioterapeutas (GW002) exibem apenas `role = THERAPIST`; admin não aparece como membro da equipe clínica |
+| RB-01.6 | Um fisio pode ser promovido a admin apenas por operação privilegiada (seed, migration ou endpoint futuro) |
 
 ---
 
@@ -125,7 +127,7 @@ Referência: [senior-test-funcional/docs/product/privacy-and-lgpd.md](../../seni
 
 | # | Tema | Opções |
 |---|------|--------|
-| D1 | Admin também usa app mobile? | Sim (como THERAPIST + ADMIN) / Não (só web) |
+| D1 | Admin também usa app mobile? | ✅ **Não** — conta ADMIN separada; não associada à conta mobile |
 | D2 | Notificar fisio destino na transferência? | E-mail / In-app / Nenhum (MVP) |
 | D3 | Política RB-05 alternativa (cascade)? | Manter bloqueio vs cascade total |
 | D4 | Cadastro de admin | ✅ Seed via `prisma db seed` (`ADMIN_SEED_*`); fluxo UI fora do MVP |

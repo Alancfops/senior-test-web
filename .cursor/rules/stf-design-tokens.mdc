@@ -7,9 +7,18 @@ alwaysApply: true
 
 Identidade visual alinhada ao app STF (Figma `mtMbhRez2Xy2k414cfzcFm`). Fonte: `senior-test-funcional/frontend/src/theme/tokens.ts` (somente leitura). Detalhe: `docs/engineering/theming.md`.
 
+## Template base UI
+
+Layout e componentes seguem um **template de referência** (prints em `docs/design/template-screens/` — nome da tela no topo de cada imagem; Figma/MCP quando conectado). Regras de adaptação:
+
+- **Tokens STF prevalecem** sobre cores/tipografia genéricas do template
+- **Contexto admin:** sidebar/top nav, tabelas densas, modais compactos — não UX mobile
+- **Telas provisórias** (ex.: login atual) serão realinhadas quando o template estiver disponível
+- **LGPD:** confirmações destrutivas, mínimo de dados na UI — independente do template
+
 ## Tokens obrigatórios (CSS variables)
 
-Centralizar em `:root` ou tema do UI kit — **nunca** hex soltos espalhados:
+Centralizar em `:root` ou tema do template — **nunca** hex soltos espalhados:
 
 | Token | Hex | Uso web |
 |-------|-----|---------|
@@ -39,9 +48,9 @@ Centralizar em `:root` ou tema do UI kit — **nunca** hex soltos espalhados:
 - Visual “app mobile” (bottom tabs, cards enormes) no painel admin
 - Gradientes decorativos em listas/tabelas internas
 
-## UI kit (quando escolhido)
+## Template base (quando disponível)
 
-Configurar tema do kit para **apontar** às variáveis `--stf-*`, não substituir a paleta.
+Configurar componentes do template para **apontar** às variáveis `--stf-*`, não substituir a paleta STF.
 
 ```tsx
 // ❌ Evitar

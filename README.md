@@ -126,7 +126,7 @@ Rotas admin consumidas pelo painel: **`/admin/*`** + **`/auth/*`** — spec em [
 |--------|------------|
 | Frontend | Vite + React + TypeScript + React Router |
 | Dados | TanStack Query + React Hook Form + Zod |
-| UI kit | A definir — cores alinhadas ao mobile ([docs/engineering/theming.md](docs/engineering/theming.md)) |
+| UI / layout | Template base adaptado ao admin STF — [docs/engineering/theming.md](docs/engineering/theming.md) |
 | Sessão | JWT em `sessionStorage` (sobrevive F5) |
 | Backend | API NestJS do STF + `AdminModule` ✅ (em `senior-test-funcional`) |
 
@@ -151,12 +151,12 @@ Repositório **separado**, caminho local padrão: `../senior-test-funcional`.
 | STF mobile + API | Produto real entregue (pós-MVP) |
 | Documentação gerenciador | ✅ Completa |
 | API admin no STF | ✅ Implementada — ver [gap-analysis-stf.md](docs/engineering/gap-analysis-stf.md) |
-| Frontend Vite | Pendente — scaffold |
+| Frontend Vite | Em andamento — UI aguarda template base |
 
 ---
 
 ## Próximos passos
 
-1. Scaffold Vite + login (`sessionStorage`) + tokens visuais
-2. Telas GW002–GW009 consumindo `/admin/*`
+1. Conectar template base (Figma MCP ou arquivo) e realinhar telas provisórias
+2. Completar GW002–GW009 consumindo `/admin/*`
 3. Configurar `CORS_ORIGINS` no STF ao deployar o front

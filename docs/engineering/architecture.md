@@ -160,7 +160,7 @@ Stack oficial: [stack.md](stack.md) · Tema: [theming.md](theming.md)
 | Framework | **Vite + React + TypeScript + React Router** |
 | Estado servidor | **TanStack Query** |
 | Formulários | **React Hook Form + Zod** |
-| UI kit | **A definir** — tokens de cor fixos desde o início |
+| UI / layout | **Template base** adaptado — tokens STF fixos desde o início |
 | Auth client | JWT em **sessionStorage** (persiste após F5) |
 | Deploy | Build estático — [deployment.md](deployment.md) |
 | Repositório | **Separado** — [repository-link.md](repository-link.md) |
@@ -214,7 +214,7 @@ flowchart LR
 | **1** | Decisão de stack ✅ — [stack.md](stack.md) |
 | **2** | Schema: `role` + `AdminAuditLog`; seed admin (STF) ✅ |
 | **3** | API: `AdminModule` + guards + transferência (STF) ✅ |
-| **4** | Web: scaffold Vite + login + GW002–GW003 |
+| **4** | Web: template base + polish GW002–GW003 |
 | **5** | Web: GW004–GW006 (modais destrutivos) |
 | **6** | Web: GW007–GW009 (perfil, histórico, PDF) |
 | **7** | Audit log UI (opcional) + hardening |

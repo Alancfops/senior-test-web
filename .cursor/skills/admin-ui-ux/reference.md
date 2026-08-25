@@ -1,5 +1,7 @@
 # Referência UI/UX — admin web
 
+**Template base:** prints em `docs/design/template-screens/` (cada imagem com nome da tela no topo). Tokens STF abaixo **prevalecem** sobre estilos genéricos do template. Detalhe: `docs/engineering/theming.md`.
+
 ## Tokens CSS (copiar uma vez no projeto)
 
 ```css

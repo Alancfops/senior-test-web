@@ -86,7 +86,7 @@ O STF mobile + API já está em **entrega de produto real** (pós-MVP). O gerenc
 |------|--------|
 | App mobile + API clínica + AdminModule | ✅ Entregue / em uso |
 | Documentação gerenciador | ✅ Completa |
-| Frontend gerenciador (Vite) | Pendente — scaffold |
+| Frontend gerenciador (Vite) | Em andamento — UI aguarda template base |
 
 ---
 
@@ -96,8 +96,8 @@ Decisões registradas em [../engineering/stack.md](../engineering/stack.md):
 
 - Repo separado, API compartilhada no STF  
 - Vite + React + TanStack Query  
-- UI kit em aberto; **cores iguais ao mobile** adaptadas para admin  
+- **Template base UI** adaptado ao admin; cores via tokens STF (`--stf-*`)  
 - Sessão persiste em `sessionStorage` (recarga F5)  
 - Deploy alinhado ao padrão STF (PaaS + estático para o web)
 
-Próximo passo: **scaffold Vite** neste repo — a API admin já está implementada no STF.
+Próximo passo: **conectar template base** e realinhar telas — a API admin já está implementada no STF.

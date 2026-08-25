@@ -1,7 +1,7 @@
 # Tema e identidade visual
 
-**UI kit:** a definir durante o projeto.  
-**Cores e tokens:** alinhados ao app mobile STF (Figma `mtMbhRez2Xy2k414cfzcFm`).
+**Template base UI:** layout e componentes seguem um **template de referência** (a ser fornecido via Figma/MCP ou arquivo). Telas provisórias devem ser realinhadas quando o template estiver disponível.  
+**Cores e tokens:** alinhados ao app mobile STF (Figma `mtMbhRez2Xy2k414cfzcFm`) — **sobrescrevem** estilos genéricos do template quando houver conflito.
 
 Fonte canônica no STF: [`senior-test-funcional/frontend/src/theme/tokens.ts`](../../senior-test-funcional/frontend/src/theme/tokens.ts)
 
@@ -58,7 +58,23 @@ No mobile, gradientes aparecem em headers e splash. No gerenciador:
 
 ---
 
-## CSS / Tailwind (quando scaffold existir)
+## Template base — adaptação STF
+
+O gerenciador **não copia** o template literalmente. Ao implementar ou revisar uma tela:
+
+| Do template | Adaptar para STF admin |
+|-------------|------------------------|
+| Layout login / auth | Logo e copy STF; gradiente só na coluna lateral (GW001) |
+| Shell (sidebar, header) | Nav GW002–GW010; densidade para tabelas |
+| Formulários e modais | RHF + Zod; confirmação explícita em ações destrutivas |
+| Cores e tipografia | Mapear para `--stf-*` ([tokens abaixo](#css--tailwind)) |
+| Listas e cards | Preferir tabelas admin; estados loading / empty / error |
+
+**Fonte do template:** prints de referência em [`docs/design/template-screens/`](../design/template-screens/) — cada imagem traz o **nome da tela no topo**. Opcionalmente nomear o arquivo em kebab-case alinhado à rota (ex.: `login.png`, `dashboard.png`). Figma MCP, quando conectado, complementa essas referências.
+
+---
+
+## CSS / Tailwind
 
 Espelhar tokens em variáveis CSS:
 
@@ -76,7 +92,7 @@ Espelhar tokens em variáveis CSS:
 }
 ```
 
-Qualquer UI kit escolhido deve **mapear** para estas variáveis — não introduzir paleta paralela.
+Template base e qualquer biblioteca de componentes devem **mapear** para estas variáveis — não introduzir paleta paralela.
 
 ---
 
@@ -86,12 +102,13 @@ Resultados de avaliação trazem `classificationMeta` (JSON) da API — cores de
 
 ---
 
-## Processo de decisão do UI kit
+## Processo de adoção do template
 
-1. Scaffold Vite + tokens CSS acima  
-2. Prototipar **dashboard (lista fisios)** com 2 candidatos se necessário  
-3. Critérios: tabelas, modais de confirmação, acessibilidade, velocidade de entrega  
-4. Registrar escolha neste arquivo quando fechada  
+1. Receber prints em [`docs/design/template-screens/`](../design/template-screens/) (nome da tela visível no topo da imagem) ou Figma MCP  
+2. Mapear componentes do template → `src/components/` com tokens `--stf-*`  
+3. Realinhar telas existentes (login, shell, listas) — substituir layouts provisórios  
+4. Validar: tabelas, modais destrutivos, WCAG 2.1 AA, responsividade admin  
+5. Manter paridade de cores com mobile STF — template não redefine a paleta clínica  
 
 ---
 

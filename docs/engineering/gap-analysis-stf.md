@@ -16,7 +16,7 @@
 | Endpoints `/admin/*` | ✅ 11 rotas + extensão auth |
 | Testes e2e admin | ✅ `backend/test/admin.e2e-spec.ts` |
 | CORS para web | ✅ `CORS_ORIGINS` em `main.ts` |
-| Frontend gerenciador | ❌ Pendente (scaffold Vite) |
+| Frontend gerenciador | 🟡 Em andamento (Vite + telas provisórias; UI aguarda template base) |
 
 > A análise anterior (mesmo dia) registrava a API como pendente. O STF **já contém** o `AdminModule` completo.
 
@@ -109,11 +109,9 @@ Admin **não substitui** estas rotas — convive em paralelo.
 
 | Item | Repo | Prioridade |
 |------|------|------------|
-| Scaffold Vite + React | `stf-gerenciador-web` | Alta |
-| Login + sessionStorage | gerenciador | Alta |
-| Telas GW002–GW010 | gerenciador | Alta |
+| Template base UI (Figma/MCP) | referência externa | Alta — realinhar telas provisórias |
+| Telas GW002–GW010 (polish + API real) | gerenciador | Alta |
 | `openapi-typescript` codegen | gerenciador | Média |
-| UI kit | gerenciador | Decidir na 1ª sprint UI |
 | `CORS_ORIGINS` com URL do admin em prod | STF `.env` deploy | Antes do go-live |
 
 ---
@@ -149,4 +147,4 @@ Swagger: http://localhost:3000/api/docs — tag **admin**
 | Pode iniciar frontend? | **Sim** — API pronta |
 | STF precisa de mais código admin? | **Não** para MVP — só CORS em deploy |
 
-**Próximo passo:** scaffold do gerenciador web consumindo `/admin/*`.
+**Próximo passo:** conectar template base UI e realinhar telas do gerenciador consumindo `/admin/*`.

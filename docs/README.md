@@ -27,6 +27,7 @@ Este projeto **gerencia** o ecossistema descrito em [`senior-test-funcional`](..
 | [domain/](domain/) | Glossário, regras de negócio |
 | [engineering/](engineering/) | Arquitetura, integração, extensões de dados |
 | [contracts/](contracts/) | **Especificação HTTP admin** (`/admin/*`) |
+| [design/](design/) | Referência visual — prints do template base |
 | [diagrams/](diagrams/) | Diagramas UML (Mermaid) |
 
 ---
@@ -43,6 +44,7 @@ Este projeto **gerencia** o ecossistema descrito em [`senior-test-funcional`](..
 | Regras de transferência/exclusão | [domain/business-rules.md](domain/business-rules.md) |
 | **Stack oficial** | [engineering/stack.md](engineering/stack.md) |
 | Tema / cores (mobile → web) | [engineering/theming.md](engineering/theming.md) |
+| **Prints do template base** | [design/template-screens/](design/template-screens/) |
 | Vínculo entre repositórios | [engineering/repository-link.md](engineering/repository-link.md) |
 | Deploy | [engineering/deployment.md](engineering/deployment.md) |
 | **Lacunas vs STF (revisão)** | [engineering/gap-analysis-stf.md](engineering/gap-analysis-stf.md) |

@@ -22,7 +22,7 @@ Build and maintain the Vite SPA that consumes the STF NestJS API (`/admin/*`, `/
 | Auth storage | sessionStorage (not localStorage) |
 | Tests | Vitest + RTL; Playwright for critical flows |
 
-UI kit is TBD — map components to STF tokens from day one.
+UI segue **template base** (referência externa) mapeado aos tokens STF — ver `docs/engineering/theming.md`.
 
 ## Before writing code — always read
 
@@ -47,7 +47,7 @@ Use `reference.md` in each skill when you need detail.
 | Doc | Purpose |
 |-----|---------|
 | `docs/engineering/stack.md` | Official stack decisions |
-| `docs/engineering/theming.md` | Colors/tokens web |
+| `docs/engineering/theming.md` | Cores/tokens web + pasta de prints do template |
 | `docs/engineering/architecture.md` | C4, frontend decisions |
 | `docs/product/features.md` | GW001–GW010 specs |
 | `docs/contracts/admin-api.md` | API contract (source of truth) |

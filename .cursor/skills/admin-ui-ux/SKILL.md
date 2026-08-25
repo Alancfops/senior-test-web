@@ -35,7 +35,16 @@ Painel admin web (não mobile). Stack: Vite, React, TS, TanStack Query, RHF + Zo
 | `clean-architecture-engineering` | Estrutura pages/components, testes de componente |
 | `git-workflow` | Commit/PR de UI (só se o usuário pedir) |
 
-Tokens STF em CSS variables (`--stf-primary`, etc.) — nunca paleta paralela do UI kit.
+Tokens STF em CSS variables (`--stf-primary`, etc.) — nunca paleta paralela do template.
+
+## Template base UI
+
+Layout e padrões visuais seguem um **template de referência**. Prints em `docs/design/template-screens/` (nome da tela no topo de cada imagem). Ao implementar:
+
+1. Consultar template para estrutura (login, shell, tabelas, modais)
+2. Substituir cores/tipografia do template pelos tokens STF
+3. Adaptar densidade e navegação ao contexto **admin** (GW001–GW010)
+4. Manter estados loading / empty / error e WCAG 2.1 AA mesmo que o template não cubra
 
 ## Princípios UX (admin)
 
@@ -81,11 +90,12 @@ Checklist detalhado: [reference.md](reference.md#wcag-21-checklist)
 
 ```
 - [ ] 1. Ler GW + rules/docs da base acima
-- [ ] 2. Layout shell + tokens STF
-- [ ] 3. Estados loading/empty/error
-- [ ] 4. Responsividade (3 breakpoints)
-- [ ] 5. WCAG 2.1 AA (teclado, contraste, labels, modais)
-- [ ] 6. Code review (code-review-clean-code)
+- [ ] 2. Consultar template base (quando disponível) ou layout provisório documentado
+- [ ] 3. Layout shell + tokens STF
+- [ ] 4. Estados loading/empty/error
+- [ ] 5. Responsividade (3 breakpoints)
+- [ ] 6. WCAG 2.1 AA (teclado, contraste, labels, modais)
+- [ ] 7. Code review (code-review-clean-code)
 ```
 
 ## Responsividade (resumo)

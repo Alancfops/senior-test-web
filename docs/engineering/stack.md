@@ -1,7 +1,7 @@
 # Stack oficial — STF Gerenciador Web
 
 **Status:** decidido (2026-08)  
-**Revisão:** UI kit permanece em aberto; demais camadas fechadas.
+**Revisão:** UI segue template base (referência externa); demais camadas fechadas.
 
 ---
 
@@ -13,7 +13,7 @@
 | Frontend | **Vite + React + TypeScript + React Router** |
 | Estado servidor | **TanStack Query v5** |
 | Formulários | **React Hook Form + Zod** |
-| UI kit | **A definir durante o projeto** — ver [theming.md](theming.md) |
+| UI / layout | **Template base** (Figma/MCP ou arquivo) adaptado ao admin STF — ver [theming.md](theming.md) |
 | HTTP | **fetch** ou **ky** + Bearer JWT |
 | Tipos da API | **openapi-typescript** (gerado a partir do Swagger STF) |
 | Backend | **NestJS existente** em `senior-test-funcional` — `AdminModule` ✅ |
@@ -77,7 +77,7 @@ Ver `.env.example` na raiz deste repositório.
 
 | Item | Quando decidir |
 |------|----------------|
-| UI kit (shadcn, MUI, etc.) | Primeira sprint de UI — após scaffold |
+| Referência concreta do template (link Figma / MCP) | Assim que disponível — registrar em [theming.md](theming.md) |
 | Biblioteca de gráficos web | Ao implementar GW008 (espelhar RF012) |
 | Persistência Query (opcional) | Só se UX exigir; não é requisito |
 

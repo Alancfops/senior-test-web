@@ -27,5 +27,6 @@ coverage/
 playwright-report/
 test-results/
 
-# Session logs — local only, not versioned
+# Session logs and /session command — local only
 .cursor/sessions/
+.cursor/commands/session.md

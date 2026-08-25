@@ -101,7 +101,7 @@ Ver [personas-and-roles.md](personas-and-roles.md).
 | API STF — `AdminModule`, guards, transferência | ✅ Implementado — [admin-api.md](../contracts/admin-api.md) |
 | Schema Prisma — `role`, `AdminAuditLog` | ✅ Migration aplicada no STF |
 | RF013 — PDF admin | ✅ `generateAssessmentReportForAdmin` |
-| Frontend Vite (este repo) | Pendente |
+| Frontend Vite (este repo) | Em andamento — UI aguarda template base |
 
 ---
 

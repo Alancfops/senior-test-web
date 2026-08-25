@@ -30,8 +30,8 @@ flowchart LR
 
 | Atributo | Descrição |
 |----------|-----------|
-| **Quem é** | Fisioterapeuta responsável pela coordenação da equipe na clínica, consultório ou projeto |
-| **Canal** | Gerenciador web (desktop) |
+| **Quem é** | Responsável pela coordenação/supervisão da equipe — **único usuário do painel web** |
+| **Canal** | Gerenciador web (desktop) **apenas** — conta separada do app mobile STF |
 | **Motivação** | Supervisionar carga de trabalho, redistribuir pacientes, garantir continuidade do cuidado |
 | **Conhecimento técnico** | Moderado — usa sistemas web no dia a dia |
 | **Frequência** | Semanal ou conforme necessidade (não aplica testes pelo painel) |
