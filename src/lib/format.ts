@@ -1,5 +1,5 @@
 export function formatDateTime(value: string | null | undefined): string {
-  if (!value) return '—';
+  if (!value) return '-';
   return new Intl.DateTimeFormat('pt-BR', {
     dateStyle: 'short',
     timeStyle: 'short',
@@ -7,7 +7,7 @@ export function formatDateTime(value: string | null | undefined): string {
 }
 
 export function formatDate(value: string | null | undefined): string {
-  if (!value) return '—';
+  if (!value) return '-';
   return new Intl.DateTimeFormat('pt-BR', { dateStyle: 'short' }).format(new Date(value));
 }
 

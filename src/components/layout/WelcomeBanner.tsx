@@ -11,19 +11,19 @@ export function WelcomeBanner({ userName, subtitle }: WelcomeBannerProps) {
 
   return (
     <section
-      className="relative overflow-hidden rounded-stf-lg p-6 text-[var(--stf-on-primary)] shadow-stf-md"
+      className="relative overflow-hidden rounded-stf-lg p-4 text-[var(--stf-on-primary)] shadow-stf-md sm:p-6"
       style={{ background: 'var(--stf-header-gradient)' }}
     >
       <div className="relative z-10 flex flex-wrap items-start justify-between gap-4">
         <div className="max-w-2xl">
-          <p className="text-sm font-semibold uppercase tracking-wide text-white/90">
+          <p className="text-xs font-semibold uppercase tracking-wide text-white/90 sm:text-sm">
             Senior Teste Funcional
           </p>
-          <h2 className="mt-1 text-2xl font-bold">Olá, {userName}!</h2>
+          <h2 className="mt-1 text-xl font-bold sm:text-2xl">Olá, {userName}!</h2>
           <p className="mt-2 text-sm leading-relaxed text-white/90">{subtitle}</p>
         </div>
         <div
-          className="flex size-12 shrink-0 items-center justify-center rounded-full bg-white/20 text-lg font-bold text-white backdrop-blur-sm"
+          className="flex size-11 shrink-0 items-center justify-center rounded-full bg-white/20 text-lg font-bold text-white backdrop-blur-sm sm:size-12"
           aria-hidden
         >
           {initial}

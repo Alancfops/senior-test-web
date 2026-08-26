@@ -8,12 +8,12 @@ export function ReportsPage() {
       title="Relatórios PDF"
       description="Geração de relatórios clínicos sem restrição de ownership (GW009)."
     >
-      <div className="stf-card p-6 md:p-8">
-        <div className="flex items-start gap-4">
+      <div className="stf-card p-4 sm:p-6 md:p-8">
+        <div className="flex flex-col items-start gap-4 sm:flex-row">
           <div className="flex size-12 shrink-0 items-center justify-center rounded-stf-lg bg-[color-mix(in_srgb,var(--stf-primary)_12%,var(--stf-surface))] text-[var(--stf-primary)]">
             <IconFile className="size-6" />
           </div>
-          <div>
+          <div className="min-w-0">
             <h2 className="text-lg font-bold text-[var(--stf-text)]">Como baixar relatórios</h2>
             <p className="mt-2 text-sm leading-relaxed text-[var(--stf-text-muted)]">
               No protótipo, o PDF é gerado a partir do detalhe de uma avaliação{' '}

@@ -38,7 +38,7 @@ export function ConfirmModal({
             variant="outline"
             onClick={onClose}
             disabled={loading}
-            className="border-[var(--stf-error)] text-[var(--stf-error)] hover:bg-[color-mix(in_srgb,var(--stf-error)_6%,var(--stf-surface))]"
+            className="w-full border-[var(--stf-error)] text-[var(--stf-error)] hover:bg-[color-mix(in_srgb,var(--stf-error)_6%,var(--stf-surface))] sm:w-auto"
           >
             {cancelLabel}
           </Button>
@@ -47,6 +47,7 @@ export function ConfirmModal({
             onClick={onConfirm}
             loading={loading}
             pill
+            className="w-full sm:w-auto"
           >
             {confirmLabel}
           </Button>

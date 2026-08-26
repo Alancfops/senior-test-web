@@ -74,10 +74,16 @@ export function TherapistsListPage() {
               <thead>
                 <tr>
                   <th scope="col">Nome</th>
-                  <th scope="col">E-mail</th>
+                  <th scope="col" className="stf-table-col-secondary">
+                    E-mail
+                  </th>
                   <th scope="col">Pacientes</th>
-                  <th scope="col">Avaliações</th>
-                  <th scope="col">Última atividade</th>
+                  <th scope="col" className="stf-table-col-secondary">
+                    Avaliações
+                  </th>
+                  <th scope="col" className="stf-table-col-tertiary">
+                    Última atividade
+                  </th>
                   <th scope="col">Ações</th>
                 </tr>
               </thead>
@@ -87,10 +93,12 @@ export function TherapistsListPage() {
                     <td className="font-medium text-[var(--stf-text)]">
                       {therapist.fullName}
                     </td>
-                    <td className="text-[var(--stf-text-muted)]">{therapist.email}</td>
+                    <td className="stf-table-col-secondary text-[var(--stf-text-muted)]">
+                      {therapist.email}
+                    </td>
                     <td>{therapist.patientCount}</td>
-                    <td>{therapist.assessmentCount}</td>
-                    <td className="text-[var(--stf-text-muted)]">
+                    <td className="stf-table-col-secondary">{therapist.assessmentCount}</td>
+                    <td className="stf-table-col-tertiary text-[var(--stf-text-muted)]">
                       {formatDateTime(therapist.lastActivityAt)}
                     </td>
                     <td>

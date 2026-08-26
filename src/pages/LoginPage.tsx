@@ -52,51 +52,39 @@ export function LoginPage() {
 
   return (
     <AuthLayout>
-      <div className="mb-8 flex flex-col items-center lg:hidden">
-        <img
-          src="/logo-seniortest-physio.png"
-          alt="SeniorTest Physio"
-          width={112}
-          height={112}
-          className="rounded-full shadow-stf ring-2 ring-[color-mix(in_srgb,var(--stf-primary)_12%,var(--stf-surface))]"
-        />
-      </div>
+      <div className="stf-card p-4 sm:p-6 md:p-8 lg:border-0 lg:bg-transparent lg:p-0 lg:shadow-none">
+        <div className="mb-6 flex flex-col items-center sm:mb-8 lg:hidden">
+          <img
+            src="/logo-seniortest-wordmark.png"
+            alt="SeniorTest Physio"
+            width={200}
+            height={60}
+            className="h-10 w-auto sm:h-12"
+          />
+        </div>
 
-      <div>
-        <h1 className="text-3xl font-bold text-[var(--stf-primary-dark)]">Entrar</h1>
-        <p className="mt-2 text-base font-medium text-[var(--stf-text)]">
-          {prototypeMode
-            ? 'Modo protótipo — clique em Entrar para acessar o painel.'
-            : 'Conta exclusiva do painel web — sem vínculo com o app mobile.'}
-        </p>
+        <div>
+          <h1 className="text-2xl font-bold text-[var(--stf-primary-dark)] sm:text-3xl">
+            Fazer Login
+          </h1>
+          <p className="mt-2 text-sm font-medium text-[var(--stf-text)] sm:text-base">
+            {prototypeMode
+              ? 'Modo protótipo. Clique em Entrar para acessar o painel.'
+              : 'Conta exclusiva do painel web, sem vínculo com o app mobile.'}
+          </p>
 
-        {prototypeMode ? (
-          <div className="mt-8 space-y-4">
-            {apiError ? (
-              <p role="alert" className="text-sm text-[var(--stf-error)]">
-                {apiError}
-              </p>
-            ) : null}
-
-            <Button
-              type="button"
-              fullWidth
-              pill
-              loading={loginMutation.isPending}
-              onClick={onPrototypeEnter}
-            >
-              Entrar
-            </Button>
-          </div>
-        ) : (
-          <form className="mt-8 space-y-4" onSubmit={onSubmit} noValidate>
+          <form
+            className="mt-6 space-y-4 sm:mt-8"
+            onSubmit={prototypeMode ? (event) => event.preventDefault() : onSubmit}
+            noValidate
+          >
             <IconTextInput
               type="email"
               placeholder="E-mail"
               autoComplete="email"
               leftIcon={<IconMail className="size-5" />}
-              {...register('email')}
-              error={errors.email?.message}
+              {...(prototypeMode ? { name: 'email' } : register('email'))}
+              error={prototypeMode ? undefined : errors.email?.message}
             />
 
             <IconTextInput
@@ -104,14 +92,14 @@ export function LoginPage() {
               placeholder="Senha"
               autoComplete="current-password"
               leftIcon={<IconLock className="size-5" />}
-              {...register('password')}
-              error={errors.password?.message}
+              {...(prototypeMode ? { name: 'password' } : register('password'))}
+              error={prototypeMode ? undefined : errors.password?.message}
             />
 
             <div className="flex items-center justify-between pt-1">
               <Link
                 to="/forgot-password"
-                className="inline-flex items-center gap-1 text-sm font-medium text-[var(--stf-primary)] no-underline hover:underline"
+                className="inline-flex min-h-11 items-center gap-1 text-sm font-medium text-[var(--stf-primary)] no-underline hover:underline"
               >
                 Esqueci minha senha
               </Link>
@@ -123,11 +111,30 @@ export function LoginPage() {
               </p>
             ) : null}
 
-            <Button type="submit" fullWidth pill loading={loginMutation.isPending} className="mt-2">
-              Entrar
-            </Button>
+            {prototypeMode ? (
+              <Button
+                type="button"
+                fullWidth
+                pill
+                loading={loginMutation.isPending}
+                onClick={onPrototypeEnter}
+                className="mt-2 min-h-11"
+              >
+                Entrar
+              </Button>
+            ) : (
+              <Button
+                type="submit"
+                fullWidth
+                pill
+                loading={loginMutation.isPending}
+                className="mt-2 min-h-11"
+              >
+                Entrar
+              </Button>
+            )}
           </form>
-        )}
+        </div>
       </div>
     </AuthLayout>
   );
