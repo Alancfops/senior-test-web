@@ -52,11 +52,11 @@ export function AppShell({
         <PrototypeBanner />
 
         <header className="border-b border-[var(--stf-border)] bg-[var(--stf-surface)] px-4 py-4 shadow-stf sm:px-6 sm:py-5">
-          <div className="mb-3 flex items-center gap-3 lg:hidden">
+          <div className="relative mb-3 flex h-11 items-center justify-center lg:hidden">
             <button
               id={menuButtonId}
               type="button"
-              className="inline-flex size-11 shrink-0 items-center justify-center rounded-stf-lg border border-[var(--stf-border)] bg-[var(--stf-surface)] text-[var(--stf-text)] hover:bg-[var(--stf-page-bg)]"
+              className="absolute left-0 inline-flex size-11 items-center justify-center rounded-stf-lg text-[var(--stf-text)] hover:bg-[var(--stf-page-bg)]"
               aria-label="Abrir menu"
               aria-expanded={menuOpen}
               aria-controls="app-sidebar"

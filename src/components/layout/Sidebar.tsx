@@ -92,11 +92,11 @@ export function Sidebar({ open = false, onClose }: SidebarProps) {
             className="mx-auto h-9 w-auto lg:hidden"
           />
           <img
-            src="/logo-seniortest-physio.png"
+            src="/logo-seniortest-mark.png"
             alt=""
-            width={72}
-            height={72}
-            className="mx-auto hidden size-[72px] rounded-full lg:block"
+            width={147}
+            height={174}
+            className="mx-auto hidden h-[88px] w-auto lg:block"
           />
           <p className="mt-3 text-sm font-bold text-[var(--stf-text)]">Gerenciador</p>
           <p className="text-xs font-medium text-[var(--stf-primary)]">Senior Teste Funcional</p>

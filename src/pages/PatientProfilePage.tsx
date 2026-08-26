@@ -153,7 +153,7 @@ export function PatientProfilePage() {
             ) : null}
 
             {!loadingAssessments && filteredHistory.length > 0 ? (
-              <div className="overflow-x-auto">
+              <div className="overflow-x-hidden">
                 <table className="stf-table">
                   <caption className="sr-only">
                     Histórico de avaliações finalizadas do paciente

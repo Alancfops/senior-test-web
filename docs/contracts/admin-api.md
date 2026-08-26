@@ -186,7 +186,7 @@ Admin usa o **mesmo fluxo** do app mobile.
 | Campo | Tipo | Descrição |
 |-------|------|-----------|
 | `patientCount` | int | Pacientes com `therapist_id = id` |
-| `assessmentCount` | int | Avaliações (qualquer status) do fisio |
+| `assessmentCount` | int | Avaliações **somente `FINALIZED`** do fisio (exclui `DRAFT` / rascunhos) |
 | `lastActivityAt` | string \| null | ISO 8601 — última avaliação finalizada |
 
 ---
@@ -226,6 +226,12 @@ Admin usa o **mesmo fluxo** do app mobile.
   }
 }
 ```
+
+| Campo | Tipo | Descrição |
+|-------|------|-----------|
+| `patients[].assessmentCount` | int | Avaliações **somente `FINALIZED`** do paciente (exclui `DRAFT`) |
+| `meta.assessmentCount` | int | Avaliações **somente `FINALIZED`** do fisio (exclui `DRAFT`) |
+| `meta.patientCount` | int | Pacientes vinculados ao fisio |
 
 **Erros**
 
@@ -299,11 +305,13 @@ Admin usa o **mesmo fluxo** do app mobile.
 
 **GW008** — Histórico de avaliações do paciente.
 
+**Governança admin:** a lista retorna **somente** avaliações `FINALIZED`. Rascunhos (`DRAFT`) nunca aparecem neste endpoint.
+
 **Query params (opcionais)**
 
 | Param | Tipo | Descrição |
 |-------|------|-----------|
-| `status` | `DRAFT` \| `FINALIZED` | Filtrar por status |
+| `status` | `DRAFT` \| `FINALIZED` | Ignorado para listagem admin — filtro efetivo é sempre `FINALIZED` |
 | `instrumentCode` | `TUG` \| `KATZ` \| … | Filtrar por instrumento |
 
 **Response `200`**
@@ -333,7 +341,7 @@ Admin usa o **mesmo fluxo** do app mobile.
 }
 ```
 
-> Estrutura alinhada a `AssessmentResponse` existente + `therapistId` / `therapistName` para contexto admin. Ordenação: `finalizedAt` desc (rascunhos por `startedAt` desc).
+> Estrutura alinhada a `AssessmentResponse` existente + `therapistId` / `therapistName` para contexto admin. Ordenação: `finalizedAt` desc (apenas `FINALIZED`).
 
 ---
 
@@ -501,7 +509,14 @@ Corpo: bytes do PDF.
 | `400` | Avaliação em rascunho |
 | `404` | Avaliação não encontrada |
 
-**Auditoria:** `DOWNLOAD_REPORT` registrado em toda geração (implementado, não opcional).
+**Auditoria:** `DOWNLOAD_REPORT` em toda geração (admin e fisio). Metadata (sem payload clínico):
+
+| Campo | Descrição |
+|-------|-----------|
+| `patientId` | UUID do paciente |
+| `patientName` | Nome do paciente |
+| `instrumentCode` | Instrumento (TUG, BERG, …) |
+| `finalizedAt` | Data/hora da avaliação finalizada |
 
 ---
 
