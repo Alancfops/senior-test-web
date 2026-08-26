@@ -65,7 +65,7 @@ export function PatientProfilePage() {
 
       {patient ? (
         <div className="space-y-6">
-          <section className="stf-card grid gap-4 p-5 md:grid-cols-2 xl:grid-cols-4">
+          <section className="stf-card grid gap-4 p-4 sm:p-5 md:grid-cols-2 xl:grid-cols-4">
             <InfoItem label="Idade" value={`${patient.age} anos`} />
             <InfoItem label="Sexo" value={formatGender(patient.gender)} />
             <InfoItem label="Contato" value={patient.contact} />
@@ -78,7 +78,7 @@ export function PatientProfilePage() {
           </section>
 
           <section className="stf-card overflow-hidden">
-            <div className="border-b border-[var(--stf-border)] px-5 py-4">
+            <div className="border-b border-[var(--stf-border)] px-4 py-4 sm:px-5">
               <h2 className="text-base font-semibold text-[var(--stf-text)]">
                 Histórico de avaliações
               </h2>
@@ -96,30 +96,41 @@ export function PatientProfilePage() {
                   <thead>
                     <tr>
                       <th scope="col">Instrumento</th>
-                      <th scope="col">Status</th>
+                      <th scope="col" className="stf-table-col-secondary">
+                        Status
+                      </th>
                       <th scope="col">Resultado</th>
-                      <th scope="col">Classificação</th>
-                      <th scope="col">Data</th>
+                      <th scope="col" className="stf-table-col-secondary">
+                        Classificação
+                      </th>
+                      <th scope="col" className="stf-table-col-tertiary">
+                        Data
+                      </th>
                       <th scope="col">Ações</th>
                     </tr>
                   </thead>
                   <tbody>
                     {assessmentsData.data.map((assessment) => (
                       <tr key={assessment.id}>
-                        <td>{INSTRUMENT_LABELS[assessment.instrumentCode] ?? assessment.instrumentCode}</td>
-                        <td>{assessment.status === 'FINALIZED' ? 'Finalizada' : 'Rascunho'}</td>
-                        <td>{assessment.result?.rawLabel ?? '—'}</td>
                         <td>
+                          {INSTRUMENT_LABELS[assessment.instrumentCode] ??
+                            assessment.instrumentCode}
+                        </td>
+                        <td className="stf-table-col-secondary">
+                          {assessment.status === 'FINALIZED' ? 'Finalizada' : 'Rascunho'}
+                        </td>
+                        <td>{assessment.result?.rawLabel ?? '-'}</td>
+                        <td className="stf-table-col-secondary">
                           {assessment.result ? (
                             <ClassificationBadge
                               label={assessment.result.classificationLabel}
                               meta={assessment.result.classificationMeta}
                             />
                           ) : (
-                            '—'
+                            '-'
                           )}
                         </td>
-                        <td className="text-[var(--stf-text-muted)]">
+                        <td className="stf-table-col-tertiary text-[var(--stf-text-muted)]">
                           {formatDateTime(assessment.finalizedAt ?? assessment.startedAt)}
                         </td>
                         <td>
@@ -163,7 +174,7 @@ export function PatientProfilePage() {
 
               {timeseries?.canShowChart && timeseries.points.length >= 2 ? (
                 <SimpleLineChart
-                  title={`Evolução — ${INSTRUMENT_LABELS[timeseries.instrumentCode] ?? timeseries.instrumentCode}`}
+                  title={`Evolução: ${INSTRUMENT_LABELS[timeseries.instrumentCode] ?? timeseries.instrumentCode}`}
                   points={timeseries.points}
                 />
               ) : (

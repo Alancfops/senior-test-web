@@ -35,7 +35,7 @@ export function DashboardPage() {
       <div className="space-y-6">
         <WelcomeBanner
           userName={user?.fullName ?? 'Administrador'}
-          subtitle="Supervisione a equipe de fisioterapeutas no app mobile — sem operar avaliações por aqui."
+          subtitle="Supervisione a equipe de fisioterapeutas no app mobile, sem operar avaliações por aqui."
         />
 
         {loading ? <Spinner label="Carregando resumo…" /> : null}
@@ -89,7 +89,7 @@ export function DashboardPage() {
                   {auditLogs.data.slice(0, 3).map((log) => (
                     <li
                       key={log.id}
-                      className="flex items-center justify-between rounded-stf-sm bg-[var(--stf-page-bg)] px-3 py-2 text-sm"
+                      className="flex flex-col gap-1 rounded-stf-sm bg-[var(--stf-page-bg)] px-3 py-2 text-sm sm:flex-row sm:items-center sm:justify-between"
                     >
                       <span className="text-[var(--stf-text)]">{log.adminName}</span>
                       <span className="text-[var(--stf-text-muted)]">

@@ -39,7 +39,7 @@ export function TransferPatientModal({
 
   const targetId = watch('targetTherapistId');
   const targetLabel =
-    therapistOptions.find((option) => option.value === targetId)?.label ?? '—';
+    therapistOptions.find((option) => option.value === targetId)?.label ?? '-';
 
   return (
     <Modal
@@ -48,10 +48,16 @@ export function TransferPatientModal({
       onClose={onClose}
       footer={
         <>
-          <Button variant="outline" onClick={onClose} disabled={loading}>
+          <Button
+            variant="outline"
+            onClick={onClose}
+            disabled={loading}
+            className="w-full sm:w-auto"
+          >
             Cancelar
           </Button>
           <Button
+            className="w-full sm:w-auto"
             onClick={handleSubmit((values) => onConfirm(values.targetTherapistId))}
             loading={loading}
             disabled={!valuesReady(therapistOptions, targetId)}

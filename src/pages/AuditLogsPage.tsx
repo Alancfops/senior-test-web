@@ -29,7 +29,7 @@ export function AuditLogsPage() {
       title="Trilha de auditoria"
       description="Registro de ações administrativas sensíveis."
       actions={
-        <div className="min-w-[260px]">
+        <div className="w-full min-w-0 sm:min-w-[260px]">
           <SelectField
             label="Filtrar ação"
             options={actionOptions}
@@ -55,8 +55,12 @@ export function AuditLogsPage() {
                   <th scope="col">Data</th>
                   <th scope="col">Admin</th>
                   <th scope="col">Ação</th>
-                  <th scope="col">Alvo</th>
-                  <th scope="col">Metadados</th>
+                  <th scope="col" className="stf-table-col-secondary">
+                    Alvo
+                  </th>
+                  <th scope="col" className="stf-table-col-tertiary">
+                    Metadados
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -67,13 +71,13 @@ export function AuditLogsPage() {
                     </td>
                     <td>{log.adminName}</td>
                     <td>{AUDIT_ACTION_LABELS[log.action]}</td>
-                    <td>
+                    <td className="stf-table-col-secondary">
                       {log.targetType} · {log.targetId.slice(0, 8)}…
                     </td>
-                    <td className="text-xs text-[var(--stf-text-muted)]">
+                    <td className="stf-table-col-tertiary text-xs text-[var(--stf-text-muted)]">
                       {Object.keys(log.metadata).length > 0
                         ? JSON.stringify(log.metadata)
-                        : '—'}
+                        : '-'}
                     </td>
                   </tr>
                 ))}

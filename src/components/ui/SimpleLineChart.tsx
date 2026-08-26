@@ -57,7 +57,7 @@ export function SimpleLineChart({ points, title }: SimpleLineChartProps) {
         {coords.map(({ x, y, point }) => (
           <g key={point.assessmentId}>
             <circle cx={x} cy={y} r="5" fill="var(--stf-primary)" />
-            <title>{`${point.rawLabel} — ${point.classificationLabel}`}</title>
+            <title>{`${point.rawLabel}: ${point.classificationLabel}`}</title>
           </g>
         ))}
       </svg>

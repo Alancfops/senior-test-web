@@ -48,7 +48,7 @@ export function Modal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-[rgba(15,23,42,0.45)] p-4 backdrop-blur-[2px]"
+      className="fixed inset-0 z-50 flex items-end justify-center bg-[rgba(15,23,42,0.45)] p-0 backdrop-blur-[2px] sm:items-center sm:p-4"
       onMouseDown={(event) => {
         if (event.target === event.currentTarget) onClose();
       }}
@@ -60,19 +60,19 @@ export function Modal({
         aria-labelledby={titleId}
         tabIndex={-1}
         className={[
-          'w-full rounded-stf-lg border border-[var(--stf-border)] bg-[var(--stf-surface)] shadow-stf-md outline-none',
-          size === 'sm' ? 'max-w-md' : 'max-w-lg',
+          'flex max-h-[min(92dvh,720px)] w-full flex-col overflow-hidden rounded-t-stf-lg border border-[var(--stf-border)] bg-[var(--stf-surface)] shadow-stf-md outline-none sm:rounded-stf-lg',
+          size === 'sm' ? 'sm:max-w-md' : 'sm:max-w-lg',
         ].join(' ')}
       >
-        <div className="flex items-start justify-between border-b border-[var(--stf-border)] px-5 py-4">
-          <h2 id={titleId} className="text-lg font-semibold text-[var(--stf-text)]">
+        <div className="flex shrink-0 items-start justify-between border-b border-[var(--stf-border)] px-4 py-4 sm:px-5">
+          <h2 id={titleId} className="pr-4 text-base font-semibold text-[var(--stf-text)] sm:text-lg">
             {title}
           </h2>
           {showClose ? (
             <button
               type="button"
               onClick={onClose}
-              className="rounded-stf-sm p-1 text-[var(--stf-text-muted)] hover:bg-[var(--stf-page-bg)] hover:text-[var(--stf-text)]"
+              className="inline-flex size-10 shrink-0 items-center justify-center rounded-stf-sm text-[var(--stf-text-muted)] hover:bg-[var(--stf-page-bg)] hover:text-[var(--stf-text)]"
               aria-label="Fechar"
             >
               <IconClose />
@@ -81,14 +81,14 @@ export function Modal({
         </div>
         <div
           className={[
-            'px-5 py-5 text-sm text-[var(--stf-text-muted)]',
+            'overflow-y-auto px-4 py-5 text-sm text-[var(--stf-text-muted)] sm:px-5',
             centered ? 'text-center' : '',
           ].join(' ')}
         >
           {children}
         </div>
         {footer ? (
-          <div className="flex justify-end gap-3 border-t border-[var(--stf-border)] px-5 py-4">
+          <div className="flex shrink-0 flex-col-reverse gap-3 border-t border-[var(--stf-border)] px-4 py-4 sm:flex-row sm:justify-end sm:px-5">
             {footer}
           </div>
         ) : null}

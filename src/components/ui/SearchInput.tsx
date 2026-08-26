@@ -16,7 +16,7 @@ export function SearchInput({
   id = 'search',
 }: SearchInputProps) {
   return (
-    <div className="relative w-full min-w-[220px] max-w-xs">
+    <div className="relative w-full min-w-0 sm:min-w-[220px] sm:max-w-xs">
       <label htmlFor={id} className="sr-only">
         {label}
       </label>

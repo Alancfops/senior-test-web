@@ -77,4 +77,12 @@
   .stf-table tbody tr:hover {
     background-color: color-mix(in srgb, var(--stf-primary) 4%, var(--stf-surface));
   }
+
+  .stf-table-col-secondary {
+    @apply hidden md:table-cell;
+  }
+
+  .stf-table-col-tertiary {
+    @apply hidden xl:table-cell;
+  }
 }

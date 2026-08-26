@@ -32,7 +32,7 @@ export function PatientsListPage() {
   return (
     <AppShell
       title="Pacientes"
-      description="Todos os pacientes cadastrados — visão transversal para o administrador."
+      description="Todos os pacientes cadastrados. Visão transversal para o administrador."
       actions={
         <SearchInput
           value={search}
@@ -61,10 +61,16 @@ export function PatientsListPage() {
                 <tr>
                   <th scope="col">Nome</th>
                   <th scope="col">Idade</th>
-                  <th scope="col">Sexo</th>
+                  <th scope="col" className="stf-table-col-secondary">
+                    Sexo
+                  </th>
                   <th scope="col">Fisioterapeuta</th>
-                  <th scope="col">Avaliações</th>
-                  <th scope="col">Última avaliação</th>
+                  <th scope="col" className="stf-table-col-secondary">
+                    Avaliações
+                  </th>
+                  <th scope="col" className="stf-table-col-tertiary">
+                    Última avaliação
+                  </th>
                   <th scope="col">Ações</th>
                 </tr>
               </thead>
@@ -73,7 +79,7 @@ export function PatientsListPage() {
                   <tr key={patient.id}>
                     <td className="font-medium text-[var(--stf-text)]">{patient.fullName}</td>
                     <td>{patient.age}</td>
-                    <td>{formatGender(patient.gender)}</td>
+                    <td className="stf-table-col-secondary">{formatGender(patient.gender)}</td>
                     <td>
                       <Link
                         to={`/therapists/${patient.therapistId}`}
@@ -82,8 +88,8 @@ export function PatientsListPage() {
                         {patient.therapistName}
                       </Link>
                     </td>
-                    <td>{patient.assessmentCount}</td>
-                    <td className="text-[var(--stf-text-muted)]">
+                    <td className="stf-table-col-secondary">{patient.assessmentCount}</td>
+                    <td className="stf-table-col-tertiary text-[var(--stf-text-muted)]">
                       {formatDateTime(patient.lastAssessmentAt)}
                     </td>
                     <td>

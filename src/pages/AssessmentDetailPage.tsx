@@ -63,7 +63,11 @@ export function AssessmentDetailPage() {
       }
       actions={
         data?.status === 'FINALIZED' ? (
-          <Button onClick={() => void handleDownload()} loading={downloading}>
+          <Button
+            className="w-full sm:w-auto"
+            onClick={() => void handleDownload()}
+            loading={downloading}
+          >
             <IconDownload />
             Baixar PDF
           </Button>
@@ -82,7 +86,7 @@ export function AssessmentDetailPage() {
 
         {data ? (
           <div className="space-y-0">
-            <div className="grid gap-4 border-b border-[var(--stf-border)] px-5 py-4 md:grid-cols-2 xl:grid-cols-4">
+            <div className="grid gap-4 border-b border-[var(--stf-border)] px-4 py-4 sm:px-5 md:grid-cols-2 xl:grid-cols-4">
               <InfoItem label="Status" value={data.status === 'FINALIZED' ? 'Finalizada' : 'Rascunho'} />
               <InfoItem label="Início" value={formatDateTime(data.startedAt)} />
               <InfoItem label="Finalização" value={formatDateTime(data.finalizedAt)} />
@@ -90,12 +94,12 @@ export function AssessmentDetailPage() {
             </div>
 
             {data.result ? (
-              <div className="space-y-4 px-5 py-4">
+              <div className="space-y-4 px-4 py-4 sm:px-5">
                 <div>
                   <p className="text-xs font-medium uppercase tracking-wide text-[var(--stf-text-muted)]">
                     Resultado
                   </p>
-                  <p className="mt-1 text-2xl font-bold text-[var(--stf-text)]">
+                  <p className="mt-1 text-xl font-bold text-[var(--stf-text)] sm:text-2xl">
                     {data.result.rawLabel}
                   </p>
                 </div>
@@ -121,7 +125,7 @@ export function AssessmentDetailPage() {
               </div>
             ) : (
               <div className="px-5 py-8 text-sm text-[var(--stf-text-muted)]">
-                Avaliação ainda não finalizada — PDF indisponível.
+                Avaliação ainda não finalizada. PDF indisponível.
               </div>
             )}
           </div>

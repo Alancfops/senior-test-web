@@ -54,7 +54,11 @@ export function TherapistDetailPage() {
       }
       actions={
         data ? (
-          <Button variant="destructive" onClick={() => setDeleteTherapistOpen(true)}>
+          <Button
+            variant="destructive"
+            className="w-full sm:w-auto"
+            onClick={() => setDeleteTherapistOpen(true)}
+          >
             <IconTrash />
             Excluir fisioterapeuta
           </Button>
@@ -73,7 +77,7 @@ export function TherapistDetailPage() {
 
         {data ? (
           <>
-            <div className="grid gap-4 border-b border-[var(--stf-border)] px-5 py-4 md:grid-cols-3">
+            <div className="grid gap-4 border-b border-[var(--stf-border)] px-4 py-4 sm:px-5 md:grid-cols-3">
               <InfoItem label="Cadastro" value={formatDateTime(data.createdAt)} />
               <InfoItem label="Pacientes" value={String(data.meta.patientCount)} />
               <InfoItem label="Avaliações" value={String(data.meta.assessmentCount)} />
@@ -91,9 +95,15 @@ export function TherapistDetailPage() {
                     <tr>
                       <th scope="col">Nome</th>
                       <th scope="col">Idade</th>
-                      <th scope="col">Sexo</th>
-                      <th scope="col">Avaliações</th>
-                      <th scope="col">Última avaliação</th>
+                      <th scope="col" className="stf-table-col-secondary">
+                        Sexo
+                      </th>
+                      <th scope="col" className="stf-table-col-secondary">
+                        Avaliações
+                      </th>
+                      <th scope="col" className="stf-table-col-tertiary">
+                        Última avaliação
+                      </th>
                       <th scope="col">Ações</th>
                     </tr>
                   </thead>
@@ -102,9 +112,11 @@ export function TherapistDetailPage() {
                       <tr key={patient.id}>
                         <td className="font-medium text-[var(--stf-text)]">{patient.fullName}</td>
                         <td>{patient.age}</td>
-                        <td>{formatGender(patient.gender)}</td>
-                        <td>{patient.assessmentCount}</td>
-                        <td className="text-[var(--stf-text-muted)]">
+                        <td className="stf-table-col-secondary">
+                          {formatGender(patient.gender)}
+                        </td>
+                        <td className="stf-table-col-secondary">{patient.assessmentCount}</td>
+                        <td className="stf-table-col-tertiary text-[var(--stf-text-muted)]">
                           {formatDateTime(patient.lastAssessmentAt)}
                         </td>
                         <td>
