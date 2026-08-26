@@ -89,7 +89,14 @@ export function Sidebar({ open = false, onClose }: SidebarProps) {
             alt=""
             width={148}
             height={44}
-            className="mx-auto h-9 w-auto sm:h-10"
+            className="mx-auto h-9 w-auto lg:hidden"
+          />
+          <img
+            src="/logo-seniortest-physio.png"
+            alt=""
+            width={72}
+            height={72}
+            className="mx-auto hidden size-[72px] rounded-full lg:block"
           />
           <p className="mt-3 text-sm font-bold text-[var(--stf-text)]">Gerenciador</p>
           <p className="text-xs font-medium text-[var(--stf-primary)]">Senior Teste Funcional</p>

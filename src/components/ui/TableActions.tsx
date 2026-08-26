@@ -11,7 +11,7 @@ const variantClasses: Record<ActionVariant, string> = {
 };
 
 const baseClasses =
-  'inline-flex items-center gap-1.5 text-sm font-medium no-underline transition-colors hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--stf-primary)] focus-visible:ring-offset-1 rounded-stf-sm px-0.5 -mx-0.5';
+  'inline-flex size-9 shrink-0 items-center justify-center rounded-stf-sm no-underline transition-colors hover:bg-[color-mix(in_srgb,var(--stf-primary)_8%,transparent)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--stf-primary)] focus-visible:ring-offset-1';
 
 type ActionLinkProps = LinkProps & {
   icon: ReactNode;
@@ -26,10 +26,16 @@ export function ActionLink({
   className = '',
   ...rest
 }: ActionLinkProps) {
+  const label = typeof children === 'string' ? children : undefined;
   return (
-    <Link className={[baseClasses, variantClasses[variant], className].join(' ')} {...rest}>
+    <Link
+      className={[baseClasses, variantClasses[variant], className].join(' ')}
+      aria-label={label}
+      title={label}
+      {...rest}
+    >
       {icon}
-      <span>{children}</span>
+      <span className="sr-only">{children}</span>
     </Link>
   );
 }
@@ -48,14 +54,17 @@ export function ActionButton({
   type = 'button',
   ...rest
 }: ActionButtonProps) {
+  const label = typeof children === 'string' ? children : undefined;
   return (
     <button
       type={type}
       className={[baseClasses, variantClasses[variant], className].join(' ')}
+      aria-label={label}
+      title={label}
       {...rest}
     >
       {icon}
-      <span>{children}</span>
+      <span className="sr-only">{children}</span>
     </button>
   );
 }
@@ -65,5 +74,9 @@ type TableActionsProps = {
 };
 
 export function TableActions({ children }: TableActionsProps) {
-  return <div className="flex flex-wrap items-center gap-x-6 gap-y-2">{children}</div>;
+  return (
+    <div className="stf-table-actions inline-flex flex-nowrap items-center justify-start gap-0">
+      {children}
+    </div>
+  );
 }

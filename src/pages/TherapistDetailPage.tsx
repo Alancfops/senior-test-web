@@ -94,7 +94,9 @@ export function TherapistDetailPage() {
                   <thead>
                     <tr>
                       <th scope="col">Nome</th>
-                      <th scope="col">Idade</th>
+                      <th scope="col" className="w-16">
+                        Idade
+                      </th>
                       <th scope="col" className="stf-table-col-secondary">
                         Sexo
                       </th>
@@ -104,13 +106,25 @@ export function TherapistDetailPage() {
                       <th scope="col" className="stf-table-col-tertiary">
                         Última avaliação
                       </th>
-                      <th scope="col">Ações</th>
+                      <th scope="col" className="stf-table-col-actions">
+                        Ações
+                      </th>
                     </tr>
                   </thead>
                   <tbody>
                     {data.patients.map((patient) => (
                       <tr key={patient.id}>
-                        <td className="font-medium text-[var(--stf-text)]">{patient.fullName}</td>
+                        <td className="font-medium text-[var(--stf-text)]">
+                          <span className="block">{patient.fullName}</span>
+                          <span className="mt-1 block text-xs font-normal leading-snug text-[var(--stf-text-muted)] md:hidden">
+                            {formatGender(patient.gender)}
+                            {' · '}
+                            {patient.assessmentCount} aval.
+                            {patient.lastAssessmentAt
+                              ? ` · ${formatDateTime(patient.lastAssessmentAt)}`
+                              : ''}
+                          </span>
+                        </td>
                         <td>{patient.age}</td>
                         <td className="stf-table-col-secondary">
                           {formatGender(patient.gender)}
@@ -119,18 +133,18 @@ export function TherapistDetailPage() {
                         <td className="stf-table-col-tertiary text-[var(--stf-text-muted)]">
                           {formatDateTime(patient.lastAssessmentAt)}
                         </td>
-                        <td>
+                        <td className="stf-table-col-actions">
                           <TableActions>
-                            <ActionLink
-                              to={`/patients/${patient.id}`}
-                              icon={<IconEye />}
-                            >
+                            <ActionLink to={`/patients/${patient.id}`} icon={<IconEye />}>
                               Ver perfil
                             </ActionLink>
                             <ActionButton
                               icon={<IconTransfer />}
                               onClick={() =>
-                                setTransferTarget({ id: patient.id, fullName: patient.fullName })
+                                setTransferTarget({
+                                  id: patient.id,
+                                  fullName: patient.fullName,
+                                })
                               }
                             >
                               Transferir

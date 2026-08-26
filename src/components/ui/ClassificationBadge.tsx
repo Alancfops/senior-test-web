@@ -8,13 +8,16 @@ export function ClassificationBadge({ label, meta }: ClassificationBadgeProps) {
     typeof meta?.color === 'string' ? meta.color : 'var(--stf-secondary)';
 
   return (
-    <span className="inline-flex items-center gap-2 rounded-full px-2.5 py-1 text-xs font-medium text-[var(--stf-text)]">
+    <span
+      className="inline-flex max-w-full items-start gap-2 rounded-full py-0.5 text-xs font-medium leading-snug text-[var(--stf-text)]"
+      title={label}
+    >
       <span
-        className="inline-block size-2 rounded-full"
+        className="mt-1.5 inline-block size-2 shrink-0 rounded-full"
         style={{ backgroundColor: color }}
         aria-hidden
       />
-      {label}
+      <span className="min-w-0">{label}</span>
     </span>
   );
 }

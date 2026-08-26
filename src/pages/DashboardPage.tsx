@@ -26,7 +26,9 @@ export function DashboardPage() {
   const loading = loadingTherapists || loadingPatients || loadingAudit;
 
   const therapistCount = therapists?.meta.total ?? 0;
-  const patientCount = patients?.meta.total ?? 0;
+  const patientCountFromTherapists =
+    therapists?.data.reduce((sum, item) => sum + item.patientCount, 0) ?? 0;
+  const patientCount = patients?.meta.total ?? patientCountFromTherapists;
   const assessmentCount =
     therapists?.data.reduce((sum, item) => sum + item.assessmentCount, 0) ?? 0;
 

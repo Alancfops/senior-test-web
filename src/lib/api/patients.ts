@@ -1,6 +1,7 @@
 import { isMockMode } from '@/lib/api/config';
 import { apiDelete, apiGet, apiPost } from '@/lib/api/client';
 import { getAccessToken } from '@/lib/auth/session';
+import { fetchTherapist, fetchTherapists } from '@/lib/api/therapists';
 import {
   mockDeletePatient,
   mockDownloadReport,
@@ -14,6 +15,7 @@ import {
 import type {
   AssessmentDetail,
   AssessmentsListResponse,
+  PatientListItem,
   PatientProfile,
   PatientsListResponse,
   TimeseriesResponse,
@@ -29,11 +31,44 @@ export async function fetchPatient(id: string): Promise<PatientProfile> {
   return apiGet<PatientProfile>(`/admin/patients/${id}`);
 }
 
+/**
+ * A API admin não expõe GET /admin/patients (lista global).
+ * Agrega pacientes a partir do detalhe de cada fisioterapeuta clínico.
+ */
 export async function fetchPatients(): Promise<PatientsListResponse> {
   if (isMockMode()) {
     return mockListPatients();
   }
-  throw new ApiError('Listagem global de pacientes ainda não disponível na API.', 501);
+
+  const therapists = await fetchTherapists({ page: 1, limit: 100 });
+  const details = await Promise.all(
+    therapists.data.map((therapist) => fetchTherapist(therapist.id)),
+  );
+
+  const data: PatientListItem[] = details
+    .flatMap((therapist) =>
+      therapist.patients.map((patient) => ({
+        id: patient.id,
+        fullName: patient.fullName,
+        age: patient.age,
+        gender: patient.gender,
+        therapistId: therapist.id,
+        therapistName: therapist.fullName,
+        assessmentCount: patient.assessmentCount,
+        lastAssessmentAt: patient.lastAssessmentAt,
+      })),
+    )
+    .sort((a, b) => a.fullName.localeCompare(b.fullName, 'pt-BR'));
+
+  return {
+    data,
+    meta: {
+      page: 1,
+      limit: data.length || 25,
+      total: data.length,
+      totalPages: 1,
+    },
+  };
 }
 
 export async function fetchPatientAssessments(patientId: string): Promise<AssessmentsListResponse> {

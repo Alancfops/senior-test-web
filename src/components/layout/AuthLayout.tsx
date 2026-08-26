@@ -24,11 +24,11 @@ export function AuthLayout({ children }: AuthLayoutProps) {
 
         <div className="relative z-10 flex max-w-lg flex-col items-center px-4">
           <img
-            src="/logo-seniortest-wordmark.png"
+            src="/logo-seniortest-physio.png"
             alt=""
-            width={280}
-            height={84}
-            className="h-14 w-auto xl:h-16"
+            width={200}
+            height={200}
+            className="size-40 rounded-full shadow-stf-md ring-4 ring-[color-mix(in_srgb,var(--stf-primary)_12%,var(--stf-surface))] xl:size-[200px]"
           />
           <p className="mt-6 text-center text-2xl font-bold tracking-tight text-[var(--stf-primary-dark)] xl:mt-8 xl:text-3xl">
             STF Gerenciador
