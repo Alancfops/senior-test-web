@@ -8,14 +8,14 @@ Este repositório concentra o **gerenciador web**: interface para o fisioterapeu
 
 ## Relação com o STF mobile
 
-| Repositório | Caminho | Papel |
-|-------------|---------|-------|
-| **STF (mobile + API)** | [`../senior-test-funcional`](../senior-test-funcional) | App Expo, API NestJS, PostgreSQL, especificação clínica |
+| Repositório | Caminho / remote | Papel |
+|-------------|------------------|-------|
+| **STF (mobile + API)** | Local: [`../senior-test-funcional`](../senior-test-funcional) · Remote: [`git@github.com:Alancfops/senior-test-funcional.git`](https://github.com/Alancfops/senior-test-funcional) | App Expo, API NestJS, PostgreSQL, especificação clínica |
 | **STF Gerenciador Web** | este repositório | Painel admin web que estende a API existente |
 
 O gerenciador **não substitui** o app mobile. Ele complementa o ecossistema com visão transversal e operações administrativas que o app, por design, não oferece (isolamento por `therapist_id`).
 
-Documentação canônica do produto base: [senior-test-funcional/docs/README.md](../senior-test-funcional/docs/README.md)
+Documentação canônica do produto base: [senior-test-funcional/docs/README.md](../senior-test-funcional/docs/README.md) ([GitHub](https://github.com/Alancfops/senior-test-funcional))
 
 ---
 
@@ -136,7 +136,10 @@ Detalhes: [docs/engineering/stack.md](docs/engineering/stack.md)
 
 ## Vínculo com o STF
 
-Repositório **separado**, caminho local padrão: `../senior-test-funcional`.
+Repositório **separado**:
+
+- Remote: [`git@github.com:Alancfops/senior-test-funcional.git`](https://github.com/Alancfops/senior-test-funcional)
+- Caminho local padrão: `../senior-test-funcional`
 
 - API e banco: STF  
 - Código web admin: este repo  
