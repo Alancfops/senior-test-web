@@ -151,7 +151,7 @@ export function AssessmentDetailPage() {
                 Itens aplicados no instrumento, com início da pergunta/instrução quando disponível.
               </p>
             </div>
-            <div className="overflow-x-auto">
+            <div className="overflow-x-hidden">
               <table className="stf-table">
                 <caption className="sr-only">Respostas registradas na avaliação</caption>
                 <thead>

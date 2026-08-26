@@ -48,7 +48,7 @@ export function AuditLogsPage() {
         ) : null}
 
         {!isLoading && !isError && data && data.data.length > 0 ? (
-          <div className="overflow-x-auto">
+          <div className="overflow-x-hidden">
             <table className="stf-table">
               <thead>
                 <tr>
@@ -73,7 +73,9 @@ export function AuditLogsPage() {
                       {log.targetType} · {log.targetId.slice(0, 8)}…
                     </td>
                     <td className="stf-table-col-tertiary break-words text-xs text-[var(--stf-text-muted)]">
-                      {Object.keys(log.metadata).length > 0 ? JSON.stringify(log.metadata) : '-'}
+                      {log.metadata && Object.keys(log.metadata).length > 0
+                        ? JSON.stringify(log.metadata)
+                        : '-'}
                     </td>
                   </tr>
                 ))}

@@ -145,7 +145,7 @@ export type AuditLogItem = {
   action: AdminAuditAction;
   targetType: 'Patient' | 'Therapist' | 'Assessment';
   targetId: string;
-  metadata: Record<string, string>;
+  metadata: Record<string, unknown>;
   createdAt: string;
 };
 

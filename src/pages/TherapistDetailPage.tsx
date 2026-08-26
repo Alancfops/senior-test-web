@@ -89,21 +89,21 @@ export function TherapistDetailPage() {
                 description="Este fisioterapeuta ainda não possui pacientes cadastrados."
               />
             ) : (
-              <div className="overflow-x-auto">
+              <div className="overflow-x-hidden">
                 <table className="stf-table">
                   <thead>
                     <tr>
                       <th scope="col">Nome</th>
-                      <th scope="col" className="w-16">
+                      <th scope="col" className="w-14">
                         Idade
                       </th>
-                      <th scope="col" className="stf-table-col-secondary">
+                      <th scope="col" className="stf-table-col-secondary w-24">
                         Sexo
                       </th>
-                      <th scope="col" className="stf-table-col-secondary">
+                      <th scope="col" className="stf-table-col-secondary w-24">
                         Avaliações
                       </th>
-                      <th scope="col" className="stf-table-col-tertiary">
+                      <th scope="col" className="stf-table-col-tertiary w-36">
                         Última avaliação
                       </th>
                       <th scope="col" className="stf-table-col-actions">

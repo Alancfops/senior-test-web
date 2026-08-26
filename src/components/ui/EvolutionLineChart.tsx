@@ -136,7 +136,7 @@ export function EvolutionLineChart({
                   cy={point.y}
                   r={chart.hitRadius}
                   fill="transparent"
-                  className="cursor-pointer"
+                  className="cursor-pointer outline-none focus:outline-none focus-visible:outline-none"
                   onClick={() => togglePoint(point.id)}
                   role="button"
                   tabIndex={0}
@@ -155,8 +155,8 @@ export function EvolutionLineChart({
                     cy={point.y}
                     r={chart.ringRadius}
                     fill="none"
-                    stroke={LINE_COLOR}
-                    strokeWidth={1.25}
+                    stroke="var(--stf-primary)"
+                    strokeWidth={2}
                     className="pointer-events-none"
                   />
                 ) : null}
@@ -164,7 +164,7 @@ export function EvolutionLineChart({
                   cx={point.x}
                   cy={point.y}
                   r={isActive ? chart.activePointRadius : chart.pointRadius}
-                  fill={LINE_COLOR}
+                  fill={isActive ? 'var(--stf-primary)' : LINE_COLOR}
                   className="pointer-events-none"
                 />
                 <text
@@ -174,7 +174,7 @@ export function EvolutionLineChart({
                   style={{ fontSize: chart.labelSize }}
                   className={[
                     isActive
-                      ? 'fill-[var(--stf-text)] font-semibold'
+                      ? 'fill-[var(--stf-primary)] font-semibold'
                       : 'fill-[var(--stf-text-muted)]',
                   ].join(' ')}
                 >

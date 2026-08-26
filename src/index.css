@@ -61,7 +61,6 @@
     background-color: var(--stf-table-head-bg);
     color: var(--stf-on-primary);
     min-height: var(--stf-row-height);
-    white-space: nowrap;
   }
 
   .stf-table td {

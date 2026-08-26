@@ -69,7 +69,7 @@ export function TherapistsListPage() {
         ) : null}
 
         {!isLoading && !isError && filteredTherapists.length > 0 ? (
-          <div className="overflow-x-auto">
+          <div className="overflow-x-hidden">
             <table className="stf-table">
               <thead>
                 <tr>
