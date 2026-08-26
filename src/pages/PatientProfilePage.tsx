@@ -5,9 +5,17 @@ import { IconEye } from '@/components/icons/ActionIcons';
 import { ClassificationBadge } from '@/components/ui/ClassificationBadge';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { ErrorState } from '@/components/ui/ErrorState';
-import { SimpleLineChart } from '@/components/ui/SimpleLineChart';
+import { EvolutionLineChart } from '@/components/ui/EvolutionLineChart';
+import { SelectField } from '@/components/ui/SelectField';
 import { Spinner } from '@/components/ui/Spinner';
 import { ActionLink } from '@/components/ui/TableActions';
+import {
+  CHART_EMPTY_MESSAGE,
+  CHART_IMPROVEMENT_HINT,
+  getChartMaxValue,
+  isChartInstrumentCode,
+  mapTimeseriesToChartPoints,
+} from '@/features/assessments/chartConfig';
 import {
   usePatient,
   usePatientAssessments,
@@ -22,17 +30,55 @@ export function PatientProfilePage() {
   const { data: patient, isLoading, isError, error, refetch } = usePatient(id);
   const { data: assessmentsData, isLoading: loadingAssessments } = usePatientAssessments(id);
 
-  const instruments = useMemo(() => {
-    const codes = new Set(
-      assessmentsData?.data.map((item) => item.instrumentCode) ?? [],
-    );
-    return Array.from(codes);
-  }, [assessmentsData]);
+  const finalizedAssessments = useMemo(
+    () => assessmentsData?.data.filter((item) => item.status === 'FINALIZED') ?? [],
+    [assessmentsData],
+  );
 
+  const instruments = useMemo(() => {
+    const codes = new Set(finalizedAssessments.map((item) => item.instrumentCode));
+    return Array.from(codes);
+  }, [finalizedAssessments]);
+
+  const [historyInstrument, setHistoryInstrument] = useState<string>('all');
   const [selectedInstrument, setSelectedInstrument] = useState<string | null>(null);
   const activeInstrument = selectedInstrument ?? instruments[0] ?? null;
 
-  const { data: timeseries } = useTimeseries(id, activeInstrument);
+  const filteredHistory = useMemo(() => {
+    if (historyInstrument === 'all') return finalizedAssessments;
+    return finalizedAssessments.filter((item) => item.instrumentCode === historyInstrument);
+  }, [finalizedAssessments, historyInstrument]);
+
+  const historyInstrumentOptions = useMemo(
+    () => [
+      { value: 'all', label: 'Todos os instrumentos' },
+      ...instruments.map((code) => ({
+        value: code,
+        label: INSTRUMENT_LABELS[code] ?? code,
+      })),
+    ],
+    [instruments],
+  );
+
+  const { data: timeseries, isLoading: loadingTimeseries } = useTimeseries(id, activeInstrument);
+
+  const chartPoints = useMemo(
+    () => (timeseries ? mapTimeseriesToChartPoints(timeseries.points) : []),
+    [timeseries],
+  );
+
+  const chartMaxValue = useMemo(() => {
+    if (!activeInstrument || !isChartInstrumentCode(activeInstrument)) {
+      const peak = chartPoints.length > 0 ? Math.max(...chartPoints.map((p) => p.value)) : 10;
+      return Math.max(10, Math.ceil(peak * 1.2));
+    }
+    return getChartMaxValue(activeInstrument, chartPoints);
+  }, [activeInstrument, chartPoints]);
+
+  const chartExplanation =
+    activeInstrument && isChartInstrumentCode(activeInstrument)
+      ? CHART_IMPROVEMENT_HINT[activeInstrument]
+      : undefined;
 
   const errorMessage =
     error instanceof ApiError ? error.message : 'Não foi possível carregar o paciente.';
@@ -78,49 +124,71 @@ export function PatientProfilePage() {
           </section>
 
           <section className="stf-card overflow-hidden">
-            <div className="border-b border-[var(--stf-border)] px-4 py-4 sm:px-5">
+            <div className="flex flex-col gap-3 border-b border-[var(--stf-border)] px-4 py-4 sm:flex-row sm:items-end sm:justify-between sm:px-5">
               <h2 className="text-base font-semibold text-[var(--stf-text)]">
                 Histórico de avaliações
               </h2>
+              {instruments.length > 0 ? (
+                <div className="w-full sm:max-w-xs">
+                  <SelectField
+                    label="Filtrar instrumento"
+                    options={historyInstrumentOptions}
+                    value={historyInstrument}
+                    onChange={(event) => setHistoryInstrument(event.target.value)}
+                  />
+                </div>
+              ) : null}
             </div>
 
             {loadingAssessments ? <Spinner label="Carregando avaliações…" /> : null}
 
-            {!loadingAssessments && assessmentsData?.data.length === 0 ? (
-              <EmptyState title="Nenhuma avaliação registrada" />
+            {!loadingAssessments && finalizedAssessments.length === 0 ? (
+              <EmptyState title="Nenhuma avaliação finalizada" />
             ) : null}
 
-            {!loadingAssessments && assessmentsData && assessmentsData.data.length > 0 ? (
+            {!loadingAssessments &&
+            finalizedAssessments.length > 0 &&
+            filteredHistory.length === 0 ? (
+              <EmptyState title="Nenhuma avaliação para o filtro selecionado" />
+            ) : null}
+
+            {!loadingAssessments && filteredHistory.length > 0 ? (
               <div className="overflow-x-auto">
                 <table className="stf-table">
+                  <caption className="sr-only">
+                    Histórico de avaliações finalizadas do paciente
+                  </caption>
                   <thead>
                     <tr>
-                      <th scope="col">Instrumento</th>
-                      <th scope="col" className="stf-table-col-secondary">
-                        Status
+                      <th scope="col" className="w-[22%]">
+                        Instrumento
                       </th>
-                      <th scope="col">Resultado</th>
-                      <th scope="col" className="stf-table-col-secondary">
-                        Classificação
+                      <th scope="col" className="w-[18%]">
+                        Resultado
                       </th>
-                      <th scope="col" className="stf-table-col-tertiary">
+                      <th scope="col">Classificação</th>
+                      <th scope="col" className="stf-table-col-secondary w-[18%]">
                         Data
                       </th>
-                      <th scope="col">Ações</th>
+                      <th scope="col" className="stf-table-col-actions">
+                        Ações
+                      </th>
                     </tr>
                   </thead>
                   <tbody>
-                    {assessmentsData.data.map((assessment) => (
+                    {filteredHistory.map((assessment) => (
                       <tr key={assessment.id}>
                         <td>
-                          {INSTRUMENT_LABELS[assessment.instrumentCode] ??
-                            assessment.instrumentCode}
-                        </td>
-                        <td className="stf-table-col-secondary">
-                          {assessment.status === 'FINALIZED' ? 'Finalizada' : 'Rascunho'}
+                          <span className="block">
+                            {INSTRUMENT_LABELS[assessment.instrumentCode] ??
+                              assessment.instrumentCode}
+                          </span>
+                          <span className="mt-1 block text-xs text-[var(--stf-text-muted)] md:hidden">
+                            {formatDateTime(assessment.finalizedAt ?? assessment.startedAt)}
+                          </span>
                         </td>
                         <td>{assessment.result?.rawLabel ?? '-'}</td>
-                        <td className="stf-table-col-secondary">
+                        <td>
                           {assessment.result ? (
                             <ClassificationBadge
                               label={assessment.result.classificationLabel}
@@ -130,10 +198,10 @@ export function PatientProfilePage() {
                             '-'
                           )}
                         </td>
-                        <td className="stf-table-col-tertiary text-[var(--stf-text-muted)]">
+                        <td className="stf-table-col-secondary text-[var(--stf-text-muted)]">
                           {formatDateTime(assessment.finalizedAt ?? assessment.startedAt)}
                         </td>
-                        <td>
+                        <td className="stf-table-col-actions">
                           <ActionLink
                             to={`/patients/${id}/assessment/${assessment.id}`}
                             icon={<IconEye />}
@@ -161,7 +229,7 @@ export function PatientProfilePage() {
                     type="button"
                     onClick={() => setSelectedInstrument(code)}
                     className={[
-                      'rounded-full px-3 py-1 text-xs font-semibold transition-colors',
+                      'min-h-11 rounded-full px-3 py-1 text-xs font-semibold transition-colors',
                       activeInstrument === code
                         ? 'bg-[var(--stf-primary)] text-[var(--stf-on-primary)]'
                         : 'border border-[var(--stf-border)] bg-[var(--stf-surface)] text-[var(--stf-text-muted)]',
@@ -172,17 +240,25 @@ export function PatientProfilePage() {
                 ))}
               </div>
 
-              {timeseries?.canShowChart && timeseries.points.length >= 2 ? (
-                <SimpleLineChart
+              {loadingTimeseries ? <Spinner label="Carregando gráfico…" /> : null}
+
+              {!loadingTimeseries &&
+              timeseries?.canShowChart &&
+              chartPoints.length >= 2 ? (
+                <EvolutionLineChart
                   title={`Evolução: ${INSTRUMENT_LABELS[timeseries.instrumentCode] ?? timeseries.instrumentCode}`}
-                  points={timeseries.points}
+                  points={chartPoints}
+                  maxValue={chartMaxValue}
+                  explanation={chartExplanation}
                 />
-              ) : (
+              ) : null}
+
+              {!loadingTimeseries &&
+              !(timeseries?.canShowChart && chartPoints.length >= 2) ? (
                 <div className="stf-card px-5 py-4 text-sm text-[var(--stf-text-muted)]">
-                  São necessárias pelo menos duas avaliações finalizadas do mesmo instrumento para
-                  exibir o gráfico.
+                  {CHART_EMPTY_MESSAGE}
                 </div>
-              )}
+              ) : null}
             </section>
           ) : null}
         </div>

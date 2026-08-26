@@ -6,6 +6,7 @@ import { ClassificationBadge } from '@/components/ui/ClassificationBadge';
 import { Button } from '@/components/ui/Button';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { Spinner } from '@/components/ui/Spinner';
+import { mapAssessmentPayloadToAnswers } from '@/features/assessments/mapAssessmentAnswers';
 import { useAssessment, usePatient } from '@/features/patients/usePatients';
 import {
   downloadAssessmentReport,
@@ -27,6 +28,10 @@ export function AssessmentDetailPage() {
 
   const errorMessage =
     error instanceof ApiError ? error.message : 'Não foi possível carregar a avaliação.';
+
+  const answers = data
+    ? mapAssessmentPayloadToAnswers(data.instrumentCode, data.payload)
+    : [];
 
   const handleDownload = async () => {
     setDownloadError(null);
@@ -80,55 +85,106 @@ export function AssessmentDetailPage() {
         </p>
       ) : null}
 
-      <div className="stf-card overflow-hidden">
-        {isLoading ? <Spinner label="Carregando avaliação…" /> : null}
-        {isError ? <ErrorState message={errorMessage} onRetry={() => void refetch()} /> : null}
+      <div className="space-y-6">
+        <div className="stf-card overflow-hidden">
+          {isLoading ? <Spinner label="Carregando avaliação…" /> : null}
+          {isError ? <ErrorState message={errorMessage} onRetry={() => void refetch()} /> : null}
 
-        {data ? (
-          <div className="space-y-0">
-            <div className="grid gap-4 border-b border-[var(--stf-border)] px-4 py-4 sm:px-5 md:grid-cols-2 xl:grid-cols-4">
-              <InfoItem label="Status" value={data.status === 'FINALIZED' ? 'Finalizada' : 'Rascunho'} />
-              <InfoItem label="Início" value={formatDateTime(data.startedAt)} />
-              <InfoItem label="Finalização" value={formatDateTime(data.finalizedAt)} />
-              <InfoItem label="Fisioterapeuta" value={data.therapistName} />
-            </div>
+          {data ? (
+            <div className="space-y-0">
+              <div className="grid gap-4 border-b border-[var(--stf-border)] px-4 py-4 sm:px-5 md:grid-cols-2 xl:grid-cols-4">
+                <InfoItem
+                  label="Status"
+                  value={data.status === 'FINALIZED' ? 'Finalizada' : 'Rascunho'}
+                />
+                <InfoItem label="Início" value={formatDateTime(data.startedAt)} />
+                <InfoItem label="Finalização" value={formatDateTime(data.finalizedAt)} />
+                <InfoItem label="Fisioterapeuta" value={data.therapistName} />
+              </div>
 
-            {data.result ? (
-              <div className="space-y-4 px-4 py-4 sm:px-5">
-                <div>
-                  <p className="text-xs font-medium uppercase tracking-wide text-[var(--stf-text-muted)]">
-                    Resultado
-                  </p>
-                  <p className="mt-1 text-xl font-bold text-[var(--stf-text)] sm:text-2xl">
-                    {data.result.rawLabel}
-                  </p>
-                </div>
-
-                <div>
-                  <p className="mb-2 text-xs font-medium uppercase tracking-wide text-[var(--stf-text-muted)]">
-                    Classificação
-                  </p>
-                  <ClassificationBadge
-                    label={data.result.classificationLabel}
-                    meta={data.result.classificationMeta}
-                  />
-                </div>
-
-                {data.notesObservation ? (
+              {data.result ? (
+                <div className="space-y-4 px-4 py-4 sm:px-5">
                   <div>
                     <p className="text-xs font-medium uppercase tracking-wide text-[var(--stf-text-muted)]">
-                      Observações
+                      Resultado
                     </p>
-                    <p className="mt-1 text-sm text-[var(--stf-text)]">{data.notesObservation}</p>
+                    <p className="mt-1 text-xl font-bold text-[var(--stf-text)] sm:text-2xl">
+                      {data.result.rawLabel}
+                    </p>
                   </div>
-                ) : null}
-              </div>
-            ) : (
-              <div className="px-5 py-8 text-sm text-[var(--stf-text-muted)]">
-                Avaliação ainda não finalizada. PDF indisponível.
-              </div>
-            )}
-          </div>
+
+                  <div>
+                    <p className="mb-2 text-xs font-medium uppercase tracking-wide text-[var(--stf-text-muted)]">
+                      Classificação
+                    </p>
+                    <ClassificationBadge
+                      label={data.result.classificationLabel}
+                      meta={data.result.classificationMeta}
+                    />
+                  </div>
+
+                  {data.notesObservation ? (
+                    <div>
+                      <p className="text-xs font-medium uppercase tracking-wide text-[var(--stf-text-muted)]">
+                        Observações
+                      </p>
+                      <p className="mt-1 text-sm text-[var(--stf-text)]">{data.notesObservation}</p>
+                    </div>
+                  ) : null}
+                </div>
+              ) : (
+                <div className="px-5 py-8 text-sm text-[var(--stf-text-muted)]">
+                  Avaliação ainda não finalizada. PDF indisponível.
+                </div>
+              )}
+            </div>
+          ) : null}
+        </div>
+
+        {data && answers.length > 0 ? (
+          <section className="stf-card overflow-hidden">
+            <div className="border-b border-[var(--stf-border)] px-4 py-4 sm:px-5">
+              <h2 className="text-base font-semibold text-[var(--stf-text)]">
+                Respostas do teste
+              </h2>
+              <p className="mt-1 text-sm text-[var(--stf-text-muted)]">
+                Itens aplicados no instrumento, com início da pergunta/instrução quando disponível.
+              </p>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="stf-table">
+                <caption className="sr-only">Respostas registradas na avaliação</caption>
+                <thead>
+                  <tr>
+                    <th scope="col" className="w-[30%]">
+                      Item
+                    </th>
+                    <th scope="col">Pergunta / instrução</th>
+                    <th scope="col" className="w-[22%]">
+                      Resposta
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {answers.map((row) => (
+                    <tr key={`${row.title}-${row.question}`}>
+                      <td className="font-medium text-[var(--stf-text)]">{row.title}</td>
+                      <td className="text-[var(--stf-text-muted)]" title={row.question}>
+                        {row.question}
+                      </td>
+                      <td className="font-medium text-[var(--stf-text)]">{row.value}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </section>
+        ) : null}
+
+        {data && !isLoading && answers.length === 0 && data.status === 'FINALIZED' ? (
+          <section className="stf-card px-4 py-5 text-sm text-[var(--stf-text-muted)] sm:px-5">
+            Não há respostas detalhadas disponíveis no payload desta avaliação.
+          </section>
         ) : null}
       </div>
     </AppShell>

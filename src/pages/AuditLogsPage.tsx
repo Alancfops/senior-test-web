@@ -66,18 +66,14 @@ export function AuditLogsPage() {
               <tbody>
                 {data.data.map((log) => (
                   <tr key={log.id}>
-                    <td className="text-[var(--stf-text-muted)]">
-                      {formatDateTime(log.createdAt)}
-                    </td>
+                    <td className="text-[var(--stf-text-muted)]">{formatDateTime(log.createdAt)}</td>
                     <td>{log.adminName}</td>
                     <td>{AUDIT_ACTION_LABELS[log.action]}</td>
                     <td className="stf-table-col-secondary">
                       {log.targetType} · {log.targetId.slice(0, 8)}…
                     </td>
-                    <td className="stf-table-col-tertiary text-xs text-[var(--stf-text-muted)]">
-                      {Object.keys(log.metadata).length > 0
-                        ? JSON.stringify(log.metadata)
-                        : '-'}
+                    <td className="stf-table-col-tertiary break-words text-xs text-[var(--stf-text-muted)]">
+                      {Object.keys(log.metadata).length > 0 ? JSON.stringify(log.metadata) : '-'}
                     </td>
                   </tr>
                 ))}

@@ -52,22 +52,26 @@
 
   .stf-table {
     @apply w-full border-collapse text-sm;
+    table-layout: fixed;
   }
 
   .stf-table th {
-    @apply border-b px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide;
+    @apply border-b px-2 py-2.5 text-left text-xs font-semibold uppercase tracking-wide sm:px-4 sm:py-3;
     border-color: transparent;
     background-color: var(--stf-table-head-bg);
     color: var(--stf-on-primary);
-    height: var(--stf-row-height);
+    min-height: var(--stf-row-height);
+    white-space: nowrap;
   }
 
   .stf-table td {
-    @apply border-b px-4 py-3;
+    @apply border-b px-2 py-2.5 sm:px-4 sm:py-3;
     border-color: color-mix(in srgb, var(--stf-border) 60%, transparent);
-    height: var(--stf-row-height);
+    min-height: var(--stf-row-height);
     vertical-align: middle;
     background-color: var(--stf-surface);
+    overflow-wrap: anywhere;
+    word-break: break-word;
   }
 
   .stf-auth-primary {
@@ -84,5 +88,16 @@
 
   .stf-table-col-tertiary {
     @apply hidden xl:table-cell;
+  }
+
+  /* Mesmo text-left das outras colunas; -ml alinha o glifo do ícone com o “A” de AÇÕES */
+  .stf-table-col-actions {
+    @apply w-[7rem] whitespace-nowrap text-left;
+    vertical-align: middle;
+  }
+
+  .stf-table-col-actions .stf-table-actions,
+  .stf-table-col-actions > a {
+    margin-left: -0.625rem;
   }
 }

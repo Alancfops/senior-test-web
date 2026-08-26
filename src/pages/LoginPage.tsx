@@ -9,7 +9,6 @@ import { IconTextInput } from '@/components/ui/IconTextInput';
 import { useAuth } from '@/features/auth/AuthContext';
 import { loginSchema, type LoginFormValues } from '@/features/auth/loginSchema';
 import { useLogin } from '@/features/auth/useLogin';
-import { isMockMode } from '@/lib/api/config';
 import { ApiError } from '@/lib/api/errors';
 
 export function LoginPage() {
@@ -17,7 +16,6 @@ export function LoginPage() {
   const { login } = useAuth();
   const loginMutation = useLogin();
   const [apiError, setApiError] = useState<string | null>(null);
-  const prototypeMode = isMockMode();
 
   const {
     register,
@@ -28,7 +26,7 @@ export function LoginPage() {
     defaultValues: { email: '', password: '' },
   });
 
-  const completeLogin = async (values: LoginFormValues) => {
+  const onSubmit = handleSubmit(async (values) => {
     setApiError(null);
 
     try {
@@ -42,13 +40,7 @@ export function LoginPage() {
       }
       setApiError('Não foi possível fazer login. Tente novamente.');
     }
-  };
-
-  const onSubmit = handleSubmit(completeLogin);
-
-  const onPrototypeEnter = () => {
-    void completeLogin({ email: 'admin@clinica.exemplo', password: 'prototype' });
-  };
+  });
 
   return (
     <AuthLayout>
@@ -68,23 +60,17 @@ export function LoginPage() {
             Fazer Login
           </h1>
           <p className="mt-2 text-sm font-medium text-[var(--stf-text)] sm:text-base">
-            {prototypeMode
-              ? 'Modo protótipo. Clique em Entrar para acessar o painel.'
-              : 'Conta exclusiva do painel web, sem vínculo com o app mobile.'}
+            Conta exclusiva do painel web, sem vínculo com o app mobile.
           </p>
 
-          <form
-            className="mt-6 space-y-4 sm:mt-8"
-            onSubmit={prototypeMode ? (event) => event.preventDefault() : onSubmit}
-            noValidate
-          >
+          <form className="mt-6 space-y-4 sm:mt-8" onSubmit={onSubmit} noValidate>
             <IconTextInput
               type="email"
               placeholder="E-mail"
               autoComplete="email"
               leftIcon={<IconMail className="size-5" />}
-              {...(prototypeMode ? { name: 'email' } : register('email'))}
-              error={prototypeMode ? undefined : errors.email?.message}
+              {...register('email')}
+              error={errors.email?.message}
             />
 
             <IconTextInput
@@ -92,8 +78,8 @@ export function LoginPage() {
               placeholder="Senha"
               autoComplete="current-password"
               leftIcon={<IconLock className="size-5" />}
-              {...(prototypeMode ? { name: 'password' } : register('password'))}
-              error={prototypeMode ? undefined : errors.password?.message}
+              {...register('password')}
+              error={errors.password?.message}
             />
 
             <div className="flex items-center justify-between pt-1">
@@ -111,28 +97,15 @@ export function LoginPage() {
               </p>
             ) : null}
 
-            {prototypeMode ? (
-              <Button
-                type="button"
-                fullWidth
-                pill
-                loading={loginMutation.isPending}
-                onClick={onPrototypeEnter}
-                className="mt-2 min-h-11"
-              >
-                Entrar
-              </Button>
-            ) : (
-              <Button
-                type="submit"
-                fullWidth
-                pill
-                loading={loginMutation.isPending}
-                className="mt-2 min-h-11"
-              >
-                Entrar
-              </Button>
-            )}
+            <Button
+              type="submit"
+              fullWidth
+              pill
+              loading={loginMutation.isPending}
+              className="mt-2 min-h-11"
+            >
+              Entrar
+            </Button>
           </form>
         </div>
       </div>

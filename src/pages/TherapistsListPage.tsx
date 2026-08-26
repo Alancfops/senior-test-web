@@ -77,21 +77,33 @@ export function TherapistsListPage() {
                   <th scope="col" className="stf-table-col-secondary">
                     E-mail
                   </th>
-                  <th scope="col">Pacientes</th>
+                  <th scope="col" className="w-24">
+                    Pacientes
+                  </th>
                   <th scope="col" className="stf-table-col-secondary">
                     Avaliações
                   </th>
                   <th scope="col" className="stf-table-col-tertiary">
                     Última atividade
                   </th>
-                  <th scope="col">Ações</th>
+                  <th scope="col" className="stf-table-col-actions">
+                    Ações
+                  </th>
                 </tr>
               </thead>
               <tbody>
                 {filteredTherapists.map((therapist) => (
                   <tr key={therapist.id}>
                     <td className="font-medium text-[var(--stf-text)]">
-                      {therapist.fullName}
+                      <span className="block">{therapist.fullName}</span>
+                      <span className="mt-1 block text-xs font-normal leading-snug text-[var(--stf-text-muted)] md:hidden">
+                        {therapist.email}
+                        {' · '}
+                        {therapist.assessmentCount} aval.
+                        {therapist.lastActivityAt
+                          ? ` · ${formatDateTime(therapist.lastActivityAt)}`
+                          : ''}
+                      </span>
                     </td>
                     <td className="stf-table-col-secondary text-[var(--stf-text-muted)]">
                       {therapist.email}
@@ -101,12 +113,9 @@ export function TherapistsListPage() {
                     <td className="stf-table-col-tertiary text-[var(--stf-text-muted)]">
                       {formatDateTime(therapist.lastActivityAt)}
                     </td>
-                    <td>
+                    <td className="stf-table-col-actions">
                       <TableActions>
-                        <ActionLink
-                          to={`/therapists/${therapist.id}`}
-                          icon={<IconEye />}
-                        >
+                        <ActionLink to={`/therapists/${therapist.id}`} icon={<IconEye />}>
                           Ver detalhe
                         </ActionLink>
                         <ActionButton
