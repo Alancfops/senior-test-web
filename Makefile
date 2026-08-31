@@ -1,8 +1,8 @@
 # STF Gerenciador Web — desenvolvimento local
 # make          → instala dependências
 # make setup    → install + .env
-# make start    → Vite (:5173) — requer API STF em :3000
-# make start-with-api → .env + API STF + Vite (stack completa)
+# make start    → API STF (:3000) + gerenciador Vite (:5173)
+# make start-web → apenas Vite (API já deve estar rodando)
 
 SHELL := /bin/bash
 STF_DIR := ../senior-test-funcional
@@ -11,7 +11,7 @@ WEB_URL ?= http://localhost:5173
 
 .DEFAULT_GOAL := install
 
-.PHONY: help install setup env start start-with-api start-stf-backend check-api check-stf lint typecheck test build preview generate-api-types stop
+.PHONY: help install setup env start start-web start-with-api start-stf-backend check-api check-stf lint typecheck test build preview generate-api-types stop
 
 help:
 	@echo "STF Gerenciador Web — alvos Make"
@@ -19,8 +19,9 @@ help:
 	@echo "  make                 Instala dependências (npm install)"
 	@echo "  make setup           install + arquivo .env"
 	@echo "  make env             Cria .env a partir de .env.example"
-	@echo "  make start           Sobe Vite em $(WEB_URL) (sem npm install)"
-	@echo "  make start-with-api  Sobe API STF (:3000) + gerenciador (:5173)"
+	@echo "  make start           Sobe API STF (:3000) + gerenciador ($(WEB_URL))"
+	@echo "  make start-web       Apenas Vite ($(WEB_URL)) — API já deve estar up"
+	@echo "  make start-with-api  Alias de make start (compatibilidade)"
 	@echo "  make start-stf-backend  Apenas API STF (delega para $(STF_DIR))"
 	@echo "  make check-api       Verifica health da API STF"
 	@echo "  make check-stf       Verifica se o repo STF está acessível"
@@ -40,9 +41,8 @@ install:
 setup: install env
 	@echo ">> Setup concluído."
 	@echo ">> Próximo passo:"
-	@echo ">>   1) No STF: cd $(STF_DIR) && make setup && make start-backend"
-	@echo ">>   2) Aqui:    make start"
-	@echo ">>   Ou tudo junto: make start-with-api"
+	@echo ">>   make start          (API STF + gerenciador web)"
+	@echo ">>   make start-web      (só gerenciador, se a API já estiver rodando)"
 	@echo ">> CORS no STF (backend/.env): CORS_ORIGINS=$(WEB_URL)"
 	@echo ">> Protótipo: VITE_USE_MOCK_API=true no .env (dados fictícios, sem API)"
 
@@ -74,16 +74,12 @@ check-api:
 		exit 1; \
 	fi
 
-start: env
+start-web: env
 	@echo ">> Iniciando gerenciador web ($(WEB_URL))..."
 	@echo ">> API esperada em $(API_URL) — confira VITE_STF_API_URL no .env"
 	@npm run dev
 
-start-stf-backend: check-stf
-	@echo ">> Iniciando API STF via $(STF_DIR) ..."
-	@cd "$(STF_DIR)" && $(MAKE) start-backend
-
-start-with-api: env check-stf
+start: env check-stf
 	@set -euo pipefail; \
 	trap 'kill 0' INT TERM; \
 	echo ">> Iniciando API STF (http://localhost:3000)..."; \
@@ -92,6 +88,13 @@ start-with-api: env check-stf
 	echo ">> Iniciando gerenciador web ($(WEB_URL))..."; \
 	npm run dev & \
 	wait
+
+start-with-api: start
+	@:
+
+start-stf-backend: check-stf
+	@echo ">> Iniciando API STF via $(STF_DIR) ..."
+	@cd "$(STF_DIR)" && $(MAKE) start-backend
 
 lint:
 	@npm run lint
@@ -113,5 +116,5 @@ generate-api-types: check-api
 	@npm run generate:api-types
 
 stop:
-	@echo ">> Processos locais (Vite/API): use Ctrl+C no terminal do make start ou make start-with-api."
+	@echo ">> Processos locais (Vite/API): use Ctrl+C no terminal do make start."
 	@echo ">> Para parar Postgres do STF: cd $(STF_DIR) && make stop"

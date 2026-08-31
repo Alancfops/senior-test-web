@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useLocation, useParams } from 'react-router-dom';
 import { AppShell } from '@/components/layout/AppShell';
 import { IconDownload } from '@/components/icons/ActionIcons';
+import { TableMobileMeta } from '@/components/ui/EllipsisText';
 import { ClassificationBadge } from '@/components/ui/ClassificationBadge';
 import { Button } from '@/components/ui/Button';
 import { ErrorState } from '@/components/ui/ErrorState';
@@ -15,9 +16,11 @@ import {
 import { formatDateTime } from '@/lib/format';
 import { ApiError } from '@/lib/api/errors';
 import { INSTRUMENT_LABELS } from '@/types/api';
+import { readBackNavigation } from '@/lib/navigation/backNavigation';
 
 export function AssessmentDetailPage() {
   const { id: patientId = '', assessmentId = '' } = useParams();
+  const location = useLocation();
   const { data: patient } = usePatient(patientId);
   const { data, isLoading, isError, error, refetch } = useAssessment(
     patientId,
@@ -32,6 +35,11 @@ export function AssessmentDetailPage() {
   const answers = data
     ? mapAssessmentPayloadToAnswers(data.instrumentCode, data.payload)
     : [];
+
+  const backNav = readBackNavigation(location.state, {
+    backTo: `/patients/${patientId}`,
+    backLabel: 'Voltar para o paciente',
+  });
 
   const handleDownload = async () => {
     setDownloadError(null);
@@ -50,6 +58,7 @@ export function AssessmentDetailPage() {
     <AppShell
       title={data ? `${INSTRUMENT_LABELS[data.instrumentCode] ?? data.instrumentCode}` : 'Avaliação'}
       description={patient?.fullName}
+      backLink={{ to: backNav.backTo, label: backNav.backLabel }}
       breadcrumbs={
         patient ? (
           <span>
@@ -119,6 +128,7 @@ export function AssessmentDetailPage() {
                     </p>
                     <ClassificationBadge
                       label={data.result.classificationLabel}
+                      code={data.result.classificationCode}
                       meta={data.result.classificationMeta}
                     />
                   </div>
@@ -156,23 +166,29 @@ export function AssessmentDetailPage() {
                 <caption className="sr-only">Respostas registradas na avaliação</caption>
                 <thead>
                   <tr>
-                    <th scope="col" className="w-[30%]">
-                      Item
+                    <th scope="col" className="stf-table-col-leading">Item</th>
+                    <th scope="col" className="stf-table-col-secondary stf-table-col-text">
+                      Pergunta / instrução
                     </th>
-                    <th scope="col">Pergunta / instrução</th>
-                    <th scope="col" className="w-[22%]">
-                      Resposta
-                    </th>
+                    <th scope="col" className="stf-table-col-actions">Resposta</th>
                   </tr>
                 </thead>
                 <tbody>
                   {answers.map((row) => (
                     <tr key={`${row.title}-${row.question}`}>
-                      <td className="font-medium text-[var(--stf-text)]">{row.title}</td>
-                      <td className="text-[var(--stf-text-muted)]" title={row.question}>
+                      <td className="stf-table-col-leading font-medium text-[var(--stf-text)]">
+                        <span className="block break-words leading-snug">{row.title}</span>
+                        <TableMobileMeta>{row.question}</TableMobileMeta>
+                      </td>
+                      <td
+                        className="stf-table-col-secondary stf-table-col-text text-[var(--stf-text-muted)]"
+                        title={row.question}
+                      >
                         {row.question}
                       </td>
-                      <td className="font-medium text-[var(--stf-text)]">{row.value}</td>
+                      <td className="stf-table-col-actions font-medium text-[var(--stf-text)]">
+                        {row.value}
+                      </td>
                     </tr>
                   ))}
                 </tbody>

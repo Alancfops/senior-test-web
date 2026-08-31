@@ -7,6 +7,7 @@ import {
 import {
   IconClipboard,
   IconFile,
+  IconHelp,
   IconPatient,
   IconUsers,
 } from '@/components/icons/NavIcons';
@@ -78,6 +79,12 @@ export function DashboardPage() {
                   title="Relatórios PDF"
                   description="Como gerar e baixar relatórios clínicos no painel admin."
                   icon={<IconFile className="size-5" />}
+                />
+                <QuickLinkCard
+                  to="/testes/duvidas"
+                  title="Dúvidas sobre testes"
+                  description="Pontuações, classificações e leitura dos resultados clínicos."
+                  icon={<IconHelp className="size-5" />}
                 />
               </div>
             </section>

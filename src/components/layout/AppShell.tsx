@@ -1,7 +1,9 @@
 import { useEffect, useId, useState, type ReactNode } from 'react';
 import { useLocation } from 'react-router-dom';
+import { AppFooter } from '@/components/layout/AppFooter';
 import { Sidebar } from '@/components/layout/Sidebar';
 import { PrototypeBanner } from '@/components/layout/PrototypeBanner';
+import { PageBackLink } from '@/components/ui/PageBackLink';
 import { IconMenu } from '@/components/icons/NavIcons';
 
 type AppShellProps = {
@@ -10,6 +12,7 @@ type AppShellProps = {
   children: ReactNode;
   actions?: ReactNode;
   breadcrumbs?: ReactNode;
+  backLink?: { to: string; label?: string };
 };
 
 export function AppShell({
@@ -18,6 +21,7 @@ export function AppShell({
   children,
   actions,
   breadcrumbs,
+  backLink,
 }: AppShellProps) {
   const [menuOpen, setMenuOpen] = useState(false);
   const location = useLocation();
@@ -56,7 +60,7 @@ export function AppShell({
             <button
               id={menuButtonId}
               type="button"
-              className="absolute left-0 inline-flex size-11 items-center justify-center rounded-stf-lg text-[var(--stf-text)] hover:bg-[var(--stf-page-bg)]"
+              className="absolute left-0 inline-flex size-11 items-center justify-center rounded-stf-lg border border-[var(--stf-border)] bg-[var(--stf-surface)] text-[var(--stf-text)] shadow-stf hover:bg-[var(--stf-page-bg)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--stf-primary)] focus-visible:ring-offset-1"
               aria-label="Abrir menu"
               aria-expanded={menuOpen}
               aria-controls="app-sidebar"
@@ -66,12 +70,16 @@ export function AppShell({
             </button>
             <img
               src="/logo-seniortest-wordmark.png"
-              alt="SeniorTest Physio"
+              alt="Sênior Teste Funcional"
               width={120}
               height={36}
               className="h-7 w-auto"
             />
           </div>
+
+          {backLink ? (
+            <PageBackLink to={backLink.to} label={backLink.label} />
+          ) : null}
 
           {breadcrumbs ? (
             <div className="mb-2 text-xs font-medium text-[var(--stf-primary)]">{breadcrumbs}</div>
@@ -79,9 +87,19 @@ export function AppShell({
 
           <div className="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-start sm:justify-between">
             <div className="min-w-0 flex-1">
-              <h1 className="text-xl font-bold text-[var(--stf-text)] sm:text-2xl">{title}</h1>
+              <h1
+                className="hyphens-none break-words text-xl font-bold text-[var(--stf-text)] sm:text-2xl md:truncate"
+                title={title}
+              >
+                {title}
+              </h1>
               {description ? (
-                <p className="mt-1 max-w-3xl text-sm text-[var(--stf-text-muted)]">{description}</p>
+                <p
+                  className="mt-1 max-w-3xl break-words text-sm text-[var(--stf-text-muted)] md:truncate"
+                  title={description}
+                >
+                  {description}
+                </p>
               ) : null}
             </div>
             {actions ? (
@@ -93,6 +111,7 @@ export function AppShell({
         </header>
 
         <main className="flex-1 p-4 sm:p-6">{children}</main>
+        <AppFooter />
       </div>
     </div>
   );

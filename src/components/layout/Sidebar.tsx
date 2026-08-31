@@ -32,8 +32,8 @@ const navSections: NavSection[] = [
   {
     title: 'Cadastros',
     items: [
-      { to: '/therapists', label: 'Fisioterapeutas', end: true, icon: IconUsers },
-      { to: '/patients', label: 'Pacientes', end: true, icon: IconPatient },
+      { to: '/therapists', label: 'Fisioterapeutas', icon: IconUsers },
+      { to: '/patients', label: 'Pacientes', icon: IconPatient },
     ],
   },
   {
@@ -98,10 +98,12 @@ export function Sidebar({ open = false, onClose }: SidebarProps) {
             height={174}
             className="mx-auto hidden h-[88px] w-auto lg:block"
           />
-          <p className="mt-3 text-sm font-bold text-[var(--stf-text)]">Gerenciador</p>
-          <p className="text-xs font-medium text-[var(--stf-primary)]">Senior Teste Funcional</p>
+          <p className="mt-3 text-sm font-bold text-[var(--stf-text)]">Gerenciador Web</p>
+          <p className="text-xs font-medium leading-snug text-[var(--stf-primary)]">
+            Sênior Teste Funcional
+          </p>
           <p className="mt-2 hidden text-[11px] leading-relaxed text-[var(--stf-text-muted)] sm:block">
-            Supervisão clínica via web. Conta admin separada do app mobile.
+            Conta administrativa exclusiva do painel web para supervisão do app mobile.
           </p>
         </div>
 
@@ -148,22 +150,33 @@ export function Sidebar({ open = false, onClose }: SidebarProps) {
 
           <div>
             <p className="mb-2 px-2 text-[11px] font-bold uppercase tracking-wider text-[var(--stf-text-muted)]">
-              Ajuda
+              Referência
             </p>
             <NavLink
-              to="/reports"
+              to="/testes/duvidas"
+              end
               onClick={onClose}
               className={({ isActive }) =>
                 [
                   'flex min-h-11 items-center gap-3 rounded-stf-lg px-3 py-2.5 text-sm font-medium transition-all',
                   isActive
                     ? 'bg-[var(--stf-primary)] text-[var(--stf-on-primary)] shadow-stf-md'
-                    : 'text-[var(--stf-text)] hover:bg-[var(--stf-page-bg)]',
+                    : 'text-[var(--stf-text)] hover:bg-[var(--stf-page-bg)] hover:text-[var(--stf-primary-dark)]',
                 ].join(' ')
               }
             >
-              <IconHelp className="size-5 shrink-0 text-[var(--stf-primary)]" aria-hidden />
-              Central de ajuda
+              {({ isActive }) => (
+                <>
+                  <IconHelp
+                    className={[
+                      'size-5 shrink-0',
+                      isActive ? 'text-[var(--stf-on-primary)]' : 'text-[var(--stf-primary)]',
+                    ].join(' ')}
+                    aria-hidden
+                  />
+                  <span>Dúvidas sobre testes</span>
+                </>
+              )}
             </NavLink>
           </div>
         </nav>

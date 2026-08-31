@@ -4,6 +4,8 @@ import {
   formatDurationMs,
   type EvolutionChartPoint,
 } from '@/features/assessments/chartConfig';
+import { resolveClassificationTone } from '@/features/assessments/classificationTone';
+import { ClassificationIndicator } from '@/components/ui/ClassificationBadge';
 import { useMediaQuery } from '@/hooks/useMediaQuery';
 
 type EvolutionLineChartProps = {
@@ -67,6 +69,12 @@ export function EvolutionLineChart({
 
   const polyline = coords.map((point) => `${point.x},${point.y}`).join(' ');
   const activePoint = coords.find((point) => point.id === activePointId) ?? null;
+  const activeClassificationTone = activePoint
+    ? resolveClassificationTone({
+        code: activePoint.classificationCode,
+        label: activePoint.classificationLabel,
+      })
+    : null;
 
   function togglePoint(pointId: string) {
     setActivePointId((current) => (current === pointId ? null : pointId));
@@ -89,7 +97,7 @@ export function EvolutionLineChart({
         <svg
           viewBox={`0 0 ${chartWidth} ${chartHeight}`}
           role="img"
-          aria-label={`${title}. Clique nas bolinhas para ver o resumo da avaliação.`}
+          aria-label={`${title}. Pontos interativos destacam a avaliação selecionada.`}
           className="mx-auto block h-auto w-full max-w-full"
           style={{ aspectRatio: `${chartWidth} / ${chartHeight}` }}
         >
@@ -136,8 +144,12 @@ export function EvolutionLineChart({
                   cy={point.y}
                   r={chart.hitRadius}
                   fill="transparent"
-                  className="cursor-pointer outline-none focus:outline-none focus-visible:outline-none"
-                  onClick={() => togglePoint(point.id)}
+                  className="stf-chart-hit cursor-pointer"
+                  onClick={(event) => {
+                    togglePoint(point.id);
+                    event.currentTarget.blur();
+                  }}
+                  onMouseDown={(event) => event.preventDefault()}
                   role="button"
                   tabIndex={0}
                   aria-label={`Avaliação ${point.label}: ${point.scoreSummary}. ${point.classificationLabel}`}
@@ -148,7 +160,11 @@ export function EvolutionLineChart({
                       togglePoint(point.id);
                     }
                   }}
-                />
+                >
+                  <title>
+                    {`${point.label} · ${point.scoreSummary} · ${point.classificationLabel}`}
+                  </title>
+                </circle>
                 {isActive ? (
                   <circle
                     cx={point.x}
@@ -190,6 +206,7 @@ export function EvolutionLineChart({
         <div
           className="mt-3 rounded-stf border border-[var(--stf-border)] bg-[var(--stf-page-bg)] px-3 py-3 sm:mt-4 sm:px-4"
           role="status"
+          aria-live="polite"
         >
           <p className="text-sm font-semibold text-[var(--stf-text)]">
             Avaliação {activePoint.label}
@@ -199,19 +216,26 @@ export function EvolutionLineChart({
               <dt className="text-xs uppercase tracking-wide text-[var(--stf-text-muted)]">
                 Pontuação
               </dt>
-              <dd className="font-medium">{activePoint.scoreSummary}</dd>
+              <dd className="mt-0.5 font-medium">{activePoint.scoreSummary}</dd>
             </div>
             <div className="min-w-0">
               <dt className="text-xs uppercase tracking-wide text-[var(--stf-text-muted)]">
                 Classificação
               </dt>
-              <dd className="break-words font-medium">{activePoint.classificationLabel}</dd>
+              <dd className="mt-0.5 flex items-start gap-2 font-medium">
+                {activeClassificationTone ? (
+                  <ClassificationIndicator tone={activeClassificationTone} className="mt-1.5" />
+                ) : null}
+                <span className="min-w-0 hyphens-none break-words">
+                  {activePoint.classificationLabel}
+                </span>
+              </dd>
             </div>
             <div>
               <dt className="text-xs uppercase tracking-wide text-[var(--stf-text-muted)]">
                 Tempo de aplicação
               </dt>
-              <dd className="font-medium">
+              <dd className="mt-0.5 font-medium">
                 {activePoint.durationMs ? formatDurationMs(activePoint.durationMs) : '-'}
               </dd>
             </div>
@@ -219,7 +243,7 @@ export function EvolutionLineChart({
         </div>
       ) : (
         <p className="mt-3 text-sm text-[var(--stf-text-muted)]">
-          Clique em uma bolinha para ver o resumo daquela avaliação.
+          Toque ou clique em uma bolinha para ver o resumo da avaliação.
         </p>
       )}
     </figure>

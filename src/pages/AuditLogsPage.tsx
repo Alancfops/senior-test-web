@@ -28,6 +28,7 @@ export function AuditLogsPage() {
     <AppShell
       title="Trilha de auditoria"
       description="Registro de ações administrativas sensíveis."
+      backLink={{ to: '/dashboard', label: 'Voltar ao início' }}
       actions={
         <div className="w-full min-w-0 sm:min-w-[260px]">
           <SelectField
@@ -50,29 +51,37 @@ export function AuditLogsPage() {
         {!isLoading && !isError && data && data.data.length > 0 ? (
           <div className="overflow-x-hidden">
             <table className="stf-table">
-              <thead>
-                <tr>
-                  <th scope="col">Data</th>
-                  <th scope="col">Admin</th>
-                  <th scope="col">Ação</th>
-                  <th scope="col" className="stf-table-col-secondary">
-                    Alvo
-                  </th>
-                  <th scope="col" className="stf-table-col-tertiary">
-                    Metadados
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {data.data.map((log) => (
-                  <tr key={log.id}>
-                    <td className="text-[var(--stf-text-muted)]">{formatDateTime(log.createdAt)}</td>
-                    <td>{log.adminName}</td>
-                    <td>{AUDIT_ACTION_LABELS[log.action]}</td>
+              <caption className="sr-only">Registros da trilha de auditoria administrativa</caption>
+                <thead>
+                  <tr>
+                    <th scope="col" className="stf-table-col-leading">Data</th>
+                    <th scope="col" className="stf-table-col-secondary">Admin</th>
+                    <th scope="col" className="stf-table-col-secondary">Ação</th>
+                    <th scope="col" className="stf-table-col-secondary">
+                      Alvo
+                    </th>
+                    <th scope="col" className="stf-table-col-tertiary stf-table-col-text">
+                      Metadados
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {data.data.map((log) => (
+                    <tr key={log.id}>
+                      <td className="stf-table-col-leading text-[var(--stf-text-muted)]">
+                        {formatDateTime(log.createdAt)}
+                        <span className="mt-1.5 block hyphens-none break-words text-xs leading-relaxed text-[var(--stf-text-muted)] md:hidden">
+                          {log.adminName} · {AUDIT_ACTION_LABELS[log.action]}
+                          {' · '}
+                          {log.targetType} {log.targetId.slice(0, 8)}…
+                        </span>
+                      </td>
+                      <td className="stf-table-col-secondary">{log.adminName}</td>
+                      <td className="stf-table-col-secondary">{AUDIT_ACTION_LABELS[log.action]}</td>
                     <td className="stf-table-col-secondary">
                       {log.targetType} · {log.targetId.slice(0, 8)}…
                     </td>
-                    <td className="stf-table-col-tertiary break-words text-xs text-[var(--stf-text-muted)]">
+                    <td className="stf-table-col-tertiary stf-table-col-text break-words text-xs text-[var(--stf-text-muted)]">
                       {log.metadata && Object.keys(log.metadata).length > 0
                         ? JSON.stringify(log.metadata)
                         : '-'}

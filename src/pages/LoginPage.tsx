@@ -48,7 +48,7 @@ export function LoginPage() {
         <div className="mb-6 flex flex-col items-center sm:mb-8 lg:hidden">
           <img
             src="/logo-seniortest-wordmark.png"
-            alt="SeniorTest Physio"
+            alt="Sênior Teste Funcional"
             width={200}
             height={60}
             className="h-10 w-auto sm:h-12"
@@ -56,11 +56,11 @@ export function LoginPage() {
         </div>
 
         <div>
-          <h1 className="text-2xl font-bold text-[var(--stf-primary-dark)] sm:text-3xl">
+          <h1 className="text-center text-2xl font-bold text-[var(--stf-primary-dark)] sm:text-3xl">
             Fazer Login
           </h1>
-          <p className="mt-2 text-sm font-medium text-[var(--stf-text)] sm:text-base">
-            Conta exclusiva do painel web, sem vínculo com o app mobile.
+          <p className="mt-2 text-center text-sm font-medium text-[var(--stf-text)] sm:text-base">
+            Conta administrativa exclusiva do painel web para supervisão do app mobile.
           </p>
 
           <form className="mt-6 space-y-4 sm:mt-8" onSubmit={onSubmit} noValidate>

@@ -75,7 +75,7 @@ type TableActionsProps = {
 
 export function TableActions({ children }: TableActionsProps) {
   return (
-    <div className="stf-table-actions inline-flex flex-nowrap items-center justify-start gap-0">
+    <div className="stf-table-actions inline-flex flex-nowrap items-center justify-center gap-0.5">
       {children}
     </div>
   );

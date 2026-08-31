@@ -31,15 +31,12 @@ export function AuthLayout({ children }: AuthLayoutProps) {
             className="h-44 w-auto drop-shadow-md xl:h-[200px]"
           />
           <p className="mt-6 text-center text-2xl font-bold tracking-tight text-[var(--stf-primary-dark)] xl:mt-8 xl:text-3xl">
-            STF Gerenciador
+            STF Gerenciador Web
           </p>
           <p className="mt-3 max-w-md text-center text-sm font-medium leading-relaxed text-[var(--stf-text)] xl:text-base">
-            Conta administrativa exclusiva do painel web, separada do app mobile STF.
+            Conta administrativa exclusiva do painel web para supervisão do app mobile.
           </p>
         </div>
-        <p className="absolute bottom-6 z-10 px-4 text-center text-xs font-medium text-[var(--stf-text)] xl:bottom-8 xl:text-sm">
-          Um único administrador por instância.
-        </p>
       </section>
 
       <section className="flex flex-1 items-center justify-center overflow-y-auto bg-[var(--stf-page-bg)] px-4 py-8 sm:px-6 md:px-8 md:py-10 lg:bg-[var(--stf-surface)] lg:px-10 xl:px-12">

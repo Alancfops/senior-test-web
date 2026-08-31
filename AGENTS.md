@@ -208,8 +208,9 @@ Cada skill tem `reference.md` com detalhes adicionais.
 |--------|--------|
 | `stf-frontend-senior` | Scaffold, páginas, hooks, UI, testes — **este repo** |
 | `stf-backend-senior` | AdminModule, Prisma, guards — **só com pedido explícito** no STF |
+| `session-log` | Comando `/session` — resumo em `.cursor/sessions/` |
 
-Delegar tarefas frontend ao `stf-frontend-senior` e backend ao `stf-backend-senior` quando fizer sentido.
+Delegar frontend ao `stf-frontend-senior`, backend ao `stf-backend-senior` e registro de sessão ao `session-log`.
 
 ---
 

@@ -8,6 +8,8 @@ import { ErrorState } from '@/components/ui/ErrorState';
 import { SearchInput } from '@/components/ui/SearchInput';
 import { Spinner } from '@/components/ui/Spinner';
 import { ActionButton, ActionLink, TableActions } from '@/components/ui/TableActions';
+import { EllipsisText, TableMobileMeta, TablePrimaryText } from '@/components/ui/EllipsisText';
+import { TableColGroup } from '@/components/ui/TableColGroup';
 import { useDeletePatient, usePatientsList } from '@/features/patients/usePatients';
 import { formatDateTime, formatGender } from '@/lib/format';
 import { ApiError } from '@/lib/api/errors';
@@ -69,14 +71,13 @@ export function PatientsListPage() {
         {!isLoading && !isError && filteredPatients.length > 0 ? (
           <div className="overflow-x-hidden">
             <table className="stf-table">
+              <TableColGroup variant="patients-list" />
               <caption className="sr-only">Lista de pacientes do sistema</caption>
               <thead>
                 <tr>
-                  <th scope="col">Nome</th>
-                  <th scope="col" className="w-16">
-                    Idade
-                  </th>
-                  <th scope="col" className="stf-table-col-secondary">
+                  <th scope="col" className="stf-table-col-leading">Nome</th>
+                  <th scope="col" className="stf-table-col-secondary">Idade</th>
+                  <th scope="col" className="stf-table-col-secondary stf-cell-gender">
                     Sexo
                   </th>
                   <th scope="col" className="stf-table-col-secondary">
@@ -96,10 +97,10 @@ export function PatientsListPage() {
               <tbody>
                 {filteredPatients.map((patient) => (
                   <tr key={patient.id}>
-                    <td className="font-medium text-[var(--stf-text)]">
-                      <span className="block">{patient.fullName}</span>
-                      <span className="mt-1 block text-xs font-normal leading-snug text-[var(--stf-text-muted)] md:hidden">
-                        {formatGender(patient.gender)}
+                    <td className="stf-table-col-leading font-medium text-[var(--stf-text)]">
+                      <TablePrimaryText text={patient.fullName} />
+                      <TableMobileMeta>
+                        {patient.age} anos · {formatGender(patient.gender)}
                         {' · '}
                         {patient.therapistName}
                         {' · '}
@@ -107,16 +108,19 @@ export function PatientsListPage() {
                         {patient.lastAssessmentAt
                           ? ` · ${formatDateTime(patient.lastAssessmentAt)}`
                           : ''}
-                      </span>
+                      </TableMobileMeta>
                     </td>
-                    <td>{patient.age}</td>
-                    <td className="stf-table-col-secondary">{formatGender(patient.gender)}</td>
+                    <td className="stf-table-col-secondary">{patient.age}</td>
+                    <td className="stf-table-col-secondary stf-cell-gender">
+                      {formatGender(patient.gender)}
+                    </td>
                     <td className="stf-table-col-secondary">
                       <Link
                         to={`/therapists/${patient.therapistId}`}
-                        className="text-[var(--stf-primary)] no-underline hover:underline"
+                        className="block min-w-0 text-[var(--stf-primary)] no-underline hover:underline"
+                        title={patient.therapistName}
                       >
-                        {patient.therapistName}
+                        <EllipsisText text={patient.therapistName} maxLines={2} />
                       </Link>
                     </td>
                     <td className="stf-table-col-secondary">{patient.assessmentCount}</td>
@@ -125,7 +129,14 @@ export function PatientsListPage() {
                     </td>
                     <td className="stf-table-col-actions">
                       <TableActions>
-                        <ActionLink to={`/patients/${patient.id}`} icon={<IconEye />}>
+                        <ActionLink
+                          to={`/patients/${patient.id}`}
+                          state={{
+                            backTo: '/patients',
+                            backLabel: 'Voltar para pacientes',
+                          }}
+                          icon={<IconEye />}
+                        >
                           Ver perfil
                         </ActionLink>
                         <ActionButton

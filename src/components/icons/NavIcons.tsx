@@ -72,3 +72,11 @@ export function IconMenu(props: IconProps) {
     </svg>
   );
 }
+
+export function IconArrowLeft(props: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" {...props}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M19 12H5M12 19l-7-7 7-7" />
+    </svg>
+  );
+}

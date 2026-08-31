@@ -52,25 +52,119 @@
 
   .stf-table {
     @apply w-full border-collapse text-sm;
-    table-layout: fixed;
+    table-layout: auto;
+  }
+
+  @media (min-width: 768px) {
+    .stf-table {
+      table-layout: fixed;
+    }
+  }
+
+  .stf-table col.stf-col-name {
+    width: 20%;
+  }
+
+  .stf-table col.stf-col-name-wide {
+    width: 24%;
+  }
+
+  .stf-table col.stf-col-age {
+    width: 8%;
+  }
+
+  .stf-table col.stf-col-gender {
+    width: 11%;
+  }
+
+  .stf-table col.stf-col-therapist {
+    width: 17%;
+  }
+
+  .stf-table col.stf-col-email {
+    width: 22%;
+  }
+
+  .stf-table col.stf-col-count {
+    width: 9%;
+  }
+
+  .stf-table col.stf-col-date {
+    width: 16%;
+  }
+
+  .stf-table col.stf-col-instrument {
+    width: 15%;
+  }
+
+  .stf-table col.stf-col-result {
+    width: 12%;
+  }
+
+  .stf-table col.stf-col-classification {
+    width: auto;
+  }
+
+  .stf-table col.stf-col-actions {
+    width: 8rem;
+  }
+
+  .stf-table col.stf-col-actions-wide {
+    width: 11rem;
+  }
+
+  .stf-table .stf-cell-gender {
+    white-space: nowrap;
   }
 
   .stf-table th {
-    @apply border-b px-2 py-2.5 text-left text-xs font-semibold uppercase tracking-wide sm:px-4 sm:py-3;
+    @apply border-b px-4 py-3 text-center text-xs font-semibold uppercase tracking-wide sm:px-5 sm:py-3.5;
     border-color: transparent;
     background-color: var(--stf-table-head-bg);
     color: var(--stf-on-primary);
     min-height: var(--stf-row-height);
+    hyphens: none;
+  }
+
+  .stf-table th.stf-table-col-leading,
+  .stf-table td.stf-table-col-leading,
+  .stf-table th.stf-table-col-text,
+  .stf-table td.stf-table-col-text {
+    @apply text-left;
   }
 
   .stf-table td {
-    @apply border-b px-2 py-2.5 sm:px-4 sm:py-3;
+    @apply border-b px-4 py-3 text-center sm:px-5 sm:py-3.5;
     border-color: color-mix(in srgb, var(--stf-border) 60%, transparent);
     min-height: var(--stf-row-height);
     vertical-align: middle;
     background-color: var(--stf-surface);
-    overflow-wrap: anywhere;
-    word-break: break-word;
+    hyphens: none;
+  }
+
+  .stf-table td.stf-table-col-leading {
+    overflow-wrap: break-word;
+    word-break: normal;
+    hyphens: none;
+  }
+
+  .stf-table td.stf-table-col-leading .stf-ellipsis,
+  .stf-table td.stf-table-col-leading .truncate,
+  .stf-table td.stf-table-col-leading .line-clamp-2,
+  .stf-table td.stf-table-col-leading .line-clamp-3 {
+    max-width: 100%;
+  }
+
+  .stf-table td .stf-table-actions {
+    @apply mx-auto justify-center;
+  }
+
+  .stf-table td:not(.stf-table-col-leading) > .inline-flex.max-w-full {
+    margin-inline: auto;
+  }
+
+  .stf-table td.stf-table-col-actions > a:only-child {
+    @apply mx-auto;
   }
 
   .stf-auth-primary {
@@ -89,14 +183,51 @@
     @apply hidden xl:table-cell;
   }
 
-  /* Mesmo text-left das outras colunas; -ml alinha o glifo do ícone com o “A” de AÇÕES */
   .stf-table-col-actions {
-    @apply w-[7rem] whitespace-nowrap text-left;
-    vertical-align: middle;
+    @apply w-[1%] whitespace-nowrap text-center;
+    vertical-align: top;
   }
 
-  .stf-table-col-actions .stf-table-actions,
-  .stf-table-col-actions > a {
-    margin-left: -0.625rem;
+  @media (max-width: 767px) {
+    .stf-table .stf-table-col-leading {
+      width: auto;
+    }
+
+    .stf-table .stf-table-col-actions {
+      width: 4.75rem;
+      padding-left: 0.5rem;
+      padding-right: 0.5rem;
+      vertical-align: top;
+    }
+
+    .stf-table thead .stf-table-col-actions {
+      text-align: center;
+    }
+
+    .stf-table tbody tr {
+      display: table-row;
+    }
+  }
+
+  /* Bolinhas do gráfico — sem caixa de focus do browser (anel azul já indica seleção) */
+  .stf-chart-hit:focus,
+  .stf-chart-hit:focus-visible {
+    outline: none;
+  }
+
+  @media (min-width: 768px) {
+    .stf-table-col-actions {
+      vertical-align: middle;
+    }
+  }
+
+  .stf-table tbody td {
+    vertical-align: top;
+  }
+
+  @media (min-width: 768px) {
+    .stf-table tbody td {
+      vertical-align: middle;
+    }
   }
 }

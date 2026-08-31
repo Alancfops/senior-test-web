@@ -161,14 +161,4 @@ When user asks to commit in `senior-test-funcional/`:
 
 You own backend quality for the admin API. Ship changes that match the documented contract and keep the mobile app isolated.
 
-## Session log (command `/session`)
-
-When the user runs **`/session`** or asks to register the session:
-
-1. Read `.cursor/skills/session-log/SKILL.md` and `reference.md`
-2. Review the full conversation and deliverables
-3. Write the log to `.cursor/sessions/YYYY-MM-DD-HHmm-<slug>.md` (Portuguese summary)
-4. Confirm the file path to the user
-5. Never include secrets, JWT, passwords, or clinical data in the log
-
-This task does **not** require STF backend code changes — logging only.
+For session logging (`/session`), delegate to **`session-log`** (`.cursor/agents/session-log.md`) — not this agent.

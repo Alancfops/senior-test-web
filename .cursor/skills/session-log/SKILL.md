@@ -42,7 +42,7 @@ TRIGGER_COMMAND: /session
 
 Executar este workflow quando o usuário enviar **`/session`** (comando em `.cursor/commands/session.md`) ou variantes: "session-log", "@session-log registrar".
 
-Delegar ao subagent **`stf-backend-senior`** conforme o comando `/session`.
+Delegar ao subagent **`session-log`** (`.cursor/agents/session-log.md`) conforme o comando `/session`.
 
 ## O que registrar
 

@@ -66,6 +66,7 @@ export type EvolutionChartPoint = {
   value: number;
   scoreSummary: string;
   classificationLabel: string;
+  classificationCode: string;
   durationMs?: number;
 };
 
@@ -82,6 +83,7 @@ export function mapTimeseriesToChartPoints(
       value: point.rawValue,
       scoreSummary: point.rawLabel,
       classificationLabel: point.classificationLabel,
+      classificationCode: point.classificationCode,
       durationMs: durationMs > 0 ? durationMs : undefined,
     };
   });

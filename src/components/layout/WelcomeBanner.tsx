@@ -17,7 +17,7 @@ export function WelcomeBanner({ userName, subtitle }: WelcomeBannerProps) {
       <div className="relative z-10 flex flex-wrap items-start justify-between gap-4">
         <div className="max-w-2xl">
           <p className="text-xs font-semibold uppercase tracking-wide text-white/90 sm:text-sm">
-            Senior Teste Funcional
+            Sênior Teste Funcional
           </p>
           <h2 className="mt-1 text-xl font-bold sm:text-2xl">Olá, {userName}!</h2>
           <p className="mt-2 text-sm leading-relaxed text-white/90">{subtitle}</p>

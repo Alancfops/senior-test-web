@@ -10,6 +10,7 @@ import { NotFoundPage } from '@/pages/NotFoundPage';
 import { PatientProfilePage } from '@/pages/PatientProfilePage';
 import { PatientsListPage } from '@/pages/PatientsListPage';
 import { ReportsPage } from '@/pages/ReportsPage';
+import { TestDoubtsPage } from '@/pages/TestDoubtsPage';
 import { TherapistDetailPage } from '@/pages/TherapistDetailPage';
 import { TherapistsListPage } from '@/pages/TherapistsListPage';
 
@@ -37,6 +38,7 @@ export const router = createBrowserRouter([
       { path: '/patients/:id/assessment/:assessmentId', element: <AssessmentDetailPage /> },
       { path: '/audit-logs', element: <AuditLogsPage /> },
       { path: '/reports', element: <ReportsPage /> },
+      { path: '/testes/duvidas', element: <TestDoubtsPage /> },
     ],
   },
   { path: '*', element: <NotFoundPage /> },

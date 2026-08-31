@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useLocation, useParams } from 'react-router-dom';
 import { AppShell } from '@/components/layout/AppShell';
 import { IconEye } from '@/components/icons/ActionIcons';
 import { ClassificationBadge } from '@/components/ui/ClassificationBadge';
@@ -8,7 +8,9 @@ import { ErrorState } from '@/components/ui/ErrorState';
 import { EvolutionLineChart } from '@/components/ui/EvolutionLineChart';
 import { SelectField } from '@/components/ui/SelectField';
 import { Spinner } from '@/components/ui/Spinner';
+import { EllipsisText, TableMobileMeta } from '@/components/ui/EllipsisText';
 import { ActionLink } from '@/components/ui/TableActions';
+import { TableColGroup } from '@/components/ui/TableColGroup';
 import {
   CHART_EMPTY_MESSAGE,
   CHART_IMPROVEMENT_HINT,
@@ -24,9 +26,11 @@ import {
 import { formatDateTime, formatGender } from '@/lib/format';
 import { ApiError } from '@/lib/api/errors';
 import { INSTRUMENT_LABELS, SCHOOLING_LABELS } from '@/types/api';
+import { readBackNavigation } from '@/lib/navigation/backNavigation';
 
 export function PatientProfilePage() {
   const { id = '' } = useParams();
+  const location = useLocation();
   const { data: patient, isLoading, isError, error, refetch } = usePatient(id);
   const { data: assessmentsData, isLoading: loadingAssessments } = usePatientAssessments(id);
 
@@ -83,10 +87,16 @@ export function PatientProfilePage() {
   const errorMessage =
     error instanceof ApiError ? error.message : 'Não foi possível carregar o paciente.';
 
+  const backNav = readBackNavigation(location.state, {
+    backTo: patient ? `/therapists/${patient.therapist.id}` : '/patients',
+    backLabel: patient ? 'Voltar para o fisioterapeuta' : 'Voltar para pacientes',
+  });
+
   return (
     <AppShell
       title={patient?.fullName ?? 'Paciente'}
       description="Perfil clínico e histórico de avaliações."
+      backLink={{ to: backNav.backTo, label: backNav.backLabel }}
       breadcrumbs={
         <span>
           <Link to="/therapists" className="text-[var(--stf-primary)] no-underline hover:underline">
@@ -120,7 +130,7 @@ export function PatientProfilePage() {
               value={SCHOOLING_LABELS[patient.schoolingBand] ?? patient.schoolingBand}
             />
             <InfoItem label="Cadastro" value={formatDateTime(patient.createdAt)} />
-            <InfoItem label="Fisioterapeuta" value={patient.therapist.fullName} />
+            <InfoItem label="Fisioterapeuta" value={patient.therapist.fullName} truncate />
           </section>
 
           <section className="stf-card overflow-hidden">
@@ -155,19 +165,16 @@ export function PatientProfilePage() {
             {!loadingAssessments && filteredHistory.length > 0 ? (
               <div className="overflow-x-hidden">
                 <table className="stf-table">
+                  <TableColGroup variant="patient-assessments" />
                   <caption className="sr-only">
                     Histórico de avaliações finalizadas do paciente
                   </caption>
                   <thead>
                     <tr>
-                      <th scope="col" className="w-[22%]">
-                        Instrumento
-                      </th>
-                      <th scope="col" className="w-[18%]">
-                        Resultado
-                      </th>
-                      <th scope="col">Classificação</th>
-                      <th scope="col" className="stf-table-col-secondary w-[18%]">
+                      <th scope="col" className="stf-table-col-leading">Instrumento</th>
+                      <th scope="col" className="stf-table-col-secondary">Resultado</th>
+                      <th scope="col" className="stf-table-col-secondary">Classificação</th>
+                      <th scope="col" className="stf-table-col-secondary">
                         Data
                       </th>
                       <th scope="col" className="stf-table-col-actions">
@@ -178,20 +185,28 @@ export function PatientProfilePage() {
                   <tbody>
                     {filteredHistory.map((assessment) => (
                       <tr key={assessment.id}>
-                        <td>
-                          <span className="block">
+                        <td className="stf-table-col-leading">
+                          <span className="block break-words font-medium leading-snug text-[var(--stf-text)]">
                             {INSTRUMENT_LABELS[assessment.instrumentCode] ??
                               assessment.instrumentCode}
                           </span>
-                          <span className="mt-1 block text-xs text-[var(--stf-text-muted)] md:hidden">
+                          <TableMobileMeta>
+                            {assessment.result?.rawLabel ?? '-'}
+                            {assessment.result?.classificationLabel
+                              ? ` · ${assessment.result.classificationLabel}`
+                              : ''}
+                            {' · '}
                             {formatDateTime(assessment.finalizedAt ?? assessment.startedAt)}
-                          </span>
+                          </TableMobileMeta>
                         </td>
-                        <td>{assessment.result?.rawLabel ?? '-'}</td>
-                        <td>
+                        <td className="stf-table-col-secondary">
+                          {assessment.result?.rawLabel ?? '-'}
+                        </td>
+                        <td className="stf-table-col-secondary text-center">
                           {assessment.result ? (
                             <ClassificationBadge
                               label={assessment.result.classificationLabel}
+                              code={assessment.result.classificationCode}
                               meta={assessment.result.classificationMeta}
                             />
                           ) : (
@@ -204,6 +219,10 @@ export function PatientProfilePage() {
                         <td className="stf-table-col-actions">
                           <ActionLink
                             to={`/patients/${id}/assessment/${assessment.id}`}
+                            state={{
+                              backTo: `/patients/${id}`,
+                              backLabel: 'Voltar para o paciente',
+                            }}
                             icon={<IconEye />}
                           >
                             Ver detalhe
@@ -228,6 +247,7 @@ export function PatientProfilePage() {
                     key={code}
                     type="button"
                     onClick={() => setSelectedInstrument(code)}
+                    aria-pressed={activeInstrument === code}
                     className={[
                       'min-h-11 rounded-full px-3 py-1 text-xs font-semibold transition-colors',
                       activeInstrument === code
@@ -267,13 +287,29 @@ export function PatientProfilePage() {
   );
 }
 
-function InfoItem({ label, value }: { label: string; value: string }) {
+function InfoItem({
+  label,
+  value,
+  truncate = false,
+}: {
+  label: string;
+  value: string;
+  truncate?: boolean;
+}) {
   return (
-    <div>
+    <div className="min-w-0">
       <p className="text-xs font-medium uppercase tracking-wide text-[var(--stf-text-muted)]">
         {label}
       </p>
-      <p className="mt-1 text-sm font-medium text-[var(--stf-text)]">{value}</p>
+      {truncate ? (
+        <EllipsisText
+          text={value}
+          as="p"
+          className="mt-1 text-sm font-medium text-[var(--stf-text)]"
+        />
+      ) : (
+        <p className="mt-1 text-sm font-medium text-[var(--stf-text)]">{value}</p>
+      )}
     </div>
   );
 }

@@ -6,6 +6,8 @@ import { EmptyState } from '@/components/ui/EmptyState';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { SearchInput } from '@/components/ui/SearchInput';
 import { Spinner } from '@/components/ui/Spinner';
+import { EllipsisText, TableMobileMeta, TablePrimaryText } from '@/components/ui/EllipsisText';
+import { TableColGroup } from '@/components/ui/TableColGroup';
 import { ActionButton, ActionLink, TableActions } from '@/components/ui/TableActions';
 import { useDeleteTherapist } from '@/features/therapists/useTherapistMutations';
 import { useTherapists } from '@/features/therapists/useTherapists';
@@ -71,13 +73,15 @@ export function TherapistsListPage() {
         {!isLoading && !isError && filteredTherapists.length > 0 ? (
           <div className="overflow-x-hidden">
             <table className="stf-table">
+              <TableColGroup variant="therapists-list" />
+              <caption className="sr-only">Lista de fisioterapeutas cadastrados</caption>
               <thead>
                 <tr>
-                  <th scope="col">Nome</th>
+                  <th scope="col" className="stf-table-col-leading">Nome</th>
                   <th scope="col" className="stf-table-col-secondary">
                     E-mail
                   </th>
-                  <th scope="col" className="w-24">
+                  <th scope="col" className="stf-table-col-secondary">
                     Pacientes
                   </th>
                   <th scope="col" className="stf-table-col-secondary">
@@ -94,21 +98,21 @@ export function TherapistsListPage() {
               <tbody>
                 {filteredTherapists.map((therapist) => (
                   <tr key={therapist.id}>
-                    <td className="font-medium text-[var(--stf-text)]">
-                      <span className="block">{therapist.fullName}</span>
-                      <span className="mt-1 block text-xs font-normal leading-snug text-[var(--stf-text-muted)] md:hidden">
+                    <td className="stf-table-col-leading font-medium text-[var(--stf-text)]">
+                      <TablePrimaryText text={therapist.fullName} />
+                      <TableMobileMeta>
                         {therapist.email}
                         {' · '}
-                        {therapist.assessmentCount} aval.
+                        {therapist.patientCount} pac. · {therapist.assessmentCount} aval.
                         {therapist.lastActivityAt
                           ? ` · ${formatDateTime(therapist.lastActivityAt)}`
                           : ''}
-                      </span>
+                      </TableMobileMeta>
                     </td>
                     <td className="stf-table-col-secondary text-[var(--stf-text-muted)]">
-                      {therapist.email}
+                      <EllipsisText text={therapist.email} maxLines={2} />
                     </td>
-                    <td>{therapist.patientCount}</td>
+                    <td className="stf-table-col-secondary">{therapist.patientCount}</td>
                     <td className="stf-table-col-secondary">{therapist.assessmentCount}</td>
                     <td className="stf-table-col-tertiary text-[var(--stf-text-muted)]">
                       {formatDateTime(therapist.lastActivityAt)}

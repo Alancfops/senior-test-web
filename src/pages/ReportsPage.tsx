@@ -108,6 +108,7 @@ export function ReportsPage() {
     <AppShell
       title="Relatórios PDF"
       description="Gere PDF de avaliações finalizadas e acompanhe downloads recentes."
+      backLink={{ to: '/dashboard', label: 'Voltar ao início' }}
     >
       <div className="space-y-6">
         <section className="stf-card p-4 sm:p-5">

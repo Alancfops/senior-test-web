@@ -9,7 +9,9 @@ import { Button } from '@/components/ui/Button';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { Spinner } from '@/components/ui/Spinner';
+import { TableMobileMeta, TablePrimaryText } from '@/components/ui/EllipsisText';
 import { ActionButton, ActionLink, TableActions } from '@/components/ui/TableActions';
+import { TableColGroup } from '@/components/ui/TableColGroup';
 import { useDeletePatient, useTransferPatient } from '@/features/patients/usePatients';
 import { useDeleteTherapist, useTherapist } from '@/features/therapists/useTherapistMutations';
 import { useTherapists } from '@/features/therapists/useTherapists';
@@ -47,6 +49,7 @@ export function TherapistDetailPage() {
     <AppShell
       title={data?.fullName ?? 'Fisioterapeuta'}
       description={data?.email}
+      backLink={{ to: '/therapists', label: 'Voltar para fisioterapeutas' }}
       breadcrumbs={
         <Link to="/therapists" className="text-[var(--stf-primary)] no-underline hover:underline">
           Fisioterapeutas
@@ -91,19 +94,21 @@ export function TherapistDetailPage() {
             ) : (
               <div className="overflow-x-hidden">
                 <table className="stf-table">
+                  <TableColGroup variant="therapist-patients" />
+                  <caption className="sr-only">
+                    Pacientes vinculados ao fisioterapeuta
+                  </caption>
                   <thead>
                     <tr>
-                      <th scope="col">Nome</th>
-                      <th scope="col" className="w-14">
-                        Idade
-                      </th>
-                      <th scope="col" className="stf-table-col-secondary w-24">
+                      <th scope="col" className="stf-table-col-leading">Nome</th>
+                      <th scope="col" className="stf-table-col-secondary">Idade</th>
+                      <th scope="col" className="stf-table-col-secondary stf-cell-gender">
                         Sexo
                       </th>
-                      <th scope="col" className="stf-table-col-secondary w-24">
+                      <th scope="col" className="stf-table-col-secondary">
                         Avaliações
                       </th>
-                      <th scope="col" className="stf-table-col-tertiary w-36">
+                      <th scope="col" className="stf-table-col-tertiary">
                         Última avaliação
                       </th>
                       <th scope="col" className="stf-table-col-actions">
@@ -114,19 +119,19 @@ export function TherapistDetailPage() {
                   <tbody>
                     {data.patients.map((patient) => (
                       <tr key={patient.id}>
-                        <td className="font-medium text-[var(--stf-text)]">
-                          <span className="block">{patient.fullName}</span>
-                          <span className="mt-1 block text-xs font-normal leading-snug text-[var(--stf-text-muted)] md:hidden">
-                            {formatGender(patient.gender)}
+                        <td className="stf-table-col-leading font-medium text-[var(--stf-text)]">
+                          <TablePrimaryText text={patient.fullName} />
+                          <TableMobileMeta>
+                            {patient.age} anos · {formatGender(patient.gender)}
                             {' · '}
                             {patient.assessmentCount} aval.
                             {patient.lastAssessmentAt
                               ? ` · ${formatDateTime(patient.lastAssessmentAt)}`
                               : ''}
-                          </span>
+                          </TableMobileMeta>
                         </td>
-                        <td>{patient.age}</td>
-                        <td className="stf-table-col-secondary">
+                        <td className="stf-table-col-secondary">{patient.age}</td>
+                        <td className="stf-table-col-secondary stf-cell-gender">
                           {formatGender(patient.gender)}
                         </td>
                         <td className="stf-table-col-secondary">{patient.assessmentCount}</td>
@@ -135,7 +140,14 @@ export function TherapistDetailPage() {
                         </td>
                         <td className="stf-table-col-actions">
                           <TableActions>
-                            <ActionLink to={`/patients/${patient.id}`} icon={<IconEye />}>
+                            <ActionLink
+                              to={`/patients/${patient.id}`}
+                              state={{
+                                backTo: `/therapists/${id}`,
+                                backLabel: 'Voltar para o fisioterapeuta',
+                              }}
+                              icon={<IconEye />}
+                            >
                               Ver perfil
                             </ActionLink>
                             <ActionButton
