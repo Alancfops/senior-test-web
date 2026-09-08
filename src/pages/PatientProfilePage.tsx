@@ -99,19 +99,49 @@ export function PatientProfilePage() {
       backLink={{ to: backNav.backTo, label: backNav.backLabel }}
       breadcrumbs={
         <span>
-          <Link to="/therapists" className="text-[var(--stf-primary)] no-underline hover:underline">
-            Fisioterapeutas
-          </Link>
-          {' / '}
-          {patient ? (
+          {backNav.backTo === '/patients' ? (
             <Link
-              to={`/therapists/${patient.therapist.id}`}
+              to="/patients"
               className="text-[var(--stf-primary)] no-underline hover:underline"
             >
-              {patient.therapist.fullName}
+              Pacientes
+            </Link>
+          ) : backNav.backTo === '/audit-logs' ? (
+            <Link
+              to="/audit-logs"
+              className="text-[var(--stf-primary)] no-underline hover:underline"
+            >
+              Auditoria
+            </Link>
+          ) : backNav.backTo === '/reports' ? (
+            <Link
+              to="/reports"
+              className="text-[var(--stf-primary)] no-underline hover:underline"
+            >
+              Relatórios PDF
             </Link>
           ) : (
-            '…'
+            <>
+              <Link
+                to="/therapists"
+                className="text-[var(--stf-primary)] no-underline hover:underline"
+              >
+                Fisioterapeutas
+              </Link>
+              {patient ? (
+                <>
+                  {' / '}
+                  <Link
+                    to={`/therapists/${patient.therapist.id}`}
+                    className="text-[var(--stf-primary)] no-underline hover:underline"
+                  >
+                    {patient.therapist.fullName}
+                  </Link>
+                </>
+              ) : (
+                ' / …'
+              )}
+            </>
           )}
         </span>
       }

@@ -13,7 +13,7 @@ import {
   downloadAssessmentReport,
   triggerBlobDownload,
 } from '@/lib/api/patients';
-import { formatDateTime } from '@/lib/format';
+import { formatDateTime, buildAssessmentReportFilename } from '@/lib/format';
 import { ApiError } from '@/lib/api/errors';
 import { INSTRUMENT_LABELS } from '@/types/api';
 import { readBackNavigation } from '@/lib/navigation/backNavigation';
@@ -45,8 +45,9 @@ export function AssessmentDetailPage() {
     setDownloadError(null);
     setDownloading(true);
     try {
-      const blob = await downloadAssessmentReport(assessmentId);
-      triggerBlobDownload(blob, `relatorio-${assessmentId.slice(0, 8)}.pdf`);
+      const fallback = buildAssessmentReportFilename(patient?.fullName ?? 'Paciente');
+      const { blob, filename } = await downloadAssessmentReport(assessmentId, fallback);
+      triggerBlobDownload(blob, filename);
     } catch (err) {
       setDownloadError(err instanceof ApiError ? err.message : 'Erro ao gerar PDF.');
     } finally {
@@ -62,12 +63,23 @@ export function AssessmentDetailPage() {
       breadcrumbs={
         patient ? (
           <span>
-            <Link to="/therapists" className="text-[var(--stf-primary)] no-underline hover:underline">
+            <Link
+              to="/therapists"
+              className="text-[var(--stf-primary)] no-underline hover:underline"
+            >
               Fisioterapeutas
             </Link>
             {' / '}
             <Link
+              to={`/therapists/${patient.therapist.id}`}
+              className="text-[var(--stf-primary)] no-underline hover:underline"
+            >
+              {patient.therapist.fullName}
+            </Link>
+            {' / '}
+            <Link
               to={`/patients/${patientId}`}
+              state={{ backTo: backNav.backTo, backLabel: backNav.backLabel }}
               className="text-[var(--stf-primary)] no-underline hover:underline"
             >
               {patient.fullName}

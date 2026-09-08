@@ -20,6 +20,15 @@ export function IconLock({ className = 'size-5', ...rest }: IconProps) {
   );
 }
 
+export function IconUser({ className = 'size-5', ...rest }: IconProps) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden {...rest}>
+      <circle cx="12" cy="8" r="3.5" />
+      <path strokeLinecap="round" strokeLinejoin="round" d="M5 19.5c1.8-3.2 4.2-4.5 7-4.5s5.2 1.3 7 4.5" />
+    </svg>
+  );
+}
+
 export function IconEye({ className = 'size-5', ...rest }: IconProps) {
   return (
     <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden {...rest}>

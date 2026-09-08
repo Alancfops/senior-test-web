@@ -196,7 +196,7 @@ export function TherapistDetailPage() {
             setActionError(null);
             try {
               await deleteTherapist.mutateAsync(data.id);
-              navigate('/dashboard', { replace: true });
+              navigate('/therapists', { replace: true });
             } catch (err) {
               setActionError(err instanceof ApiError ? err.message : 'Erro ao excluir.');
             }

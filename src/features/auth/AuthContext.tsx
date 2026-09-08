@@ -9,6 +9,7 @@ import {
 import { useQueryClient } from '@tanstack/react-query';
 import {
   clearSession,
+  getAccessToken,
   getStoredUser,
   isAdminSession,
   setSession,
@@ -18,8 +19,10 @@ import type { AuthUser, LoginResponse } from '@/types/api';
 type AuthContextValue = {
   user: AuthUser | null;
   isAuthenticated: boolean;
+  mustChangePassword: boolean;
   login: (response: LoginResponse) => void;
   logout: () => void;
+  updateUser: (partial: Partial<AuthUser>) => void;
 };
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -41,14 +44,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     queryClient.clear();
   }, [queryClient]);
 
+  const updateUser = useCallback((partial: Partial<AuthUser>) => {
+    setUser((prev) => {
+      if (!prev) return prev;
+      const next = { ...prev, ...partial };
+      const token = getAccessToken();
+      if (token) {
+        setSession(token, next);
+      }
+      return next;
+    });
+  }, []);
+
   const value = useMemo(
     () => ({
       user,
       isAuthenticated: Boolean(user),
+      mustChangePassword: Boolean(user?.mustChangePassword),
       login,
       logout,
+      updateUser,
     }),
-    [user, login, logout],
+    [user, login, logout, updateUser],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

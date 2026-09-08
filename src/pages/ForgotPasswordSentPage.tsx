@@ -21,11 +21,20 @@ export function ForgotPasswordSentPage() {
           </p>
         </div>
 
-        <Link to="/login" className="mt-8 inline-block">
-          <Button variant="outlinePrimary" pill>
-            Voltar ao login
-          </Button>
-        </Link>
+        <div className="mt-8 flex flex-col items-stretch gap-3 sm:items-center">
+          {email ? (
+            <Link to="/forgot-password/verify" state={{ email }} className="w-full sm:w-auto">
+              <Button pill fullWidth className="sm:w-auto">
+                Já tenho o código
+              </Button>
+            </Link>
+          ) : null}
+          <Link to="/login" className="w-full sm:w-auto">
+            <Button variant="outlinePrimary" pill fullWidth className="sm:w-auto">
+              Voltar ao login
+            </Button>
+          </Link>
+        </div>
       </div>
     </AuthLayout>
   );

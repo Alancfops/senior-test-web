@@ -62,11 +62,11 @@
   }
 
   .stf-table col.stf-col-name {
-    width: 20%;
+    width: 22%;
   }
 
   .stf-table col.stf-col-name-wide {
-    width: 24%;
+    width: 28%;
   }
 
   .stf-table col.stf-col-age {
@@ -78,7 +78,7 @@
   }
 
   .stf-table col.stf-col-therapist {
-    width: 17%;
+    width: 18%;
   }
 
   .stf-table col.stf-col-email {
@@ -86,7 +86,7 @@
   }
 
   .stf-table col.stf-col-count {
-    width: 9%;
+    width: 10%;
   }
 
   .stf-table col.stf-col-date {
@@ -209,8 +209,11 @@
     }
   }
 
-  /* Bolinhas do gráfico — sem caixa de focus do browser (anel azul já indica seleção) */
-  .stf-chart-hit:focus,
+  /* Bolinhas do gráfico: outline nativo some (SVG); o anel no componente marca foco/seleção */
+  .stf-chart-hit:focus {
+    outline: none;
+  }
+
   .stf-chart-hit:focus-visible {
     outline: none;
   }

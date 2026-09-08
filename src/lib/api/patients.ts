@@ -1,5 +1,6 @@
 import { isMockMode } from '@/lib/api/config';
 import { apiDelete, apiGet, apiPost } from '@/lib/api/client';
+import { parseContentDispositionFilename } from '@/lib/api/contentDisposition';
 import { getAccessToken } from '@/lib/auth/session';
 import { fetchTherapist, fetchTherapists } from '@/lib/api/therapists';
 import {
@@ -119,9 +120,18 @@ export async function transferPatientRequest(
   return apiPost<TransferPatientResponse>(`/admin/patients/${patientId}/transfer`, body);
 }
 
-export async function downloadAssessmentReport(assessmentId: string): Promise<Blob> {
+export type DownloadedAssessmentReport = {
+  blob: Blob;
+  filename: string;
+};
+
+export async function downloadAssessmentReport(
+  assessmentId: string,
+  fallbackFilename: string,
+): Promise<DownloadedAssessmentReport> {
   if (isMockMode()) {
-    return mockDownloadReport(assessmentId);
+    const blob = await mockDownloadReport(assessmentId);
+    return { blob, filename: fallbackFilename };
   }
 
   const baseUrl = import.meta.env.VITE_STF_API_URL?.replace(/\/$/, '');
@@ -139,7 +149,11 @@ export async function downloadAssessmentReport(assessmentId: string): Promise<Bl
     throw await toApiError(response);
   }
 
-  return response.blob();
+  const filename =
+    parseContentDispositionFilename(response.headers.get('Content-Disposition')) ??
+    fallbackFilename;
+
+  return { blob: await response.blob(), filename };
 }
 
 export function triggerBlobDownload(blob: Blob, filename: string): void {

@@ -21,7 +21,11 @@
 }
 ```
 
-## Breakpoints sugeridos
+## Responsividade obrigatória
+
+**Sempre** validar mobile + tablet + desktop ao tocar UI. Desktop-first não significa “só desktop”.
+
+### Breakpoints
 
 ```css
 /* mobile */   @media (max-width: 767px)
@@ -29,7 +33,34 @@
 /* desktop */  @media (min-width: 1280px)
 ```
 
-Tailwind equivalente: `md:` (768px), `lg:` (1024px), `xl:` (1280px).
+Tailwind: `md:` (768), `lg:` (1024), `xl:` (1280).
+
+### Checklist rápido por viewport
+
+| | Mobile | Tablet | Desktop |
+|--|--------|--------|---------|
+| Nav | drawer | colapsável / ícones | sidebar fixa |
+| Tabela | nome + meta + ações | secondary visíveis; **sem faixa vazia** | + tertiary (datas) |
+| Colgroup | omitir ou auto | larguras só das cols **visíveis** | % completos |
+| Nomes | quebra livre | `maxLines={2}` + `title` | idem |
+| CTAs | full-width empilhados | row quando couber | row |
+| Modal | bottom / full | centrado | centrado ~480px |
+
+### Anti-padrões (já vistos no gerenciador)
+
+- `<col>` com `width: 16%` para coluna que está `hidden` no tablet → **espaço morto à direita**
+- Tabela `table-layout: fixed` + soma de % que não cobre as cols visíveis
+- Layout com `width: 1200px` ou cards sem `min-w-0`
+- Esquecer tablet e só testar 375px + 1440px
+
+### Tabelas — implementação
+
+1. Priorizar: Nome, Ações (+ contagens no `md`)
+2. Secondary: `stf-table-col-secondary` → `hidden md:table-cell`
+3. Tertiary (datas): `stf-table-col-tertiary` → `hidden xl:table-cell`
+4. `TableColGroup` deve mudar com breakpoint (`useMediaQuery`) — ver `src/components/ui/TableColGroup.tsx`
+5. Mobile: `TableMobileMeta` sob o nome; wrapper `overflow-x-hidden` (não scroll de body)
+6. Empty: ícone + "Nenhum registro" (`textMuted`)
 
 ## Layout shell
 
@@ -47,20 +78,14 @@ Tailwind equivalente: `md:` (768px), `lg:` (1024px), `xl:` (1280px).
 
 ## Padrão por tipo de tela
 
-| Tela | GW | Desktop | Mobile |
-|------|-----|---------|--------|
-| Login | GW001 | card central ~400px | full-width card, padding 16px |
-| Dashboard fisios | GW002 | tabela sortável | cards por fisio |
-| Detalhe fisio | GW003 | tabela pacientes | lista stacked |
-| Perfil paciente | GW007 | 2 colunas info + histórico | abas ou scroll vertical |
-| Modais excluir/transferir | GW004–006 | modal ~480px | bottom sheet ou full-screen |
-
-## Tabelas responsivas
-
-1. Priorizar colunas: Nome, Pacientes, Ações
-2. Colunas secundárias: `hidden md:table-cell`
-3. Overflow: `overflow-x-auto` no wrapper, não no body inteiro
-4. Empty: ícone + "Nenhum registro" (`textMuted`)
+| Tela | GW | Desktop | Tablet | Mobile |
+|------|-----|---------|--------|--------|
+| Login | GW001 | card central ~400px | card central | full-width, padding 16px |
+| Dashboard fisios | GW002 | tabela completa | tabela sem tertiary | cards / leading+meta |
+| Detalhe fisio | GW003 | tabela pacientes | sem col data se tertiary | lista stacked |
+| Perfil paciente | GW007 | 2–4 colunas info | 2 colunas | 1 coluna |
+| Modais excluir/transferir | GW004–006 | ~480px | ~480px | bottom sheet / full |
+| Resumo (ex. PDF) | — | modal + “Ver mais” | idem | idem |
 
 ## Modais destrutivos
 
@@ -75,6 +100,7 @@ Tailwind equivalente: `md:` (768px), `lg:` (1024px), `xl:` (1280px).
 - Cores série: `--stf-primary`, `--stf-secondary`
 - Mensagem se `canShowChart === false` (API timeseries)
 - Altura fixa ~240px; responsivo `width: 100%`
+- Pontos focáveis: anel visível no Tab (não só após Enter)
 
 ## WCAG 2.1 checklist
 

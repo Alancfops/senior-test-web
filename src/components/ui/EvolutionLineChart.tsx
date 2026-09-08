@@ -51,6 +51,7 @@ export function EvolutionLineChart({
   const isDesktop = useMediaQuery('(min-width: 640px)');
   const chart = isDesktop ? DESKTOP_CHART : MOBILE_CHART;
   const [activePointId, setActivePointId] = useState<string | null>(null);
+  const [focusedPointId, setFocusedPointId] = useState<string | null>(null);
 
   const { width: chartWidth, height: chartHeight, padding } = chart;
   const chartW = chartWidth - padding.left - padding.right;
@@ -137,6 +138,8 @@ export function EvolutionLineChart({
 
           {coords.map((point) => {
             const isActive = point.id === activePointId;
+            const isFocused = point.id === focusedPointId;
+            const isHighlighted = isActive || isFocused;
             return (
               <g key={point.id}>
                 <circle
@@ -150,6 +153,10 @@ export function EvolutionLineChart({
                     event.currentTarget.blur();
                   }}
                   onMouseDown={(event) => event.preventDefault()}
+                  onFocus={() => setFocusedPointId(point.id)}
+                  onBlur={() =>
+                    setFocusedPointId((current) => (current === point.id ? null : current))
+                  }
                   role="button"
                   tabIndex={0}
                   aria-label={`Avaliação ${point.label}: ${point.scoreSummary}. ${point.classificationLabel}`}
@@ -165,7 +172,7 @@ export function EvolutionLineChart({
                     {`${point.label} · ${point.scoreSummary} · ${point.classificationLabel}`}
                   </title>
                 </circle>
-                {isActive ? (
+                {isHighlighted ? (
                   <circle
                     cx={point.x}
                     cy={point.y}
@@ -173,14 +180,15 @@ export function EvolutionLineChart({
                     fill="none"
                     stroke="var(--stf-primary)"
                     strokeWidth={2}
+                    strokeDasharray={isFocused && !isActive ? '4 3' : undefined}
                     className="pointer-events-none"
                   />
                 ) : null}
                 <circle
                   cx={point.x}
                   cy={point.y}
-                  r={isActive ? chart.activePointRadius : chart.pointRadius}
-                  fill={isActive ? 'var(--stf-primary)' : LINE_COLOR}
+                  r={isHighlighted ? chart.activePointRadius : chart.pointRadius}
+                  fill={isHighlighted ? 'var(--stf-primary)' : LINE_COLOR}
                   className="pointer-events-none"
                 />
                 <text
@@ -189,7 +197,7 @@ export function EvolutionLineChart({
                   textAnchor="middle"
                   style={{ fontSize: chart.labelSize }}
                   className={[
-                    isActive
+                    isHighlighted
                       ? 'fill-[var(--stf-primary)] font-semibold'
                       : 'fill-[var(--stf-text-muted)]',
                   ].join(' ')}
@@ -243,7 +251,8 @@ export function EvolutionLineChart({
         </div>
       ) : (
         <p className="mt-3 text-sm text-[var(--stf-text-muted)]">
-          Toque ou clique em uma bolinha para ver o resumo da avaliação.
+          Tab navega entre as bolinhas (anel azul indica o foco). Enter ou Espaço abre o
+          resumo; clique também funciona.
         </p>
       )}
     </figure>

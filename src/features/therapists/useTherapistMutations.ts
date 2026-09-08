@@ -15,7 +15,7 @@ export function useDeleteTherapist() {
   return useMutation({
     mutationFn: (id: string) => deleteTherapist(id),
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: ['admin', 'therapists'] });
+      void queryClient.invalidateQueries({ queryKey: ['admin'] });
     },
   });
 }

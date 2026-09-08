@@ -1,4 +1,5 @@
 import type {
+  AccessRequestItem,
   AssessmentDetail,
   AssessmentListItem,
   AuditLogItem,
@@ -19,6 +20,7 @@ export const MOCK_IDS = {
   assessmentBerg3: '770e8400-e29b-41d4-a716-446655440003',
   assessmentKatz1: '770e8400-e29b-41d4-a716-446655440004',
   assessmentTug1: '770e8400-e29b-41d4-a716-446655440005',
+  accessRequestPending: '880e8400-e29b-41d4-a716-446655440001',
 } as const;
 
 type MockState = {
@@ -27,6 +29,7 @@ type MockState = {
   patients: Record<string, PatientProfile>;
   assessments: Record<string, AssessmentDetail>;
   auditLogs: AuditLogItem[];
+  accessRequests: AccessRequestItem[];
 };
 
 function buildInitialState(): MockState {
@@ -265,6 +268,7 @@ function buildInitialState(): MockState {
       targetType: 'Patient',
       targetId: MOCK_IDS.patientAna,
       metadata: {
+        patientName: 'Ana Costa',
         fromTherapistId: MOCK_IDS.therapistCarlos,
         toTherapistId: MOCK_IDS.therapistMaria,
       },
@@ -277,12 +281,29 @@ function buildInitialState(): MockState {
       action: 'DOWNLOAD_REPORT',
       targetType: 'Assessment',
       targetId: MOCK_IDS.assessmentBerg3,
-      metadata: {},
+      metadata: {
+        patientId: MOCK_IDS.patientJoao,
+        patientName: 'João Santos',
+        instrumentCode: 'BERG',
+        finalizedAt: '2026-08-01T09:18:00.000Z',
+      },
       createdAt: '2026-08-16T10:30:00.000Z',
     },
   ];
 
-  return { therapists, therapistDetails, patients, assessments, auditLogs };
+  const accessRequests: AccessRequestItem[] = [
+    {
+      id: MOCK_IDS.accessRequestPending,
+      email: 'solicitante@clinica.exemplo',
+      fullName: 'Ana Solicitante',
+      status: 'PENDING',
+      createdAt: '2026-08-28T14:00:00.000Z',
+      resolvedAt: null,
+      resolvedBy: null,
+    },
+  ];
+
+  return { therapists, therapistDetails, patients, assessments, auditLogs, accessRequests };
 }
 
 let state = buildInitialState();
@@ -324,7 +345,29 @@ export function getPatientAssessments(patientId: string): AssessmentListItem[] {
   return Object.values(state.assessments)
     .filter((a) => a.patientId === patientId)
     .sort((a, b) => (b.finalizedAt ?? b.startedAt).localeCompare(a.finalizedAt ?? a.startedAt))
-    .map(({ payload: _p, schoolingBandUsed: _s, notesObservation: _n, ...item }) => item);
+    .map(
+      ({
+        id,
+        patientId: pid,
+        instrumentCode,
+        status,
+        startedAt,
+        finalizedAt,
+        therapistId,
+        therapistName,
+        result,
+      }): AssessmentListItem => ({
+        id,
+        patientId: pid,
+        instrumentCode,
+        status,
+        startedAt,
+        finalizedAt,
+        therapistId,
+        therapistName,
+        result,
+      }),
+    );
 }
 
 export function removePatient(patientId: string): void {
@@ -399,5 +442,44 @@ export function appendAuditLog(entry: Omit<AuditLogItem, 'id' | 'createdAt'>): v
     ...entry,
     id: crypto.randomUUID(),
     createdAt: new Date().toISOString(),
+  });
+}
+
+export function resolveAccessRequest(
+  id: string,
+  status: 'APPROVED' | 'REJECTED',
+): AccessRequestItem {
+  const request = state.accessRequests.find((item) => item.id === id);
+  if (!request) {
+    throw new Error('not_found');
+  }
+  if (request.status !== 'PENDING') {
+    throw new Error('already_resolved');
+  }
+
+  request.status = status;
+  request.resolvedAt = new Date().toISOString();
+  request.resolvedBy = {
+    id: MOCK_IDS.therapistAdmin,
+    fullName: 'Administrador',
+    email: 'admin@clinica.exemplo',
+  };
+  return structuredClone(request);
+}
+
+export function appendAccessRequest(email: string, fullName: string): void {
+  const existing = state.accessRequests.find(
+    (item) => item.email === email && item.status === 'PENDING',
+  );
+  if (existing) return;
+
+  state.accessRequests.unshift({
+    id: crypto.randomUUID(),
+    email,
+    fullName,
+    status: 'PENDING',
+    createdAt: new Date().toISOString(),
+    resolvedAt: null,
+    resolvedBy: null,
   });
 }

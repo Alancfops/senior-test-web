@@ -35,7 +35,7 @@ export function EllipsisText({
   );
 }
 
-/** Nome ou título principal em células de tabela — quebra de linha natural. */
+/** Nome ou título principal em células de tabela — até 2 linhas no tablet/desktop. */
 export function TablePrimaryText({
   text,
   className = '',
@@ -43,7 +43,13 @@ export function TablePrimaryText({
   text: string;
   className?: string;
 }) {
-  return <EllipsisText text={text} className={['font-semibold text-[var(--stf-text)]', className].join(' ')} />;
+  return (
+    <EllipsisText
+      text={text}
+      maxLines={2}
+      className={['font-semibold text-[var(--stf-text)]', className].join(' ')}
+    />
+  );
 }
 
 /** Meta secundária abaixo do nome no mobile (email, stats, etc.). */

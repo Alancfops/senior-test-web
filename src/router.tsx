@@ -1,10 +1,14 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom';
 import { GuestRoute, ProtectedRoute } from '@/components/layout/ProtectedRoute';
+import { AccessRequestsPage } from '@/pages/AccessRequestsPage';
 import { AssessmentDetailPage } from '@/pages/AssessmentDetailPage';
 import { AuditLogsPage } from '@/pages/AuditLogsPage';
+import { ChangePasswordPage } from '@/pages/ChangePasswordPage';
 import { DashboardPage } from '@/pages/DashboardPage';
 import { ForgotPasswordPage } from '@/pages/ForgotPasswordPage';
+import { ForgotPasswordResetPage } from '@/pages/ForgotPasswordResetPage';
 import { ForgotPasswordSentPage } from '@/pages/ForgotPasswordSentPage';
+import { ForgotPasswordVerifyPage } from '@/pages/ForgotPasswordVerifyPage';
 import { LoginPage } from '@/pages/LoginPage';
 import { NotFoundPage } from '@/pages/NotFoundPage';
 import { PatientProfilePage } from '@/pages/PatientProfilePage';
@@ -25,17 +29,21 @@ export const router = createBrowserRouter([
       { path: '/login', element: <LoginPage /> },
       { path: '/forgot-password', element: <ForgotPasswordPage /> },
       { path: '/forgot-password/sent', element: <ForgotPasswordSentPage /> },
+      { path: '/forgot-password/verify', element: <ForgotPasswordVerifyPage /> },
+      { path: '/forgot-password/reset', element: <ForgotPasswordResetPage /> },
     ],
   },
   {
     element: <ProtectedRoute />,
     children: [
+      { path: '/change-password', element: <ChangePasswordPage /> },
       { path: '/dashboard', element: <DashboardPage /> },
       { path: '/therapists', element: <TherapistsListPage /> },
       { path: '/therapists/:id', element: <TherapistDetailPage /> },
       { path: '/patients', element: <PatientsListPage /> },
       { path: '/patients/:id', element: <PatientProfilePage /> },
       { path: '/patients/:id/assessment/:assessmentId', element: <AssessmentDetailPage /> },
+      { path: '/access-requests', element: <AccessRequestsPage /> },
       { path: '/audit-logs', element: <AuditLogsPage /> },
       { path: '/reports', element: <ReportsPage /> },
       { path: '/testes/duvidas', element: <TestDoubtsPage /> },

@@ -7,6 +7,7 @@ import {
   IconFile,
   IconHelp,
   IconHome,
+  IconInbox,
   IconLogout,
   IconPatient,
   IconUsers,
@@ -39,6 +40,12 @@ const navSections: NavSection[] = [
   {
     title: 'Governança',
     items: [
+      {
+        to: '/access-requests',
+        label: 'Solicitações de acesso',
+        end: true,
+        icon: IconInbox,
+      },
       { to: '/audit-logs', label: 'Auditoria', end: true, icon: IconClipboard },
       { to: '/reports', label: 'Relatórios PDF', end: true, icon: IconFile },
     ],
@@ -53,6 +60,14 @@ type SidebarProps = {
 export function Sidebar({ open = false, onClose }: SidebarProps) {
   const { user, logout } = useAuth();
   const initial = (user?.fullName ?? 'A').charAt(0).toUpperCase();
+  const canManageAccessRequests = Boolean(user?.canManageAccessRequests);
+
+  const sections = navSections.map((section) => ({
+    ...section,
+    items: section.items.filter(
+      (item) => item.to !== '/access-requests' || canManageAccessRequests,
+    ),
+  }));
 
   return (
     <>
@@ -108,7 +123,7 @@ export function Sidebar({ open = false, onClose }: SidebarProps) {
         </div>
 
         <nav className="flex flex-1 flex-col gap-5 overflow-y-auto p-3">
-          {navSections.map((section) => (
+          {sections.map((section) => (
             <div key={section.title}>
               <p className="mb-2 px-2 text-[11px] font-bold uppercase tracking-wider text-[var(--stf-text-muted)]">
                 {section.title}
@@ -195,7 +210,9 @@ export function Sidebar({ open = false, onClose }: SidebarProps) {
               </p>
               <p className="truncate text-xs text-[var(--stf-text-muted)]">{user?.email}</p>
               <p className="mt-0.5 text-[10px] font-medium uppercase tracking-wide text-[var(--stf-primary)]">
-                Administrador · painel web
+                {user?.canManageAccessRequests
+                  ? 'Administrador · bootstrap'
+                  : 'Gerenciador · painel web'}
               </p>
             </div>
           </div>

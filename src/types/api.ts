@@ -4,11 +4,40 @@ export type AuthUser = {
   fullName: string;
   email: string;
   role: TherapistRole;
+  mustChangePassword?: boolean;
+  /** Só o bootstrap (admin.dev) gerencia solicitações de acesso. */
+  canManageAccessRequests?: boolean;
 };
 
 export type LoginResponse = {
   accessToken: string;
   user: AuthUser;
+};
+
+export type MessageResponse = {
+  message: string;
+};
+
+export type AdminAccessRequestStatus = 'PENDING' | 'APPROVED' | 'REJECTED';
+
+export type AccessRequestResolvedBy = {
+  id: string;
+  fullName: string;
+  email: string;
+};
+
+export type AccessRequestItem = {
+  id: string;
+  email: string;
+  fullName: string;
+  status: AdminAccessRequestStatus;
+  createdAt: string;
+  resolvedAt: string | null;
+  resolvedBy: AccessRequestResolvedBy | null;
+};
+
+export type AccessRequestsListResponse = {
+  data: AccessRequestItem[];
 };
 
 export type TherapistListItem = {

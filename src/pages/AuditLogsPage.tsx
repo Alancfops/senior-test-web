@@ -5,9 +5,10 @@ import { EmptyState } from '@/components/ui/EmptyState';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { Spinner } from '@/components/ui/Spinner';
 import { useAuditLogs } from '@/features/audit/useAuditLogs';
+import { resolveAuditTarget } from '@/lib/audit/formatAuditTarget';
 import { formatDateTime } from '@/lib/format';
 import { ApiError } from '@/lib/api/errors';
-import type { AdminAuditAction } from '@/types/api';
+import type { AdminAuditAction, AuditLogItem } from '@/types/api';
 import { AUDIT_ACTION_LABELS } from '@/types/api';
 
 const actionOptions: Array<{ value: string; label: string }> = [
@@ -52,41 +53,25 @@ export function AuditLogsPage() {
           <div className="overflow-x-hidden">
             <table className="stf-table">
               <caption className="sr-only">Registros da trilha de auditoria administrativa</caption>
-                <thead>
-                  <tr>
-                    <th scope="col" className="stf-table-col-leading">Data</th>
-                    <th scope="col" className="stf-table-col-secondary">Admin</th>
-                    <th scope="col" className="stf-table-col-secondary">Ação</th>
-                    <th scope="col" className="stf-table-col-secondary">
-                      Alvo
-                    </th>
-                    <th scope="col" className="stf-table-col-tertiary stf-table-col-text">
-                      Metadados
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {data.data.map((log) => (
-                    <tr key={log.id}>
-                      <td className="stf-table-col-leading text-[var(--stf-text-muted)]">
-                        {formatDateTime(log.createdAt)}
-                        <span className="mt-1.5 block hyphens-none break-words text-xs leading-relaxed text-[var(--stf-text-muted)] md:hidden">
-                          {log.adminName} · {AUDIT_ACTION_LABELS[log.action]}
-                          {' · '}
-                          {log.targetType} {log.targetId.slice(0, 8)}…
-                        </span>
-                      </td>
-                      <td className="stf-table-col-secondary">{log.adminName}</td>
-                      <td className="stf-table-col-secondary">{AUDIT_ACTION_LABELS[log.action]}</td>
-                    <td className="stf-table-col-secondary">
-                      {log.targetType} · {log.targetId.slice(0, 8)}…
-                    </td>
-                    <td className="stf-table-col-tertiary stf-table-col-text break-words text-xs text-[var(--stf-text-muted)]">
-                      {log.metadata && Object.keys(log.metadata).length > 0
-                        ? JSON.stringify(log.metadata)
-                        : '-'}
-                    </td>
-                  </tr>
+              <thead>
+                <tr>
+                  <th scope="col" className="stf-table-col-leading">
+                    Data
+                  </th>
+                  <th scope="col" className="stf-table-col-secondary">
+                    Admin
+                  </th>
+                  <th scope="col" className="stf-table-col-secondary">
+                    Ação
+                  </th>
+                  <th scope="col" className="stf-table-col-secondary stf-table-col-text">
+                    Alvo
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {data.data.map((log) => (
+                  <AuditLogRow key={log.id} log={log} />
                 ))}
               </tbody>
             </table>
@@ -94,5 +79,39 @@ export function AuditLogsPage() {
         ) : null}
       </div>
     </AppShell>
+  );
+}
+
+function AuditLogRow({ log }: { log: AuditLogItem }) {
+  const target = resolveAuditTarget(log);
+
+  return (
+    <tr>
+      <td className="stf-table-col-leading text-[var(--stf-text-muted)]">
+        {formatDateTime(log.createdAt)}
+        <span className="mt-1.5 block hyphens-none break-words text-xs leading-relaxed text-[var(--stf-text-muted)] md:hidden">
+          {log.adminName} · {AUDIT_ACTION_LABELS[log.action]}
+          {' · '}
+          <AuditTargetLink target={target} />
+        </span>
+      </td>
+      <td className="stf-table-col-secondary">{log.adminName}</td>
+      <td className="stf-table-col-secondary">{AUDIT_ACTION_LABELS[log.action]}</td>
+      <td className="stf-table-col-secondary stf-table-col-text">
+        <AuditTargetLink target={target} />
+      </td>
+    </tr>
+  );
+}
+
+function AuditTargetLink({
+  target,
+}: {
+  target: ReturnType<typeof resolveAuditTarget>;
+}) {
+  return (
+    <span className="font-medium text-[var(--stf-text)]" title={target.title}>
+      {target.label}
+    </span>
   );
 }

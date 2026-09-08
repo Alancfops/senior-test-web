@@ -1,0 +1,15 @@
+---
+description: Sempre confirmar com o usuário antes de apagar dados no banco (STF/Postgres).
+alwaysApply: true
+---
+
+# Confirmar exclusões no banco
+
+Antes de **qualquer** exclusão ou destruição de dados em banco (Postgres/Prisma/`DELETE`/cascade/seed que remova contas, pacientes, avaliações, solicitações, etc.):
+
+1. **Perguntar confirmação explícita** ao usuário, mesmo que o pedido pareça claro.
+2. Resumir o que será apagado (tabela/entidade, e-mail/id, se há cascade).
+3. Só executar depois de um **sim** inequívoco na mensagem atual.
+4. Em caso de ambiguidade (ex.: “delete o alan” = só ADMIN ou também THERAPIST?), listar as opções e esperar escolha.
+
+Não se aplica a: limpar caches locais, arquivos de build, `sessionStorage`, ou dados de teste efêmeros que o usuário pediu explicitamente como “reset de ambiente de teste” **e** confirmou na mesma mensagem.

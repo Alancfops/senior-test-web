@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Link, useNavigate } from 'react-router-dom';
+import { AccessRequestModal } from '@/components/auth/AccessRequestModal';
 import { IconMail, IconLock } from '@/components/icons/AuthIcons';
 import { AuthLayout } from '@/components/layout/AuthLayout';
 import { Button } from '@/components/ui/Button';
@@ -10,12 +11,20 @@ import { useAuth } from '@/features/auth/AuthContext';
 import { loginSchema, type LoginFormValues } from '@/features/auth/loginSchema';
 import { useLogin } from '@/features/auth/useLogin';
 import { ApiError } from '@/lib/api/errors';
+import {
+  clearRememberedEmail,
+  getRememberedEmail,
+  setRememberedEmail,
+} from '@/lib/auth/rememberEmail';
 
 export function LoginPage() {
   const navigate = useNavigate();
   const { login } = useAuth();
   const loginMutation = useLogin();
   const [apiError, setApiError] = useState<string | null>(null);
+  const [accessModalOpen, setAccessModalOpen] = useState(false);
+  const remembered = getRememberedEmail();
+  const [rememberMe, setRememberMe] = useState(Boolean(remembered));
 
   const {
     register,
@@ -23,7 +32,7 @@ export function LoginPage() {
     formState: { errors },
   } = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
-    defaultValues: { email: '', password: '' },
+    defaultValues: { email: remembered ?? '', password: '' },
   });
 
   const onSubmit = handleSubmit(async (values) => {
@@ -32,6 +41,17 @@ export function LoginPage() {
     try {
       const response = await loginMutation.mutateAsync(values);
       login(response);
+
+      if (rememberMe) {
+        setRememberedEmail(values.email);
+      } else {
+        clearRememberedEmail();
+      }
+
+      if (response.user.mustChangePassword) {
+        navigate('/change-password', { replace: true });
+        return;
+      }
       navigate('/dashboard', { replace: true });
     } catch (error) {
       if (error instanceof ApiError) {
@@ -67,7 +87,7 @@ export function LoginPage() {
             <IconTextInput
               type="email"
               placeholder="E-mail"
-              autoComplete="email"
+              autoComplete="username"
               leftIcon={<IconMail className="size-5" />}
               {...register('email')}
               error={errors.email?.message}
@@ -82,7 +102,16 @@ export function LoginPage() {
               error={errors.password?.message}
             />
 
-            <div className="flex items-center justify-between pt-1">
+            <div className="flex flex-col gap-2 pt-1 sm:flex-row sm:items-center sm:justify-between">
+              <label className="inline-flex min-h-11 cursor-pointer items-center gap-2 text-sm text-[var(--stf-text)]">
+                <input
+                  type="checkbox"
+                  checked={rememberMe}
+                  onChange={(event) => setRememberMe(event.target.checked)}
+                  className="size-4 rounded border-[var(--stf-border)] text-[var(--stf-primary)] focus:ring-[var(--stf-primary)]"
+                />
+                Lembre-se de mim
+              </label>
               <Link
                 to="/forgot-password"
                 className="inline-flex min-h-11 items-center gap-1 text-sm font-medium text-[var(--stf-primary)] no-underline hover:underline"
@@ -107,8 +136,21 @@ export function LoginPage() {
               Entrar
             </Button>
           </form>
+
+          <p className="mt-6 text-center text-sm text-[var(--stf-text-muted)]">
+            Não tem conta?{' '}
+            <button
+              type="button"
+              onClick={() => setAccessModalOpen(true)}
+              className="min-h-11 font-semibold text-[var(--stf-primary)] hover:underline"
+            >
+              Solicitar acesso
+            </button>
+          </p>
         </div>
       </div>
+
+      <AccessRequestModal open={accessModalOpen} onClose={() => setAccessModalOpen(false)} />
     </AuthLayout>
   );
 }

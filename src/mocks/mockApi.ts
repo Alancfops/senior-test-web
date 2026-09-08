@@ -1,20 +1,25 @@
 import { getMockDelay } from '@/lib/api/config';
 import { ApiError } from '@/lib/api/errors';
 import {
+  appendAccessRequest,
   appendAuditLog,
   getMockState,
   getPatientAssessments,
   MOCK_IDS,
   removePatient,
   removeTherapist,
+  resolveAccessRequest,
   transferPatient,
 } from '@/mocks/mockStore';
 import type {
+  AccessRequestsListResponse,
+  AdminAccessRequestStatus,
   AdminAuditAction,
   AssessmentDetail,
   AssessmentsListResponse,
   AuditLogsResponse,
   LoginResponse,
+  MessageResponse,
   PatientsListResponse,
   PatientProfile,
   TherapistsListResponse,
@@ -24,12 +29,19 @@ import type {
   TransferPatientResponse,
 } from '@/types/api';
 import type { LoginFormValues } from '@/features/auth/loginSchema';
+import type {
+  AdminAccessRequestFormValues,
+  ChangePasswordRequest,
+  ResetPasswordFormValues,
+  VerifyResetCodeFormValues,
+} from '@/features/auth/passwordSchema';
 
 async function delay(): Promise<void> {
   await new Promise((resolve) => setTimeout(resolve, getMockDelay()));
 }
 
 export async function mockLogin(_values: LoginFormValues): Promise<LoginResponse> {
+  void _values;
   await delay();
 
   return {
@@ -38,6 +50,8 @@ export async function mockLogin(_values: LoginFormValues): Promise<LoginResponse
       fullName: 'Administrador',
       email: 'admin@clinica.exemplo',
       role: 'ADMIN',
+      mustChangePassword: false,
+      canManageAccessRequests: true,
     },
   };
 }
@@ -88,7 +102,11 @@ export async function mockDeleteTherapist(id: string): Promise<void> {
     action: 'DELETE_THERAPIST',
     targetType: 'Therapist',
     targetId: id,
-    metadata: {},
+    metadata: {
+      therapistName: therapist.fullName,
+      fullName: therapist.fullName,
+      email: therapist.email,
+    },
   });
 }
 
@@ -181,6 +199,7 @@ export async function mockDeletePatient(patientId: string): Promise<void> {
   if (!patient) {
     throw new ApiError('Paciente não encontrado.', 404);
   }
+  const patientName = patient.fullName;
   removePatient(patientId);
   appendAuditLog({
     adminId: MOCK_IDS.therapistAdmin,
@@ -188,7 +207,7 @@ export async function mockDeletePatient(patientId: string): Promise<void> {
     action: 'DELETE_PATIENT',
     targetType: 'Patient',
     targetId: patientId,
-    metadata: {},
+    metadata: { patientName },
   });
 }
 
@@ -219,6 +238,7 @@ export async function mockTransferPatient(
     targetType: 'Patient',
     targetId: patientId,
     metadata: {
+      patientName: patient.fullName,
       fromTherapistId,
       toTherapistId: body.targetTherapistId,
     },
@@ -273,5 +293,78 @@ export async function mockListAuditLogs(action?: AdminAuditAction): Promise<Audi
 }
 
 export async function mockRequestPasswordReset(_email: string): Promise<void> {
+  void _email;
   await delay();
+}
+
+export async function mockRequestAdminAccess(
+  values: AdminAccessRequestFormValues,
+): Promise<MessageResponse> {
+  await delay();
+  appendAccessRequest(values.email, values.fullName);
+  return {
+    message:
+      'Se os dados estiverem corretos, sua solicitação será analisada. Você receberá um e-mail quando houver uma resposta.',
+  };
+}
+
+export async function mockChangePassword(
+  _values: ChangePasswordRequest,
+): Promise<MessageResponse> {
+  void _values;
+  await delay();
+  return { message: 'Senha alterada com sucesso.' };
+}
+
+export async function mockVerifyResetCode(
+  values: VerifyResetCodeFormValues,
+): Promise<MessageResponse> {
+  await delay();
+  if (values.token !== '123456') {
+    throw new ApiError('Código inválido ou expirado.', 400);
+  }
+  return { message: 'Código validado.' };
+}
+
+export async function mockResetPassword(
+  values: ResetPasswordFormValues,
+): Promise<MessageResponse> {
+  await delay();
+  if (values.token !== '123456') {
+    throw new ApiError('Código inválido ou expirado.', 400);
+  }
+  return { message: 'Senha redefinida com sucesso.' };
+}
+
+export async function mockListAccessRequests(
+  status: AdminAccessRequestStatus = 'PENDING',
+): Promise<AccessRequestsListResponse> {
+  await delay();
+  const data = getMockState().accessRequests.filter((item) => item.status === status);
+  return { data: structuredClone(data) };
+}
+
+export async function mockApproveAccessRequest(id: string): Promise<{ id: string }> {
+  await delay();
+  try {
+    const request = resolveAccessRequest(id, 'APPROVED');
+    return { id: request.id };
+  } catch (error) {
+    if (error instanceof Error && error.message === 'not_found') {
+      throw new ApiError('Solicitação não encontrada.', 404);
+    }
+    throw new ApiError('Esta solicitação já foi resolvida.', 409);
+  }
+}
+
+export async function mockRejectAccessRequest(id: string) {
+  await delay();
+  try {
+    return resolveAccessRequest(id, 'REJECTED');
+  } catch (error) {
+    if (error instanceof Error && error.message === 'not_found') {
+      throw new ApiError('Solicitação não encontrada.', 404);
+    }
+    throw new ApiError('Esta solicitação já foi resolvida.', 409);
+  }
 }

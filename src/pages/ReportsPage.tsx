@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
+import { AssessmentSummaryModal } from '@/components/assessments/AssessmentSummaryModal';
 import { AppShell } from '@/components/layout/AppShell';
 import { IconDownload, IconEye } from '@/components/icons/ActionIcons';
 import { IconFile } from '@/components/icons/NavIcons';
@@ -17,7 +18,7 @@ import {
   triggerBlobDownload,
 } from '@/lib/api/patients';
 import { ApiError } from '@/lib/api/errors';
-import { formatDateTime } from '@/lib/format';
+import { buildAssessmentReportFilename, formatDateTime, formatShortDisplayName } from '@/lib/format';
 import { INSTRUMENT_LABELS } from '@/types/api';
 
 export function ReportsPage() {
@@ -34,6 +35,7 @@ export function ReportsPage() {
   const [patientSearch, setPatientSearch] = useState('');
   const [selectedPatientId, setSelectedPatientId] = useState('');
   const [selectedAssessmentId, setSelectedAssessmentId] = useState('');
+  const [summaryOpen, setSummaryOpen] = useState(false);
   const [downloading, setDownloading] = useState(false);
   const [downloadError, setDownloadError] = useState<string | null>(null);
   const [downloadSuccess, setDownloadSuccess] = useState<string | null>(null);
@@ -56,6 +58,11 @@ export function ReportsPage() {
   const { data: assessmentsData, isLoading: loadingAssessments } =
     usePatientAssessments(selectedPatientId);
 
+  const selectedAssessment = useMemo(
+    () => assessmentsData?.data.find((item) => item.id === selectedAssessmentId) ?? null,
+    [assessmentsData?.data, selectedAssessmentId],
+  );
+
   const assessmentOptions = useMemo(() => {
     const items = assessmentsData?.data ?? [];
     return items.map((assessment) => {
@@ -77,6 +84,7 @@ export function ReportsPage() {
   function selectPatient(patientId: string) {
     setSelectedPatientId(patientId);
     setSelectedAssessmentId('');
+    setSummaryOpen(false);
     setDownloadError(null);
     setDownloadSuccess(null);
   }
@@ -87,9 +95,9 @@ export function ReportsPage() {
     setDownloadSuccess(null);
     setDownloading(true);
     try {
-      const blob = await downloadAssessmentReport(selectedAssessmentId);
-      const shortId = selectedAssessmentId.slice(0, 8);
-      triggerBlobDownload(blob, `relatorio-${shortId}.pdf`);
+      const fallback = buildAssessmentReportFilename(selectedPatient?.fullName ?? 'Paciente');
+      const { blob, filename } = await downloadAssessmentReport(selectedAssessmentId, fallback);
+      triggerBlobDownload(blob, filename);
       setDownloadSuccess('PDF gerado e baixado. O download ficou registrado na auditoria.');
       void queryClient.invalidateQueries({ queryKey: ['admin', 'audit-logs'] });
     } catch (err) {
@@ -182,6 +190,7 @@ export function ReportsPage() {
                   Paciente:{' '}
                   <Link
                     to={`/patients/${selectedPatientId}`}
+                    state={{ backTo: '/reports', backLabel: 'Voltar para relatórios' }}
                     className="font-medium text-[var(--stf-primary)] no-underline hover:underline"
                   >
                     {selectedPatient?.fullName}
@@ -207,6 +216,7 @@ export function ReportsPage() {
                       value={selectedAssessmentId}
                       onChange={(event) => {
                         setSelectedAssessmentId(event.target.value);
+                        setSummaryOpen(false);
                         setDownloadError(null);
                         setDownloadSuccess(null);
                       }}
@@ -223,13 +233,14 @@ export function ReportsPage() {
                         Baixar PDF
                       </Button>
                       {selectedAssessmentId ? (
-                        <Link
-                          to={`/patients/${selectedPatientId}/assessment/${selectedAssessmentId}`}
-                          className="inline-flex min-h-11 items-center gap-1.5 text-sm font-medium text-[var(--stf-primary)] no-underline hover:underline"
+                        <button
+                          type="button"
+                          onClick={() => setSummaryOpen(true)}
+                          className="inline-flex min-h-11 w-full items-center justify-center gap-1.5 text-sm font-medium text-[var(--stf-primary)] hover:underline sm:w-auto sm:justify-start"
                         >
-                          <IconEye className="size-4" />
-                          Ver detalhe
-                        </Link>
+                          <IconEye className="size-4 shrink-0 text-[var(--stf-primary)]" />
+                          Ver mais
+                        </button>
                       ) : null}
                     </div>
                   </>
@@ -275,6 +286,8 @@ export function ReportsPage() {
                 const meta = log.metadata ?? {};
                 const patientName =
                   typeof meta.patientName === 'string' ? meta.patientName : null;
+                const patientId =
+                  typeof meta.patientId === 'string' ? meta.patientId : null;
                 const instrumentCode =
                   typeof meta.instrumentCode === 'string' ? meta.instrumentCode : null;
                 const instrumentLabel = instrumentCode
@@ -285,11 +298,9 @@ export function ReportsPage() {
                     ? formatDateTime(meta.finalizedAt)
                     : null;
 
-                const titleParts = [
-                  patientName,
-                  instrumentLabel,
-                  assessmentDate,
-                ].filter(Boolean);
+                const shortName = patientName
+                  ? formatShortDisplayName(patientName)
+                  : null;
 
                 return (
                   <li
@@ -298,9 +309,23 @@ export function ReportsPage() {
                   >
                     <div className="min-w-0">
                       <p className="text-sm font-medium text-[var(--stf-text)]">
-                        {titleParts.length > 0
-                          ? titleParts.join(' · ')
-                          : `Avaliação ${log.targetId.slice(0, 8)}…`}
+                        {shortName && patientId ? (
+                          <Link
+                            to={`/patients/${patientId}`}
+                            state={{
+                              backTo: '/reports',
+                              backLabel: 'Voltar para relatórios',
+                            }}
+                            className="text-[var(--stf-primary)] no-underline hover:underline"
+                            title={patientName ?? undefined}
+                          >
+                            {shortName}
+                          </Link>
+                        ) : (
+                          (shortName ?? 'Avaliação')
+                        )}
+                        {instrumentLabel ? ` · ${instrumentLabel}` : null}
+                        {assessmentDate ? ` · ${assessmentDate}` : null}
                       </p>
                       <p className="text-xs text-[var(--stf-text-muted)]">
                         Baixado por {log.adminName}
@@ -352,6 +377,14 @@ export function ReportsPage() {
           </div>
         </section>
       </div>
+
+      <AssessmentSummaryModal
+        open={summaryOpen && Boolean(selectedAssessment)}
+        patientId={selectedPatientId}
+        patientName={selectedPatient?.fullName ?? 'Paciente'}
+        assessment={selectedAssessment}
+        onClose={() => setSummaryOpen(false)}
+      />
     </AppShell>
   );
 }

@@ -8,11 +8,13 @@ import {
   IconClipboard,
   IconFile,
   IconHelp,
+  IconInbox,
   IconPatient,
   IconUsers,
 } from '@/components/icons/NavIcons';
 import { Spinner } from '@/components/ui/Spinner';
 import { useAuth } from '@/features/auth/AuthContext';
+import { useAccessRequests } from '@/features/access-requests/useAccessRequests';
 import { usePatientsList } from '@/features/patients/usePatients';
 import { useTherapists } from '@/features/therapists/useTherapists';
 import { useAuditLogs } from '@/features/audit/useAuditLogs';
@@ -20,11 +22,20 @@ import { AUDIT_ACTION_LABELS } from '@/types/api';
 
 export function DashboardPage() {
   const { user } = useAuth();
+  const canManageAccessRequests = Boolean(user?.canManageAccessRequests);
   const { data: therapists, isLoading: loadingTherapists } = useTherapists();
   const { data: patients, isLoading: loadingPatients } = usePatientsList();
   const { data: auditLogs, isLoading: loadingAudit } = useAuditLogs({ limit: 5 });
+  const { data: accessRequests, isLoading: loadingAccess } = useAccessRequests({
+    status: 'PENDING',
+    enabled: canManageAccessRequests,
+  });
 
-  const loading = loadingTherapists || loadingPatients || loadingAudit;
+  const loading =
+    loadingTherapists ||
+    loadingPatients ||
+    loadingAudit ||
+    (canManageAccessRequests && loadingAccess);
 
   const therapistCount = therapists?.meta.total ?? 0;
   const patientCountFromTherapists =
@@ -32,6 +43,7 @@ export function DashboardPage() {
   const patientCount = patients?.meta.total ?? patientCountFromTherapists;
   const assessmentCount =
     therapists?.data.reduce((sum, item) => sum + item.assessmentCount, 0) ?? 0;
+  const pendingAccessCount = accessRequests?.data.length ?? 0;
 
   return (
     <AppShell title="Início" description="Visão geral do gerenciador clínico.">
@@ -56,6 +68,18 @@ export function DashboardPage() {
                 Acesso rápido
               </h2>
               <div className="grid gap-3 md:grid-cols-2">
+                {canManageAccessRequests ? (
+                  <QuickLinkCard
+                    to="/access-requests"
+                    title={
+                      pendingAccessCount > 0
+                        ? `Solicitações de acesso (${pendingAccessCount})`
+                        : 'Solicitações de acesso'
+                    }
+                    description="Aprovar ou rejeitar pedidos de nova conta administrativa no painel."
+                    icon={<IconInbox className="size-5" />}
+                  />
+                ) : null}
                 <QuickLinkCard
                   to="/therapists"
                   title="Fisioterapeutas"
