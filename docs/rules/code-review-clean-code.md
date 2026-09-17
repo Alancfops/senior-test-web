@@ -1,6 +1,5 @@
 ---
 description: Code review e clean code — revisar antes de commit (Vite + React + TS)
-alwaysApply: true
 ---
 
 # Code review e clean code
@@ -23,7 +22,7 @@ Vite, React, TypeScript, React Router, TanStack Query, RHF + Zod. API admin no S
 
 - JWT só em `sessionStorage`; nunca logar token, senha ou dados clínicos.
 - Ações destrutivas (excluir/transferir) com confirmação explícita na UI.
-- Regra completa: `.cursor/rules/lgpd-admin-panel.mdc`.
+- Regra completa: `docs/rules/lgpd-admin-panel.md`.
 
 ## Antes do commit
 

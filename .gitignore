@@ -27,6 +27,6 @@ coverage/
 playwright-report/
 test-results/
 
-# Session logs and /session command — local only
-.cursor/sessions/
-.cursor/commands/session.md
+# Session logs and /session command — local only (Claude Code)
+.claude/sessions/
+.claude/commands/session.md

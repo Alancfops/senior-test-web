@@ -21,8 +21,8 @@ Parágrafo(s) objetivo(s): objetivo da sessão, o que foi discutido e decidido.
 
 | Tipo | Path / referência |
 |------|-------------------|
-| Skill | `.cursor/skills/...` |
-| Rule | `.cursor/rules/...` |
+| Skill | `.claude/skills/...` |
+| Rule | `docs/rules/...` |
 | Doc | `docs/...` |
 | Código | `src/...` |
 | Branch | `feature/...` |
@@ -49,7 +49,7 @@ Decisões, comandos trigger pendentes, follow-ups.
 
 ## Resumo
 
-Criação e refinamento de skills Cursor para padronizar UI, arquitetura, git e registro de sessões. Documentação do projeto permanece como fonte de spec; frontend Vite ainda não iniciado.
+Criação e refinamento de skills do Claude Code para padronizar UI, arquitetura, git e registro de sessões. Documentação do projeto permanece como fonte de spec; frontend Vite ainda não iniciado.
 
 ## O que foi feito
 
@@ -62,10 +62,10 @@ Criação e refinamento de skills Cursor para padronizar UI, arquitetura, git e 
 
 | Tipo | Path / referência |
 |------|-------------------|
-| Skill | `.cursor/skills/admin-ui-ux/SKILL.md` |
-| Skill | `.cursor/skills/clean-architecture-engineering/SKILL.md` |
-| Skill | `.cursor/skills/git-workflow/SKILL.md` |
-| Rule | `.cursor/rules/stf-design-tokens.mdc` |
+| Skill | `.claude/skills/admin-ui-ux/SKILL.md` |
+| Skill | `.claude/skills/clean-architecture-engineering/SKILL.md` |
+| Skill | `.claude/skills/git-workflow/SKILL.md` |
+| Rule | `docs/rules/stf-design-tokens.md` |
 
 ## Estado final
 
@@ -74,17 +74,17 @@ Criação e refinamento de skills Cursor para padronizar UI, arquitetura, git e 
 
 ## Notas
 
-Trigger provisório: `/session` (`.cursor/commands/session.md`)
+Trigger provisório: `/session` (`.claude/commands/session.md`)
 ```
 
 ## Comando de disparo
 
-Oficial: `/session` — definido em `.cursor/commands/session.md` e `SKILL.md`.
+Oficial: `/session` — definido em `.claude/commands/session.md` e `SKILL.md`.
 
 ## Slug do filename
 
 | Tema da sessão | Slug |
 |----------------|------|
 | Login GW001 | `auth-login-scaffold` |
-| Várias skills | `cursor-skills-setup` |
+| Várias skills | `claude-skills-setup` |
 | Fix transfer modal | `fix-transfer-modal` |

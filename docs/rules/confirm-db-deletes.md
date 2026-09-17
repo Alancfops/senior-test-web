@@ -1,6 +1,5 @@
 ---
 description: Sempre confirmar com o usuário antes de apagar dados no banco (STF/Postgres).
-alwaysApply: true
 ---
 
 # Confirmar exclusões no banco

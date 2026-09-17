@@ -1,4 +1,4 @@
-# AGENTS.md — STF Gerenciador Web
+# CLAUDE.md — STF Gerenciador Web
 
 Painel administrativo web do **Sênior Teste Funcional (STF)** — SPA Vite + React para o fisioterapeuta **admin** supervisionar fisioterapeutas, pacientes e relatórios clínicos.
 
@@ -22,7 +22,7 @@ Este repositório é **apenas o cliente web**. A API NestJS, o banco PostgreSQL 
 - Rotas admin: **`/admin/*`** e **`/auth/*`** — nunca simular admin com `/patients/*` do fisio comum
 - Não duplicar scoring, interpretação clínica ou geração de PDF no browser
 
-Detalhe: `.cursor/rules/stf-readonly-consumer.mdc`
+Detalhe: `docs/rules/stf-readonly-consumer.md`
 
 ---
 
@@ -142,7 +142,7 @@ Antes de implementar qualquer GW: ler a seção correspondente em `features.md` 
 
 ## LGPD e segurança (obrigatório)
 
-Painel trata **dados pessoais e sensíveis de saúde**. Regra completa: `.cursor/rules/lgpd-admin-panel.mdc`.
+Painel trata **dados pessoais e sensíveis de saúde**. Regra completa: `docs/rules/lgpd-admin-panel.md`.
 
 Resumo para agentes:
 
@@ -169,24 +169,31 @@ Tokens STF obrigatórios — **nunca** hex soltos espalhados:
 
 Adaptação admin: densidade para tabelas, sidebar/top nav — não copiar UX mobile (bottom tabs, cards enormes).
 
-Detalhe: `.cursor/rules/stf-design-tokens.mdc`, skill `admin-ui-ux` (WCAG 2.1 AA).
+Detalhe: `docs/rules/stf-design-tokens.md`, skill `admin-ui-ux` (WCAG 2.1 AA).
 
 ---
 
-## Regras Cursor (`.cursor/rules/`)
+## Regras do projeto (`docs/rules/`)
 
-Aplicar conforme escopo — várias são `alwaysApply`:
+Regras sempre válidas — importadas abaixo para carregarem em toda sessão:
+
+@docs/rules/stf-readonly-consumer.md
+@docs/rules/lgpd-admin-panel.md
+@docs/rules/code-review-clean-code.md
+@docs/rules/stf-design-tokens.md
+@docs/rules/confirm-db-deletes.md
 
 | Arquivo | Conteúdo |
 |---------|----------|
-| `stf-readonly-consumer.mdc` | Fronteira STF — não editar sem pedido explícito |
-| `lgpd-admin-panel.mdc` | Dados sensíveis, auth, audit, confirmações |
-| `code-review-clean-code.mdc` | Qualidade, tipos, estados de tela, review antes de commit |
-| `stf-design-tokens.mdc` | Paleta STF, proibições visuais |
+| `stf-readonly-consumer.md` | Fronteira STF — não editar sem pedido explícito |
+| `lgpd-admin-panel.md` | Dados sensíveis, auth, audit, confirmações |
+| `code-review-clean-code.md` | Qualidade, tipos, estados de tela, review antes de commit |
+| `stf-design-tokens.md` | Paleta STF, proibições visuais |
+| `confirm-db-deletes.md` | Confirmar exclusões no banco antes de executar |
 
 ---
 
-## Skills (`.cursor/skills/`)
+## Skills (`.claude/skills/`)
 
 Ler o `SKILL.md` relevante **antes** de implementar:
 
@@ -196,19 +203,19 @@ Ler o `SKILL.md` relevante **antes** de implementar:
 | `stf-api-integration` | Cliente HTTP, auth, hooks Query, GW↔endpoint, PDF blob |
 | `clean-architecture-engineering` | Camadas, testes, LGPD, code review |
 | `git-workflow` | Branch, commit, PR — **só se o usuário pedir** |
-| `session-log` | Comando `/session` — registrar resumo em `.cursor/sessions/` |
+| `session-log` | Comando `/session` — registrar resumo em `.claude/sessions/` |
 
 Cada skill tem `reference.md` com detalhes adicionais.
 
 ---
 
-## Subagentes (`.cursor/agents/`)
+## Subagentes (`.claude/agents/`)
 
 | Agente | Escopo |
 |--------|--------|
 | `stf-frontend-senior` | Scaffold, páginas, hooks, UI, testes — **este repo** |
 | `stf-backend-senior` | AdminModule, Prisma, guards — **só com pedido explícito** no STF |
-| `session-log` | Comando `/session` — resumo em `.cursor/sessions/` |
+| `session-log` | Comando `/session` — resumo em `.claude/sessions/` |
 
 Delegar frontend ao `stf-frontend-senior`, backend ao `stf-backend-senior` e registro de sessão ao `session-log`.
 

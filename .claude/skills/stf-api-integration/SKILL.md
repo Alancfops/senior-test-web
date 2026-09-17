@@ -13,10 +13,10 @@ Cliente web consome a API em `senior-test-funcional/backend`.
 
 | Rule | Escopo nesta skill |
 |------|-------------------|
-| `.cursor/rules/stf-readonly-consumer.mdc` | **Obrigatória** — STF read-only; não editar backend |
-| `.cursor/rules/lgpd-admin-panel.mdc` | **Obrigatória** — JWT sessionStorage, sem logs clínicos, PDF blob |
-| `.cursor/rules/code-review-clean-code.mdc` | Tipos, erros, TanStack Query, sem `any` |
-| `.cursor/rules/stf-design-tokens.mdc` | Indireta — erros/mensagens na UI seguem tokens |
+| `docs/rules/stf-readonly-consumer.md` | **Obrigatória** — STF read-only; não editar backend |
+| `docs/rules/lgpd-admin-panel.md` | **Obrigatória** — JWT sessionStorage, sem logs clínicos, PDF blob |
+| `docs/rules/code-review-clean-code.md` | Tipos, erros, TanStack Query, sem `any` |
+| `docs/rules/stf-design-tokens.md` | Indireta — erros/mensagens na UI seguem tokens |
 
 ### Documentação
 

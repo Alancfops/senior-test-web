@@ -1,6 +1,5 @@
 ---
 description: LGPD no gerenciador web STF — dados sensíveis, acesso admin, logs e segurança
-alwaysApply: true
 ---
 
 # LGPD — STF Gerenciador Web

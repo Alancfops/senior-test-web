@@ -1,6 +1,6 @@
 ---
 name: session-log
-description: Saves a structured summary of the Cursor session (date, what was done, deliverables) when the user runs /session. Use when the user invokes /session, session-log, or asks to register/log a session.
+description: Saves a structured summary of the Claude Code session (date, what was done, deliverables) when the user runs /session. Use when the user invokes /session, session-log, or asks to register/log a session.
 disable-model-invocation: true
 ---
 
@@ -14,18 +14,18 @@ Persiste um resumo da sessão atual para consulta futura.
 
 | Rule | Escopo nesta skill |
 |------|-------------------|
-| `.cursor/rules/lgpd-admin-panel.mdc` | **Obrigatória** — nunca registrar tokens, senhas ou dados clínicos |
-| `.cursor/rules/stf-readonly-consumer.mdc` | Mencionar STF como read-only; não listar paths internos sensíveis |
-| `.cursor/rules/code-review-clean-code.mdc` | Indireta — resumir entregas de código com qualidade |
+| `docs/rules/lgpd-admin-panel.md` | **Obrigatória** — nunca registrar tokens, senhas ou dados clínicos |
+| `docs/rules/stf-readonly-consumer.md` | Mencionar STF como read-only; não listar paths internos sensíveis |
+| `docs/rules/code-review-clean-code.md` | Indireta — resumir entregas de código com qualidade |
 
 ### Documentação e artefatos
 
 | Fonte | Uso |
 |-------|-----|
-| `.cursor/skills/*` | Listar skills criadas/alteradas na sessão |
-| `.cursor/rules/*` | Listar rules tocadas |
+| `.claude/skills/*` | Listar skills criadas/alteradas na sessão |
+| `docs/rules/*` | Listar rules tocadas |
 | `docs/` | Referenciar docs alterados |
-| `.cursor/sessions/` | Destino dos logs |
+| `.claude/sessions/` | Destino dos logs |
 
 ### Skills relacionadas
 
@@ -40,9 +40,9 @@ Persiste um resumo da sessão atual para consulta futura.
 TRIGGER_COMMAND: /session
 ```
 
-Executar este workflow quando o usuário enviar **`/session`** (comando em `.cursor/commands/session.md`) ou variantes: "session-log", "@session-log registrar".
+Executar este workflow quando o usuário enviar **`/session`** (comando em `.claude/commands/session.md`) ou variantes: "session-log", "@session-log registrar".
 
-Delegar ao subagent **`session-log`** (`.cursor/agents/session-log.md`) conforme o comando `/session`.
+Delegar ao subagent **`session-log`** (`.claude/agents/session-log.md`) conforme o comando `/session`.
 
 ## O que registrar
 
@@ -58,7 +58,7 @@ Delegar ao subagent **`session-log`** (`.cursor/agents/session-log.md`) conforme
 
 1. Revisar a conversa inteira (mensagens, tool calls, arquivos tocados)
 2. Montar resumo objetivo em **português**
-3. Salvar em `.cursor/sessions/` com nome:
+3. Salvar em `.claude/sessions/` com nome:
 
 ```
 YYYY-MM-DD-HHmm-<slug-curto>.md
@@ -75,12 +75,12 @@ Exemplo: `2026-08-18-1709-git-workflow-skill.md`
 - **Não** duplicar sessão: se já existir arquivo com mesmo slug no mesmo minuto, acrescentar sufixo `-2`
 - Slug: kebab-case, 2–4 palavras do tema principal
 - Um arquivo **por** disparo do comando (não sobrescrever sessões anteriores)
-- Não criar outros `.md` fora de `.cursor/sessions/` neste workflow
+- Não criar outros `.md` fora de `.claude/sessions/` neste workflow
 
 ## Estrutura de pastas
 
 ```
-.cursor/sessions/
+.claude/sessions/
 ├── 2026-08-18-1709-exemplo.md
 └── ...
 ```
@@ -95,5 +95,5 @@ Exemplo: `2026-08-18-1709-git-workflow-skill.md`
 
 ## Relacionado
 
-- Git/commits: `.cursor/skills/git-workflow/SKILL.md`
-- Transcripts Cursor: `agent-transcripts/` (somente leitura)
+- Git/commits: `.claude/skills/git-workflow/SKILL.md`
+- Transcripts da sessão: veja o histórico da conversa atual

@@ -1,6 +1,5 @@
 ---
 description: STF é somente leitura — consumir API/docs; nunca alterar senior-test-funcional sem pedido explícito
-alwaysApply: true
 ---
 
 # Fronteira STF — apenas consumir

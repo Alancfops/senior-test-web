@@ -1,6 +1,5 @@
 ---
 description: Paleta e estilo STF mobile adaptados ao gerenciador web — tokens, densidade admin
-alwaysApply: true
 ---
 
 # Design — paleta mobile, contexto admin web

@@ -13,10 +13,10 @@ description: Defines Git workflow for the STF admin web repo — branch strategy
 
 | Rule | Escopo nesta skill |
 |------|-------------------|
-| `.cursor/rules/code-review-clean-code.mdc` | **Obrigatória** — review completo do diff antes de commit |
-| `.cursor/rules/lgpd-admin-panel.mdc` | Sem secrets, `.env`, dados clínicos ou tokens no diff |
-| `.cursor/rules/stf-readonly-consumer.mdc` | Commits só neste repo — não incluir alterações do STF |
-| `.cursor/rules/stf-design-tokens.mdc` | Indireta — PRs de UI devem respeitar tokens |
+| `docs/rules/code-review-clean-code.md` | **Obrigatória** — review completo do diff antes de commit |
+| `docs/rules/lgpd-admin-panel.md` | Sem secrets, `.env`, dados clínicos ou tokens no diff |
+| `docs/rules/stf-readonly-consumer.md` | Commits só neste repo — não incluir alterações do STF |
+| `docs/rules/stf-design-tokens.md` | Indireta — PRs de UI devem respeitar tokens |
 
 ### Documentação
 
@@ -109,7 +109,7 @@ Examples: [reference.md](reference.md)
 
 ## Before committing
 
-1. Run code review per `.cursor/rules/code-review-clean-code.mdc`
+1. Run code review per `docs/rules/code-review-clean-code.md`
 2. Check diff: no secrets, `.env`, or sensitive data
 3. Stage only relevant files
 4. Draft message from **why**, not a file list

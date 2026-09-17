@@ -13,10 +13,10 @@ Cliente web admin do STF. API é fonte da verdade — **não duplicar domínio c
 
 | Rule | Escopo nesta skill |
 |------|-------------------|
-| `.cursor/rules/code-review-clean-code.mdc` | **Obrigatória** — review antes de concluir/commit |
-| `.cursor/rules/lgpd-admin-panel.mdc` | **Obrigatória** — dados sensíveis, auth, logs, confirmações |
-| `.cursor/rules/stf-readonly-consumer.mdc` | Não alterar `senior-test-funcional/` |
-| `.cursor/rules/stf-design-tokens.mdc` | Ao tocar UI — tokens, não hex soltos |
+| `docs/rules/code-review-clean-code.md` | **Obrigatória** — review antes de concluir/commit |
+| `docs/rules/lgpd-admin-panel.md` | **Obrigatória** — dados sensíveis, auth, logs, confirmações |
+| `docs/rules/stf-readonly-consumer.md` | Não alterar `senior-test-funcional/` |
+| `docs/rules/stf-design-tokens.md` | Ao tocar UI — tokens, não hex soltos |
 
 ### Documentação
 
@@ -131,6 +131,6 @@ export function TherapistsPage() {
 
 ## Skills relacionadas
 
-- UI/responsividade/WCAG: `.cursor/skills/admin-ui-ux/SKILL.md`
-- API/hooks: `.cursor/skills/stf-api-integration/SKILL.md`
-- Git: `.cursor/skills/git-workflow/SKILL.md`
+- UI/responsividade/WCAG: `.claude/skills/admin-ui-ux/SKILL.md`
+- API/hooks: `.claude/skills/stf-api-integration/SKILL.md`
+- Git: `.claude/skills/git-workflow/SKILL.md`

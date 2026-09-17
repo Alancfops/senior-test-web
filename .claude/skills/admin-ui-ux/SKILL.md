@@ -35,10 +35,10 @@ Detalhes e breakpoints: [reference.md](reference.md#responsividade-obrigatória)
 
 | Rule | Escopo nesta skill |
 |------|-------------------|
-| `.cursor/rules/stf-design-tokens.mdc` | **Obrigatória** — cores, CSS variables, paridade mobile |
-| `.cursor/rules/code-review-clean-code.mdc` | Componentes legíveis, sem debug, estados de tela |
-| `.cursor/rules/lgpd-admin-panel.mdc` | Modais destrutivos, mínimo de dados na UI, PDF transitório |
-| `.cursor/rules/stf-readonly-consumer.mdc` | Tokens mobile só leitura em `senior-test-funcional/` |
+| `docs/rules/stf-design-tokens.md` | **Obrigatória** — cores, CSS variables, paridade mobile |
+| `docs/rules/code-review-clean-code.md` | Componentes legíveis, sem debug, estados de tela |
+| `docs/rules/lgpd-admin-panel.md` | Modais destrutivos, mínimo de dados na UI, PDF transitório |
+| `docs/rules/stf-readonly-consumer.md` | Tokens mobile só leitura em `senior-test-funcional/` |
 
 ### Documentação
 
