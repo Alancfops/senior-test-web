@@ -76,8 +76,24 @@ export function DashboardPage() {
                         ? `Solicitações de acesso (${pendingAccessCount})`
                         : 'Solicitações de acesso'
                     }
-                    description="Aprovar ou rejeitar pedidos de nova conta administrativa no painel."
+                    description="Aprovar ou rejeitar pedidos de acesso de ajudante no painel."
                     icon={<IconInbox className="size-5" />}
+                  />
+                ) : null}
+                {canManageAccessRequests ? (
+                  <QuickLinkCard
+                    to="/assistants"
+                    title="Ajudantes"
+                    description="Contas de ajudante com acesso ao painel web."
+                    icon={<IconUsers className="size-5" />}
+                  />
+                ) : null}
+                {user?.role === 'SUPER_ADMIN' ? (
+                  <QuickLinkCard
+                    to="/managers"
+                    title="Professoras"
+                    description="Criar e gerenciar contas administrativas do painel web."
+                    icon={<IconUsers className="size-5" />}
                   />
                 ) : null}
                 <QuickLinkCard

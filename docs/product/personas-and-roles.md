@@ -69,7 +69,9 @@ flowchart LR
 | Role | Valor | App mobile | Gerenciador web | Escopo API |
 |------|-------|------------|-----------------|------------|
 | `THERAPIST` | padrão atual | ✅ | ❌ | Próprios pacientes/avaliações |
-| `ADMIN` | novo | ❌ (ou ✅ read-only futuro) | ✅ | Todos os fisios/pacientes/avaliações |
+| `ASSISTANT` | novo (ajudante) | ❌ | ✅ | Gerencia apenas THERAPIST (comuns) + seus pacientes; vê a trilha de auditoria (somente leitura) |
+| `ADMIN` | novo (professora) | ❌ (ou ✅ read-only futuro) | ✅ | Gerencia ASSISTANT + THERAPIST; aprova/rejeita solicitações de acesso |
+| `SUPER_ADMIN` | novo (bootstrap) | ❌ | ✅ | Full CRUD — inclui contas ADMIN/ASSISTANT; cria ADMIN diretamente |
 
 ### Matriz de permissões (MVP)
 

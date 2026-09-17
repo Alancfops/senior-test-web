@@ -31,7 +31,7 @@ flowchart TB
         WEB["Vite + React SPA"]
     end
 
-    subgraph stf["Senior Test Funcional"]
+    subgraph stf["Sênior Teste Funcional"]
         APP["App Mobile Expo"]
         API["API NestJS"]
         DB[("PostgreSQL")]

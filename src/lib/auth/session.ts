@@ -1,4 +1,4 @@
-import type { AuthUser } from '@/types/api';
+import type { AuthUser, TherapistRole } from '@/types/api';
 
 const ACCESS_TOKEN_KEY = 'stf_access_token';
 const USER_KEY = 'stf_user';
@@ -29,8 +29,10 @@ export function clearSession(): void {
   sessionStorage.removeItem(USER_KEY);
 }
 
+const WEB_ROLES: TherapistRole[] = ['ASSISTANT', 'ADMIN', 'SUPER_ADMIN'];
+
 export function isAdminSession(): boolean {
   const token = getAccessToken();
   const user = getStoredUser();
-  return Boolean(token && user?.role === 'ADMIN');
+  return Boolean(token && user && WEB_ROLES.includes(user.role));
 }

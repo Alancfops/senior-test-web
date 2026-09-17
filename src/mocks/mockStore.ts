@@ -12,6 +12,7 @@ export const MOCK_IDS = {
   therapistMaria: '550e8400-e29b-41d4-a716-446655440001',
   therapistCarlos: '550e8400-e29b-41d4-a716-446655440002',
   therapistAdmin: '550e8400-e29b-41d4-a716-446655440003',
+  therapistAssistant: '550e8400-e29b-41d4-a716-446655440004',
   patientJoao: '660e8400-e29b-41d4-a716-446655440001',
   patientAna: '660e8400-e29b-41d4-a716-446655440002',
   patientPedro: '660e8400-e29b-41d4-a716-446655440003',
@@ -53,6 +54,26 @@ function buildInitialState(): MockState {
       patientCount: 1,
       assessmentCount: 2,
       lastActivityAt: '2026-08-05T11:00:00.000Z',
+    },
+    {
+      id: MOCK_IDS.therapistAdmin,
+      fullName: 'Administradora',
+      email: 'admin@clinica.exemplo',
+      role: 'SUPER_ADMIN',
+      createdAt: '2026-01-01T08:00:00.000Z',
+      patientCount: 0,
+      assessmentCount: 0,
+      lastActivityAt: null,
+    },
+    {
+      id: MOCK_IDS.therapistAssistant,
+      fullName: 'Beatriz Ajudante',
+      email: 'ajudante@clinica.exemplo',
+      role: 'ASSISTANT',
+      createdAt: '2026-02-10T08:00:00.000Z',
+      patientCount: 0,
+      assessmentCount: 0,
+      lastActivityAt: null,
     },
   ];
 
@@ -256,6 +277,24 @@ function buildInitialState(): MockState {
         },
       ],
       meta: { patientCount: 1, assessmentCount: 1 },
+    },
+    [MOCK_IDS.therapistAdmin]: {
+      id: MOCK_IDS.therapistAdmin,
+      fullName: 'Administradora',
+      email: 'admin@clinica.exemplo',
+      role: 'SUPER_ADMIN',
+      createdAt: '2026-01-01T08:00:00.000Z',
+      patients: [],
+      meta: { patientCount: 0, assessmentCount: 0 },
+    },
+    [MOCK_IDS.therapistAssistant]: {
+      id: MOCK_IDS.therapistAssistant,
+      fullName: 'Beatriz Ajudante',
+      email: 'ajudante@clinica.exemplo',
+      role: 'ASSISTANT',
+      createdAt: '2026-02-10T08:00:00.000Z',
+      patients: [],
+      meta: { patientCount: 0, assessmentCount: 0 },
     },
   };
 
@@ -464,7 +503,39 @@ export function resolveAccessRequest(
     fullName: 'Administrador',
     email: 'admin@clinica.exemplo',
   };
+
+  if (status === 'APPROVED') {
+    const newId = crypto.randomUUID();
+    const createdAt = new Date().toISOString();
+    addTherapist(
+      {
+        id: newId,
+        fullName: request.fullName,
+        email: request.email,
+        role: 'ASSISTANT',
+        createdAt,
+        patientCount: 0,
+        assessmentCount: 0,
+        lastActivityAt: null,
+      },
+      {
+        id: newId,
+        fullName: request.fullName,
+        email: request.email,
+        role: 'ASSISTANT',
+        createdAt,
+        patients: [],
+        meta: { patientCount: 0, assessmentCount: 0 },
+      },
+    );
+  }
+
   return structuredClone(request);
+}
+
+export function addTherapist(therapist: TherapistListItem, detail: TherapistDetail): void {
+  state.therapists.unshift(therapist);
+  state.therapistDetails[therapist.id] = detail;
 }
 
 export function appendAccessRequest(email: string, fullName: string): void {

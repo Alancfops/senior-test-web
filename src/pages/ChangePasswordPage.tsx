@@ -58,8 +58,7 @@ export function ChangePasswordPage() {
           Alterar senha
         </h1>
         <p className="mt-2 text-center text-sm text-[var(--stf-text-muted)] sm:text-left">
-          Use a senha temporária do e-mail (válida por 5 minutos) e defina uma nova senha para acessar
-          o painel.
+          Use a senha temporária do e-mail e defina uma nova senha para acessar o painel.
         </p>
 
         <form className="mt-6 space-y-4" onSubmit={onSubmit} noValidate>
@@ -71,7 +70,7 @@ export function ChangePasswordPage() {
             leftIcon={<IconLock className="size-5" />}
             {...register('currentPassword')}
             error={errors.currentPassword?.message}
-            hint="É a senha que chegou no e-mail ao aprovar o acesso (válida por 5 minutos)."
+            hint="É a senha que chegou no e-mail ao aprovar o acesso."
           />
 
           <div className="space-y-2">

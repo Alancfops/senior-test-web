@@ -34,7 +34,7 @@ flowchart LR
         SPA["React + TanStack Query\nJWT em sessionStorage"]
     end
 
-    subgraph stf["Senior Test Funcional"]
+    subgraph stf["Sênior Teste Funcional"]
         APP["App Expo\n(RN)"]
         API["API NestJS\n/auth + /admin"]
         DB[("PostgreSQL")]

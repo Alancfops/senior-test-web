@@ -1,0 +1,132 @@
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { IconMail, IconUser } from '@/components/icons/AuthIcons';
+import { Button } from '@/components/ui/Button';
+import { IconTextInput } from '@/components/ui/IconTextInput';
+import { Modal } from '@/components/ui/Modal';
+import { useCreateManagerAccount } from '@/features/therapists/useTherapistMutations';
+import { ApiError } from '@/lib/api/errors';
+import {
+  createManagerAccountSchema,
+  type CreateManagerAccountFormValues,
+} from '@/features/auth/passwordSchema';
+
+type CreateManagerModalProps = {
+  open: boolean;
+  onClose: () => void;
+};
+
+export function CreateManagerModal({ open, onClose }: CreateManagerModalProps) {
+  const createManagerAccount = useCreateManagerAccount();
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [apiError, setApiError] = useState<string | null>(null);
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors, isSubmitting },
+  } = useForm<CreateManagerAccountFormValues>({
+    resolver: zodResolver(createManagerAccountSchema),
+    defaultValues: { email: '', fullName: '' },
+  });
+
+  const handleClose = () => {
+    setSuccessMessage(null);
+    setApiError(null);
+    reset({ email: '', fullName: '' });
+    onClose();
+  };
+
+  const onSubmit = handleSubmit(async (values) => {
+    setApiError(null);
+    try {
+      const response = await createManagerAccount.mutateAsync(values);
+      setSuccessMessage(
+        `Conta de professora criada para ${response.fullName}. Uma senha temporária foi enviada para ${response.email}.`,
+      );
+      reset({ email: '', fullName: '' });
+    } catch (error) {
+      setApiError(
+        error instanceof ApiError
+          ? error.message
+          : 'Não foi possível criar a conta. Tente novamente.',
+      );
+    }
+  });
+
+  return (
+    <Modal
+      open={open}
+      title={successMessage ? 'Conta criada' : 'Criar professora'}
+      onClose={handleClose}
+      size="sm"
+      footer={
+        successMessage ? (
+          <Button type="button" pill fullWidth className="sm:w-auto" onClick={handleClose}>
+            Fechar
+          </Button>
+        ) : (
+          <>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handleClose}
+              disabled={isSubmitting}
+              className="w-full sm:w-auto"
+            >
+              Cancelar
+            </Button>
+            <Button
+              type="submit"
+              form="create-manager-form"
+              pill
+              loading={isSubmitting}
+              className="w-full sm:w-auto"
+            >
+              Criar conta
+            </Button>
+          </>
+        )
+      }
+    >
+      {successMessage ? (
+        <p className="text-sm text-[var(--stf-text)]" role="status">
+          {successMessage}
+        </p>
+      ) : (
+        <form id="create-manager-form" className="space-y-4 text-left" onSubmit={onSubmit} noValidate>
+          <p className="text-sm text-[var(--stf-text-muted)]">
+            Informe os dados da nova professora. Uma senha temporária será enviada por e-mail
+            para o primeiro acesso ao painel web — ela continua válida até a professora trocá-la.
+          </p>
+
+          <IconTextInput
+            type="text"
+            placeholder="Nome completo"
+            autoComplete="name"
+            leftIcon={<IconUser className="size-5" />}
+            {...register('fullName')}
+            error={errors.fullName?.message}
+          />
+
+          <IconTextInput
+            type="email"
+            placeholder="E-mail"
+            autoComplete="email"
+            leftIcon={<IconMail className="size-5" />}
+            {...register('email')}
+            error={errors.email?.message}
+          />
+
+          {apiError ? (
+            <p role="alert" className="text-sm text-[var(--stf-error)]">
+              {apiError}
+            </p>
+          ) : null}
+        </form>
+      )}
+    </Modal>
+  );
+}

@@ -1,6 +1,7 @@
 import { getMockDelay } from '@/lib/api/config';
 import { ApiError } from '@/lib/api/errors';
 import {
+  addTherapist,
   appendAccessRequest,
   appendAuditLog,
   getMockState,
@@ -22,6 +23,7 @@ import type {
   MessageResponse,
   PatientsListResponse,
   PatientProfile,
+  TherapistRole,
   TherapistsListResponse,
   TherapistDetail,
   TimeseriesResponse,
@@ -35,36 +37,45 @@ import type {
   ResetPasswordFormValues,
   VerifyResetCodeFormValues,
 } from '@/features/auth/passwordSchema';
+import type { CreateManagerAccountInput, CreateManagerAccountResponse } from '@/lib/api/therapists';
 
 async function delay(): Promise<void> {
   await new Promise((resolve) => setTimeout(resolve, getMockDelay()));
 }
 
 export async function mockLogin(_values: LoginFormValues): Promise<LoginResponse> {
-  void _values;
   await delay();
+
+  const { therapists } = getMockState();
+  const match = therapists.find(
+    (therapist) => therapist.email.toLowerCase() === _values.email.trim().toLowerCase(),
+  );
+
+  const fallback = { fullName: 'Administradora', email: 'admin@clinica.exemplo', role: 'SUPER_ADMIN' as const };
+  const { fullName, email, role } = match ?? fallback;
 
   return {
     accessToken: 'mock-jwt-token-prototype',
     user: {
-      fullName: 'Administrador',
-      email: 'admin@clinica.exemplo',
-      role: 'ADMIN',
+      fullName,
+      email,
+      role,
       mustChangePassword: false,
-      canManageAccessRequests: true,
+      canManageAccessRequests: role === 'ADMIN' || role === 'SUPER_ADMIN',
     },
   };
 }
 
-export async function mockListTherapists(): Promise<TherapistsListResponse> {
+export async function mockListTherapists(role?: TherapistRole): Promise<TherapistsListResponse> {
   await delay();
   const { therapists } = getMockState();
+  const data = role ? therapists.filter((therapist) => therapist.role === role) : [...therapists];
   return {
-    data: [...therapists],
+    data,
     meta: {
       page: 1,
       limit: 25,
-      total: therapists.length,
+      total: data.length,
       totalPages: 1,
     },
   };
@@ -92,7 +103,10 @@ export async function mockDeleteTherapist(id: string): Promise<void> {
       409,
     );
   }
-  if (therapist.role === 'ADMIN' && state.therapists.filter((t) => t.role === 'ADMIN').length <= 1) {
+  if (
+    therapist.role === 'SUPER_ADMIN' &&
+    state.therapists.filter((t) => t.role === 'SUPER_ADMIN').length <= 1
+  ) {
     throw new ApiError('Não é possível remover o único administrador do sistema.', 409);
   }
   removeTherapist(id);
@@ -108,6 +122,45 @@ export async function mockDeleteTherapist(id: string): Promise<void> {
       email: therapist.email,
     },
   });
+}
+
+export async function mockCreateManagerAccount(
+  input: CreateManagerAccountInput,
+): Promise<CreateManagerAccountResponse> {
+  await delay();
+  const id = crypto.randomUUID();
+  const createdAt = new Date().toISOString();
+
+  addTherapist(
+    {
+      id,
+      fullName: input.fullName,
+      email: input.email,
+      role: 'ADMIN',
+      createdAt,
+      patientCount: 0,
+      assessmentCount: 0,
+      lastActivityAt: null,
+    },
+    {
+      id,
+      fullName: input.fullName,
+      email: input.email,
+      role: 'ADMIN',
+      createdAt,
+      patients: [],
+      meta: { patientCount: 0, assessmentCount: 0 },
+    },
+  );
+
+  return {
+    id,
+    email: input.email,
+    fullName: input.fullName,
+    role: 'ADMIN',
+    mustChangePassword: true,
+    createdAt,
+  };
 }
 
 export async function mockGetPatient(id: string): Promise<PatientProfile> {

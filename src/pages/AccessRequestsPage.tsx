@@ -158,11 +158,11 @@ export function AccessRequestsPage() {
         description={
           pending ? (
             <p>
-              Ao aprovar, será criada uma conta do <strong className="font-semibold">gerenciador web</strong> para{' '}
-              <strong className="font-semibold">{pending.request.fullName}</strong> (
-              {pending.request.email}). Uma senha temporária válida por <strong>5 minutos</strong> será
-              enviada por e-mail (só para o painel web). Se já existir conta no app mobile com o mesmo
-              e-mail, ela permanece separada.
+              Ao aprovar, será criada uma conta de <strong className="font-semibold">ajudante</strong> do
+              gerenciador web para <strong className="font-semibold">{pending.request.fullName}</strong> (
+              {pending.request.email}). Uma senha temporária será enviada por e-mail (só para o painel
+              web) e continua válida até a troca no primeiro acesso. Se já existir conta no app mobile
+              com o mesmo e-mail, ela permanece separada.
             </p>
           ) : null
         }

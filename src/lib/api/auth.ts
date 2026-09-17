@@ -25,10 +25,10 @@ export async function loginRequest(values: LoginFormValues): Promise<LoginRespon
 
   const response = await apiPost<LoginResponse>(
     '/auth/login',
-    { ...values, role: 'ADMIN' },
+    { ...values, panel: 'web' },
     false,
   );
-  if (response.user.role !== 'ADMIN') {
+  if (response.user.role === 'THERAPIST') {
     throw new ApiError('Acesso restrito a administradores.', 403);
   }
   return response;
@@ -38,7 +38,7 @@ export async function requestPasswordReset(email: string): Promise<void> {
   if (isMockMode()) {
     return mockRequestPasswordReset(email);
   }
-  await apiPost('/auth/forgot-password', { email, role: 'ADMIN' }, false);
+  await apiPost('/auth/forgot-password', { email, panel: 'web' }, false);
 }
 
 export async function requestAdminAccess(
@@ -67,7 +67,7 @@ export async function verifyResetCode(
   }
   return apiPost<MessageResponse>(
     '/auth/verify-reset-code',
-    { ...values, role: 'ADMIN' },
+    { ...values, panel: 'web' },
     false,
   );
 }
@@ -78,7 +78,7 @@ export async function resetPassword(values: ResetPasswordFormValues): Promise<Me
   }
   return apiPost<MessageResponse>(
     '/auth/reset-password',
-    { ...values, role: 'ADMIN' },
+    { ...values, panel: 'web' },
     false,
   );
 }

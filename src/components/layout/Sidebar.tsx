@@ -12,12 +12,14 @@ import {
   IconPatient,
   IconUsers,
 } from '@/components/icons/NavIcons';
+import { ROLE_LABELS, type TherapistRole } from '@/types/api';
 
 type NavItem = {
   to: string;
   label: string;
   end?: boolean;
   icon: ComponentType<SVGProps<SVGSVGElement>>;
+  visible?: (role: TherapistRole | undefined) => boolean;
 };
 
 type NavSection = {
@@ -45,6 +47,21 @@ const navSections: NavSection[] = [
         label: 'Solicitações de acesso',
         end: true,
         icon: IconInbox,
+        visible: (role) => role === 'ADMIN' || role === 'SUPER_ADMIN',
+      },
+      {
+        to: '/assistants',
+        label: 'Ajudantes',
+        end: true,
+        icon: IconUsers,
+        visible: (role) => role === 'ADMIN' || role === 'SUPER_ADMIN',
+      },
+      {
+        to: '/managers',
+        label: 'Professoras',
+        end: true,
+        icon: IconUsers,
+        visible: (role) => role === 'SUPER_ADMIN',
       },
       { to: '/audit-logs', label: 'Auditoria', end: true, icon: IconClipboard },
       { to: '/reports', label: 'Relatórios PDF', end: true, icon: IconFile },
@@ -60,13 +77,10 @@ type SidebarProps = {
 export function Sidebar({ open = false, onClose }: SidebarProps) {
   const { user, logout } = useAuth();
   const initial = (user?.fullName ?? 'A').charAt(0).toUpperCase();
-  const canManageAccessRequests = Boolean(user?.canManageAccessRequests);
 
   const sections = navSections.map((section) => ({
     ...section,
-    items: section.items.filter(
-      (item) => item.to !== '/access-requests' || canManageAccessRequests,
-    ),
+    items: section.items.filter((item) => (item.visible ? item.visible(user?.role) : true)),
   }));
 
   return (
@@ -210,9 +224,7 @@ export function Sidebar({ open = false, onClose }: SidebarProps) {
               </p>
               <p className="truncate text-xs text-[var(--stf-text-muted)]">{user?.email}</p>
               <p className="mt-0.5 text-[10px] font-medium uppercase tracking-wide text-[var(--stf-primary)]">
-                {user?.canManageAccessRequests
-                  ? 'Administrador · bootstrap'
-                  : 'Gerenciador · painel web'}
+                {user?.role ? ROLE_LABELS[user.role] : 'Gerenciador · painel web'}
               </p>
             </div>
           </div>

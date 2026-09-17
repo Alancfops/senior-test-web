@@ -1,11 +1,11 @@
-export type TherapistRole = 'ADMIN' | 'THERAPIST';
+export type TherapistRole = 'THERAPIST' | 'ASSISTANT' | 'ADMIN' | 'SUPER_ADMIN';
 
 export type AuthUser = {
   fullName: string;
   email: string;
   role: TherapistRole;
   mustChangePassword?: boolean;
-  /** Só o bootstrap (admin.dev) gerencia solicitações de acesso. */
+  /** Verdadeiro para ADMIN (professora) e SUPER_ADMIN. */
   canManageAccessRequests?: boolean;
 };
 
@@ -165,7 +165,8 @@ export type AdminAuditAction =
   | 'DELETE_PATIENT'
   | 'TRANSFER_PATIENT'
   | 'DELETE_THERAPIST'
-  | 'DOWNLOAD_REPORT';
+  | 'DOWNLOAD_REPORT'
+  | 'CREATE_THERAPIST';
 
 export type AuditLogItem = {
   id: string;
@@ -224,4 +225,12 @@ export const AUDIT_ACTION_LABELS: Record<AdminAuditAction, string> = {
   TRANSFER_PATIENT: 'Transferência de paciente',
   DELETE_THERAPIST: 'Exclusão de fisioterapeuta',
   DOWNLOAD_REPORT: 'Download de relatório',
+  CREATE_THERAPIST: 'Criação de conta',
+};
+
+export const ROLE_LABELS: Record<TherapistRole, string> = {
+  THERAPIST: 'Fisioterapeuta',
+  ASSISTANT: 'Ajudante',
+  ADMIN: 'Professora',
+  SUPER_ADMIN: 'Super admin',
 };

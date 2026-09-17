@@ -80,6 +80,12 @@ export const adminAccessRequestSchema = z.object({
   fullName: fullNameSchema,
 });
 
+/** SUPER_ADMIN cria conta ADMIN (professora) diretamente — mesma validação do pedido de acesso. */
+export const createManagerAccountSchema = z.object({
+  email: emailSchema,
+  fullName: fullNameSchema,
+});
+
 export const verifyResetCodeSchema = z.object({
   email: emailSchema,
   token: resetTokenSchema,
@@ -97,5 +103,6 @@ export type ChangePasswordRequest = Pick<
   'currentPassword' | 'newPassword'
 >;
 export type AdminAccessRequestFormValues = z.infer<typeof adminAccessRequestSchema>;
+export type CreateManagerAccountFormValues = z.infer<typeof createManagerAccountSchema>;
 export type VerifyResetCodeFormValues = z.infer<typeof verifyResetCodeSchema>;
 export type ResetPasswordFormValues = z.infer<typeof resetPasswordSchema>;

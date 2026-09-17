@@ -4,7 +4,7 @@
 **Verificação:** 2026-08-18 — [../engineering/gap-analysis-stf.md](../engineering/gap-analysis-stf.md)  
 **Tag OpenAPI:** `admin`  
 **Prefixo:** `/admin`  
-**Autenticação:** `Authorization: Bearer <JWT>` — `JwtAuthGuard` + `AdminGuard` (`role === ADMIN`)
+**Autenticação:** `Authorization: Bearer <JWT>` — `JwtAuthGuard` + `AdminGuard` (`role` em `ASSISTANT | ADMIN | SUPER_ADMIN`; `POST /admin/therapists` exige `role === SUPER_ADMIN`)
 
 ---
 
@@ -43,7 +43,9 @@ O gerenciador web (`stf-gerenciador-web`) **consome** estas rotas.
 ```prisma
 enum TherapistRole {
   THERAPIST
+  ASSISTANT
   ADMIN
+  SUPER_ADMIN
 }
 
 enum AdminAuditAction {
@@ -79,7 +81,7 @@ Payload atual: `{ sub, email }`. **Estender** para:
 | Código HTTP | Quando |
 |-------------|--------|
 | `401 Unauthorized` | Token ausente, inválido ou expirado |
-| `403 Forbidden` | Token válido mas `role !== ADMIN` — mensagem: `"Acesso restrito a administradores."` |
+| `403 Forbidden` | Token válido mas `role === THERAPIST` (fisio comum) — mensagem: `"Acesso restrito a administradores."` |
 
 ---
 
@@ -96,9 +98,12 @@ O admin **não** tem rota de login separada. Usa as rotas `/auth/*` já implemen
 ```json
 {
   "email": "admin@clinica.exemplo",
-  "password": "Senha1234"
+  "password": "Senha1234",
+  "panel": "web"
 }
 ```
+
+> `panel: 'web'` substitui o antigo `role: 'ADMIN'` fixo — qualquer um dos 3 papéis web (`ASSISTANT`, `ADMIN`, `SUPER_ADMIN`) pode logar neste painel; enviar `role` fixo quebraria o login de `ASSISTANT`/`SUPER_ADMIN`. O mesmo campo `panel: 'web'` é enviado em `/auth/forgot-password`, `/auth/verify-reset-code` e `/auth/reset-password`.
 
 **Response `201`** — NestJS default para POST (e2e confirma):
 
@@ -108,7 +113,8 @@ O admin **não** tem rota de login separada. Usa as rotas `/auth/*` já implemen
   "user": {
     "fullName": "Coordenador Clínico",
     "email": "admin@clinica.exemplo",
-    "role": "ADMIN"
+    "role": "ADMIN",
+    "canManageAccessRequests": true
   }
 }
 ```
@@ -117,12 +123,13 @@ O admin **não** tem rota de login separada. Usa as rotas `/auth/*` já implemen
 
 | Campo novo | Tipo | Descrição |
 |------------|------|-----------|
-| `user.role` | `"ADMIN" \| "THERAPIST"` | Papel do usuário |
+| `user.role` | `"THERAPIST" \| "ASSISTANT" \| "ADMIN" \| "SUPER_ADMIN"` | Papel do usuário |
+| `user.canManageAccessRequests` | boolean | Computado no servidor: `role === 'ADMIN' \|\| role === 'SUPER_ADMIN'` |
 
 **Comportamento no gerenciador web**
 
-- Se `role !== "ADMIN"` após login → exibir erro de acesso; **não** armazenar token para rotas admin
-- Se `role === "ADMIN"` → persistir `accessToken` em `sessionStorage`
+- Se `role === "THERAPIST"` (fisio comum, app mobile) após login → exibir erro de acesso; **não** armazenar token para rotas admin
+- Se `role` for `ASSISTANT`, `ADMIN` ou `SUPER_ADMIN` → persistir `accessToken` em `sessionStorage`
 
 **Erros**
 
@@ -138,7 +145,25 @@ O admin **não** tem rota de login separada. Usa as rotas `/auth/*` já implemen
 | POST | `/auth/verify-reset-code` | Validar código |
 | POST | `/auth/reset-password` | Nova senha |
 
-Admin usa o **mesmo fluxo** do app mobile.
+Admin usa o **mesmo fluxo** do app mobile, enviando `panel: "web"` no corpo em vez de `role`.
+
+### 3.3 POST `/auth/admin-access-request` (público, sem autenticação)
+
+Fluxo de "solicitar acesso" do painel web (formulário público). Mesmo endpoint de antes — o que muda é o papel criado na aprovação.
+
+**Request**
+
+```json
+{ "email": "novo@clinica.exemplo", "fullName": "Nova Ajudante" }
+```
+
+**Response `201`**
+
+```json
+{ "message": "Se os dados estiverem corretos, sua solicitação será analisada..." }
+```
+
+**Aprovação (`/admin/access-requests/:id/approve`)** — agora cria uma conta **`ASSISTANT`** (ajudante), não mais `ADMIN`. Qualquer usuário com `role === 'ADMIN' || role === 'SUPER_ADMIN'` pode aprovar/rejeitar (antes era restrito a um e-mail bootstrap fixo). Mesma mecânica de senha temporária (`mustChangePassword: true`, sem prazo de expiração — a senha continua válida até o usuário trocá-la em `/auth/change-password`).
 
 ---
 
@@ -157,6 +182,7 @@ Admin usa o **mesmo fluxo** do app mobile.
 | `limit` | int | `25` | Itens por página (máx. 100) |
 | `sortBy` | enum | `fullName` | `fullName` \| `email` \| `createdAt` |
 | `sortOrder` | enum | `asc` | `asc` \| `desc` |
+| `role` | `TherapistRole` | — | Filtra por papel (`THERAPIST`, `ASSISTANT`, `ADMIN`, `SUPER_ADMIN`) — usado pelas telas Ajudantes/Professoras |
 
 **Response `200`**
 
@@ -262,6 +288,40 @@ Admin usa o **mesmo fluxo** do app mobile.
 | `409` | `{ "message": "Não é possível remover o único administrador do sistema.", "statusCode": 409 }` |
 
 **Auditoria:** registrar `DELETE_THERAPIST` em `AdminAuditLog`.
+
+---
+
+### 4.4 POST `/admin/therapists`
+
+Restrito a `SUPER_ADMIN`. Cria uma conta `ADMIN` (professora) diretamente — sem passar pelo formulário público de solicitação.
+
+**Request**
+
+```json
+{ "email": "professora@clinica.exemplo", "fullName": "Nova Professora" }
+```
+
+**Response `201`**
+
+```json
+{
+  "id": "550e8400-e29b-41d4-a716-446655440099",
+  "email": "professora@clinica.exemplo",
+  "fullName": "Nova Professora",
+  "role": "ADMIN",
+  "mustChangePassword": true,
+  "createdAt": "2026-08-28T14:00:00.000Z"
+}
+```
+
+Mesma mecânica de senha temporária do fluxo de aprovação de solicitação de acesso — sem prazo de expiração, válida até o usuário trocá-la.
+
+**Erros**
+
+| Status | Quando |
+|--------|--------|
+| `403` | `role !== SUPER_ADMIN` |
+| `409` | E-mail já cadastrado |
 
 ---
 
@@ -568,18 +628,20 @@ Corpo: bytes do PDF.
 
 | # | Método | Rota | GW | STF | Audit |
 |---|--------|------|-----|-----|-------|
-| 1 | POST | `/auth/login` | GW001 | ✅ `role` no user + JWT | — |
-| 2 | GET | `/admin/therapists` | GW002 | ✅ | — |
+| 1 | POST | `/auth/login` | GW001 | ✅ `panel: 'web'` no request + `role`/`canManageAccessRequests` no user | — |
+| 2 | GET | `/admin/therapists` | GW002 | ✅ `?role=` opcional | — |
 | 3 | GET | `/admin/therapists/:id` | GW003 | ✅ | — |
 | 4 | DELETE | `/admin/therapists/:id` | GW006 | ✅ | ✅ |
-| 5 | GET | `/admin/patients/:id` | GW007 | ✅ | — |
-| 6 | GET | `/admin/patients/:id/assessments` | GW008 | ✅ | — |
-| 7 | GET | `/admin/patients/:id/assessments/:assessmentId` | GW007 | ✅ | — |
-| 8 | GET | `/admin/patients/:id/instruments/:code/timeseries` | GW008 | ✅ | — |
-| 9 | DELETE | `/admin/patients/:id` | GW004 | ✅ | ✅ |
-| 10 | POST | `/admin/patients/:id/transfer` | GW005 | ✅ | ✅ |
-| 11 | POST | `/admin/reports/assessments/:assessmentId` | GW009 | ✅ | ✅ |
-| 12 | GET | `/admin/audit-logs` | GW010 | ✅ | — |
+| 5 | POST | `/admin/therapists` | Ajudantes/Professoras | ✅ `SUPER_ADMIN` only | ✅ |
+| 6 | POST | `/auth/admin-access-request` | Solicitar acesso | ✅ público — aprovação cria `ASSISTANT` | ✅ (na aprovação) |
+| 7 | GET | `/admin/patients/:id` | GW007 | ✅ | — |
+| 8 | GET | `/admin/patients/:id/assessments` | GW008 | ✅ | — |
+| 9 | GET | `/admin/patients/:id/assessments/:assessmentId` | GW007 | ✅ | — |
+| 10 | GET | `/admin/patients/:id/instruments/:code/timeseries` | GW008 | ✅ | — |
+| 11 | DELETE | `/admin/patients/:id` | GW004 | ✅ | ✅ |
+| 12 | POST | `/admin/patients/:id/transfer` | GW005 | ✅ | ✅ |
+| 13 | POST | `/admin/reports/assessments/:assessmentId` | GW009 | ✅ | ✅ |
+| 14 | GET | `/admin/audit-logs` | GW010 | ✅ | — |
 
 ---
 
