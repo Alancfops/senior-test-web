@@ -130,4 +130,4 @@ Referência: [senior-test-funcional/docs/product/privacy-and-lgpd.md](../../seni
 | D1 | Admin também usa app mobile? | ✅ **Não** — conta ADMIN separada; não associada à conta mobile |
 | D2 | Notificar fisio destino na transferência? | E-mail / In-app / Nenhum (MVP) |
 | D3 | Política RB-05 alternativa (cascade)? | Manter bloqueio vs cascade total |
-| D4 | Cadastro de admin | ✅ Hierarquia de 3 níveis no painel web: `SUPER_ADMIN` via seed (`ADMIN_SEED_*`), cria `ADMIN` (professora) diretamente via `POST /admin/therapists`; `ADMIN` aprova `ASSISTANT` (ajudante) pelo fluxo público de solicitação de acesso existente |
+| D4 | Cadastro de admin | ✅ Dois papéis no painel web: `ADMIN` (professora, conta única) criada/recuperada/trocada só via `npm run admin:set` no backend (seed dev cria se não houver); `ADMIN` aprova `ASSISTANT` (ajudante) pelo fluxo público de solicitação de acesso. O painel nunca cria, exclui ou rebaixa a conta `ADMIN` |

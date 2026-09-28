@@ -88,14 +88,6 @@ export function DashboardPage() {
                     icon={<IconUsers className="size-5" />}
                   />
                 ) : null}
-                {user?.role === 'SUPER_ADMIN' ? (
-                  <QuickLinkCard
-                    to="/managers"
-                    title="Professoras"
-                    description="Criar e gerenciar contas administrativas do painel web."
-                    icon={<IconUsers className="size-5" />}
-                  />
-                ) : null}
                 <QuickLinkCard
                   to="/therapists"
                   title="Fisioterapeutas"

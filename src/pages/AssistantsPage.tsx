@@ -18,7 +18,7 @@ import { ApiError } from '@/lib/api/errors';
 
 export function AssistantsPage() {
   const { user } = useAuth();
-  const canManage = user?.role === 'ADMIN' || user?.role === 'SUPER_ADMIN';
+  const canManage = user?.role === 'ADMIN';
   const { data, isLoading, isError, error, refetch } = useTherapists({ role: 'ASSISTANT' });
   const deleteTherapist = useDeleteTherapist();
   const [search, setSearch] = useState('');

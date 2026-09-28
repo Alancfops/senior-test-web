@@ -11,7 +11,6 @@ import { ForgotPasswordResetPage } from '@/pages/ForgotPasswordResetPage';
 import { ForgotPasswordSentPage } from '@/pages/ForgotPasswordSentPage';
 import { ForgotPasswordVerifyPage } from '@/pages/ForgotPasswordVerifyPage';
 import { LoginPage } from '@/pages/LoginPage';
-import { ManagersPage } from '@/pages/ManagersPage';
 import { NotFoundPage } from '@/pages/NotFoundPage';
 import { PatientProfilePage } from '@/pages/PatientProfilePage';
 import { PatientsListPage } from '@/pages/PatientsListPage';
@@ -47,7 +46,6 @@ export const router = createBrowserRouter([
       { path: '/patients/:id/assessment/:assessmentId', element: <AssessmentDetailPage /> },
       { path: '/access-requests', element: <AccessRequestsPage /> },
       { path: '/assistants', element: <AssistantsPage /> },
-      { path: '/managers', element: <ManagersPage /> },
       { path: '/audit-logs', element: <AuditLogsPage /> },
       { path: '/reports', element: <ReportsPage /> },
       { path: '/testes/duvidas', element: <TestDoubtsPage /> },

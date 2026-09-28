@@ -1,7 +1,6 @@
 import { getMockDelay } from '@/lib/api/config';
 import { ApiError } from '@/lib/api/errors';
 import {
-  addTherapist,
   appendAccessRequest,
   appendAuditLog,
   getMockState,
@@ -37,7 +36,6 @@ import type {
   ResetPasswordFormValues,
   VerifyResetCodeFormValues,
 } from '@/features/auth/passwordSchema';
-import type { CreateManagerAccountInput, CreateManagerAccountResponse } from '@/lib/api/therapists';
 
 async function delay(): Promise<void> {
   await new Promise((resolve) => setTimeout(resolve, getMockDelay()));
@@ -51,7 +49,7 @@ export async function mockLogin(_values: LoginFormValues): Promise<LoginResponse
     (therapist) => therapist.email.toLowerCase() === _values.email.trim().toLowerCase(),
   );
 
-  const fallback = { fullName: 'Administradora', email: 'admin@clinica.exemplo', role: 'SUPER_ADMIN' as const };
+  const fallback = { fullName: 'Administradora', email: 'admin@clinica.exemplo', role: 'ADMIN' as const };
   const { fullName, email, role } = match ?? fallback;
 
   return {
@@ -61,7 +59,7 @@ export async function mockLogin(_values: LoginFormValues): Promise<LoginResponse
       email,
       role,
       mustChangePassword: false,
-      canManageAccessRequests: role === 'ADMIN' || role === 'SUPER_ADMIN',
+      canManageAccessRequests: role === 'ADMIN',
     },
   };
 }
@@ -103,11 +101,8 @@ export async function mockDeleteTherapist(id: string): Promise<void> {
       409,
     );
   }
-  if (
-    therapist.role === 'SUPER_ADMIN' &&
-    state.therapists.filter((t) => t.role === 'SUPER_ADMIN').length <= 1
-  ) {
-    throw new ApiError('Não é possível remover o único administrador do sistema.', 409);
+  if (therapist.role === 'ADMIN') {
+    throw new ApiError('Fora do escopo de gestão desta conta.', 403);
   }
   removeTherapist(id);
   appendAuditLog({
@@ -122,45 +117,6 @@ export async function mockDeleteTherapist(id: string): Promise<void> {
       email: therapist.email,
     },
   });
-}
-
-export async function mockCreateManagerAccount(
-  input: CreateManagerAccountInput,
-): Promise<CreateManagerAccountResponse> {
-  await delay();
-  const id = crypto.randomUUID();
-  const createdAt = new Date().toISOString();
-
-  addTherapist(
-    {
-      id,
-      fullName: input.fullName,
-      email: input.email,
-      role: 'ADMIN',
-      createdAt,
-      patientCount: 0,
-      assessmentCount: 0,
-      lastActivityAt: null,
-    },
-    {
-      id,
-      fullName: input.fullName,
-      email: input.email,
-      role: 'ADMIN',
-      createdAt,
-      patients: [],
-      meta: { patientCount: 0, assessmentCount: 0 },
-    },
-  );
-
-  return {
-    id,
-    email: input.email,
-    fullName: input.fullName,
-    role: 'ADMIN',
-    mustChangePassword: true,
-    createdAt,
-  };
 }
 
 export async function mockGetPatient(id: string): Promise<PatientProfile> {

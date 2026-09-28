@@ -4,7 +4,7 @@
 **Verificação:** 2026-08-18 — [../engineering/gap-analysis-stf.md](../engineering/gap-analysis-stf.md)  
 **Tag OpenAPI:** `admin`  
 **Prefixo:** `/admin`  
-**Autenticação:** `Authorization: Bearer <JWT>` — `JwtAuthGuard` + `AdminGuard` (`role` em `ASSISTANT | ADMIN | SUPER_ADMIN`; `POST /admin/therapists` exige `role === SUPER_ADMIN`)
+**Autenticação:** `Authorization: Bearer <JWT>` — `JwtAuthGuard` + `AdminGuard` (`role` em `ASSISTANT | ADMIN`)
 
 ---
 
@@ -45,7 +45,6 @@ enum TherapistRole {
   THERAPIST
   ASSISTANT
   ADMIN
-  SUPER_ADMIN
 }
 
 enum AdminAuditAction {
@@ -103,7 +102,7 @@ O admin **não** tem rota de login separada. Usa as rotas `/auth/*` já implemen
 }
 ```
 
-> `panel: 'web'` substitui o antigo `role: 'ADMIN'` fixo — qualquer um dos 3 papéis web (`ASSISTANT`, `ADMIN`, `SUPER_ADMIN`) pode logar neste painel; enviar `role` fixo quebraria o login de `ASSISTANT`/`SUPER_ADMIN`. O mesmo campo `panel: 'web'` é enviado em `/auth/forgot-password`, `/auth/verify-reset-code` e `/auth/reset-password`.
+> `panel: 'web'` substitui o antigo `role: 'ADMIN'` fixo — qualquer um dos 2 papéis web (`ASSISTANT`, `ADMIN`) pode logar neste painel; enviar `role` fixo quebraria o login de `ASSISTANT`. O mesmo campo `panel: 'web'` é enviado em `/auth/forgot-password`, `/auth/verify-reset-code` e `/auth/reset-password`.
 
 **Response `201`** — NestJS default para POST (e2e confirma):
 
@@ -123,13 +122,13 @@ O admin **não** tem rota de login separada. Usa as rotas `/auth/*` já implemen
 
 | Campo novo | Tipo | Descrição |
 |------------|------|-----------|
-| `user.role` | `"THERAPIST" \| "ASSISTANT" \| "ADMIN" \| "SUPER_ADMIN"` | Papel do usuário |
-| `user.canManageAccessRequests` | boolean | Computado no servidor: `role === 'ADMIN' \|\| role === 'SUPER_ADMIN'` |
+| `user.role` | `"THERAPIST" \| "ASSISTANT" \| "ADMIN"` | Papel do usuário |
+| `user.canManageAccessRequests` | boolean | Computado no servidor: `role === 'ADMIN'` |
 
 **Comportamento no gerenciador web**
 
 - Se `role === "THERAPIST"` (fisio comum, app mobile) após login → exibir erro de acesso; **não** armazenar token para rotas admin
-- Se `role` for `ASSISTANT`, `ADMIN` ou `SUPER_ADMIN` → persistir `accessToken` em `sessionStorage`
+- Se `role` for `ASSISTANT` ou `ADMIN` → persistir `accessToken` em `sessionStorage`
 
 **Erros**
 
@@ -163,7 +162,7 @@ Fluxo de "solicitar acesso" do painel web (formulário público). Mesmo endpoint
 { "message": "Se os dados estiverem corretos, sua solicitação será analisada..." }
 ```
 
-**Aprovação (`/admin/access-requests/:id/approve`)** — agora cria uma conta **`ASSISTANT`** (ajudante), não mais `ADMIN`. Qualquer usuário com `role === 'ADMIN' || role === 'SUPER_ADMIN'` pode aprovar/rejeitar (antes era restrito a um e-mail bootstrap fixo). Mesma mecânica de senha temporária (`mustChangePassword: true`, sem prazo de expiração — a senha continua válida até o usuário trocá-la em `/auth/change-password`).
+**Aprovação (`/admin/access-requests/:id/approve`)** — agora cria uma conta **`ASSISTANT`** (ajudante), não mais `ADMIN`. Somente a professora (`role === 'ADMIN'`) pode aprovar/rejeitar (antes era restrito a um e-mail bootstrap fixo). Mesma mecânica de senha temporária (`mustChangePassword: true`, sem prazo de expiração — a senha continua válida até o usuário trocá-la em `/auth/change-password`).
 
 ---
 
@@ -182,7 +181,7 @@ Fluxo de "solicitar acesso" do painel web (formulário público). Mesmo endpoint
 | `limit` | int | `25` | Itens por página (máx. 100) |
 | `sortBy` | enum | `fullName` | `fullName` \| `email` \| `createdAt` |
 | `sortOrder` | enum | `asc` | `asc` \| `desc` |
-| `role` | `TherapistRole` | — | Filtra por papel (`THERAPIST`, `ASSISTANT`, `ADMIN`, `SUPER_ADMIN`) — usado pelas telas Ajudantes/Professoras |
+| `role` | `TherapistRole` | — | Filtra por papel (`THERAPIST`, `ASSISTANT`) — usado pela tela Ajudantes. `ADMIN` filtrando por `ADMIN` → `403` |
 
 **Response `200`**
 
@@ -274,7 +273,7 @@ Fluxo de "solicitar acesso" do painel web (formulário público). Mesmo endpoint
 **Regras (RB-05)**
 
 - Bloquear se `patientCount > 0` → `409 Conflict`
-- Bloquear se for o **único** admin tentando excluir a si mesmo → `409 Conflict`
+- Conta `ADMIN` (professora) está fora do escopo de gestão do painel → `403 Forbidden` (troca/recuperação só via `npm run admin:set` no backend, ver §4.4)
 - Sucesso → cascade em `PasswordResetToken`; pacientes **não** existem (pré-condição)
 
 **Response `204`** — sem corpo.
@@ -285,43 +284,28 @@ Fluxo de "solicitar acesso" do painel web (formulário público). Mesmo endpoint
 |--------|-----------------|
 | `404` | `{ "message": "Fisioterapeuta não encontrado.", "statusCode": 404 }` |
 | `409` | `{ "message": "Este fisioterapeuta ainda possui 3 paciente(s). Transfira ou exclua os pacientes antes de remover a conta.", "statusCode": 409 }` |
-| `409` | `{ "message": "Não é possível remover o único administrador do sistema.", "statusCode": 409 }` |
+| `403` | `{ "message": "Fora do escopo de gestão desta conta.", "statusCode": 403 }` |
 
 **Auditoria:** registrar `DELETE_THERAPIST` em `AdminAuditLog`.
 
 ---
 
-### 4.4 POST `/admin/therapists`
+### 4.4 Conta da professora (`ADMIN`) — fora do painel
 
-Restrito a `SUPER_ADMIN`. Cria uma conta `ADMIN` (professora) diretamente — sem passar pelo formulário público de solicitação.
+Modelo de **dois papéis web**: professora (`ADMIN`, conta única) + ajudante (`ASSISTANT`). O painel **não** cria, exclui nem rebaixa a conta `ADMIN` — não existe `POST /admin/therapists`.
 
-**Request**
+A conta é gerida só por script no backend STF (`backend/scripts/set-admin.ts`):
 
-```json
-{ "email": "professora@clinica.exemplo", "fullName": "Nova Professora" }
-```
+| Caso | Comando (em `senior-test-funcional/backend`) |
+|------|-----------------------------------------------|
+| Criar a professora (sem `ADMIN` no banco) | `npm run admin:set -- --email <e-mail> --name "<nome>"` |
+| Recuperar acesso (mesmo e-mail) | `npm run admin:set -- --email <e-mail>` |
+| Trocar a professora responsável | `npm run admin:set -- --email <novo e-mail> --name "<nome>" --replace` |
 
-**Response `201`**
-
-```json
-{
-  "id": "550e8400-e29b-41d4-a716-446655440099",
-  "email": "professora@clinica.exemplo",
-  "fullName": "Nova Professora",
-  "role": "ADMIN",
-  "mustChangePassword": true,
-  "createdAt": "2026-08-28T14:00:00.000Z"
-}
-```
-
-Mesma mecânica de senha temporária do fluxo de aprovação de solicitação de acesso — sem prazo de expiração, válida até o usuário trocá-la.
-
-**Erros**
-
-| Status | Quando |
-|--------|--------|
-| `403` | `role !== SUPER_ADMIN` |
-| `409` | E-mail já cadastrado |
+- Gera senha temporária exibida uma vez no terminal; `mustChangePassword: true` força a troca no 1º login.
+- `--replace` rebaixa a professora anterior para `ASSISTANT` (preserva a trilha de auditoria); a nova professora pode removê-la depois pelo painel.
+- O script recusa rodar se houver mais de uma conta `ADMIN`.
+- Seed dev (`npx prisma db seed`) só cria `ADMIN` quando ainda não há outra professora definida.
 
 ---
 
@@ -632,16 +616,15 @@ Corpo: bytes do PDF.
 | 2 | GET | `/admin/therapists` | GW002 | ✅ `?role=` opcional | — |
 | 3 | GET | `/admin/therapists/:id` | GW003 | ✅ | — |
 | 4 | DELETE | `/admin/therapists/:id` | GW006 | ✅ | ✅ |
-| 5 | POST | `/admin/therapists` | Ajudantes/Professoras | ✅ `SUPER_ADMIN` only | ✅ |
-| 6 | POST | `/auth/admin-access-request` | Solicitar acesso | ✅ público — aprovação cria `ASSISTANT` | ✅ (na aprovação) |
-| 7 | GET | `/admin/patients/:id` | GW007 | ✅ | — |
-| 8 | GET | `/admin/patients/:id/assessments` | GW008 | ✅ | — |
-| 9 | GET | `/admin/patients/:id/assessments/:assessmentId` | GW007 | ✅ | — |
-| 10 | GET | `/admin/patients/:id/instruments/:code/timeseries` | GW008 | ✅ | — |
-| 11 | DELETE | `/admin/patients/:id` | GW004 | ✅ | ✅ |
-| 12 | POST | `/admin/patients/:id/transfer` | GW005 | ✅ | ✅ |
-| 13 | POST | `/admin/reports/assessments/:assessmentId` | GW009 | ✅ | ✅ |
-| 14 | GET | `/admin/audit-logs` | GW010 | ✅ | — |
+| 5 | POST | `/auth/admin-access-request` | Solicitar acesso | ✅ público — aprovação cria `ASSISTANT` | ✅ (na aprovação) |
+| 6 | GET | `/admin/patients/:id` | GW007 | ✅ | — |
+| 7 | GET | `/admin/patients/:id/assessments` | GW008 | ✅ | — |
+| 8 | GET | `/admin/patients/:id/assessments/:assessmentId` | GW007 | ✅ | — |
+| 9 | GET | `/admin/patients/:id/instruments/:code/timeseries` | GW008 | ✅ | — |
+| 10 | DELETE | `/admin/patients/:id` | GW004 | ✅ | ✅ |
+| 11 | POST | `/admin/patients/:id/transfer` | GW005 | ✅ | ✅ |
+| 12 | POST | `/admin/reports/assessments/:assessmentId` | GW009 | ✅ | ✅ |
+| 13 | GET | `/admin/audit-logs` | GW010 | ✅ | — |
 
 ---
 
