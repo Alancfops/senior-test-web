@@ -29,7 +29,7 @@ export function clearSession(): void {
   sessionStorage.removeItem(USER_KEY);
 }
 
-const WEB_ROLES: TherapistRole[] = ['ASSISTANT', 'ADMIN', 'SUPER_ADMIN'];
+const WEB_ROLES: TherapistRole[] = ['ASSISTANT', 'ADMIN'];
 
 export function isAdminSession(): boolean {
   const token = getAccessToken();

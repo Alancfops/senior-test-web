@@ -1,11 +1,11 @@
-export type TherapistRole = 'THERAPIST' | 'ASSISTANT' | 'ADMIN' | 'SUPER_ADMIN';
+export type TherapistRole = 'THERAPIST' | 'ASSISTANT' | 'ADMIN';
 
 export type AuthUser = {
   fullName: string;
   email: string;
   role: TherapistRole;
   mustChangePassword?: boolean;
-  /** Verdadeiro para ADMIN (professora) e SUPER_ADMIN. */
+  /** Verdadeiro para ADMIN (professora). */
   canManageAccessRequests?: boolean;
 };
 
@@ -232,5 +232,4 @@ export const ROLE_LABELS: Record<TherapistRole, string> = {
   THERAPIST: 'Fisioterapeuta',
   ASSISTANT: 'Ajudante',
   ADMIN: 'Professora',
-  SUPER_ADMIN: 'Super admin',
 };

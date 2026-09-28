@@ -1,8 +1,7 @@
 import { isMockMode } from '@/lib/api/config';
-import { apiDelete, apiGet, apiPost } from '@/lib/api/client';
+import { apiDelete, apiGet } from '@/lib/api/client';
 import { filterClinicalTherapists } from '@/lib/domain/therapists';
 import {
-  mockCreateManagerAccount,
   mockDeleteTherapist,
   mockGetTherapist,
   mockListTherapists,
@@ -14,20 +13,6 @@ export type TherapistsQueryParams = {
   page?: number;
   limit?: number;
   role?: TherapistRole;
-};
-
-export type CreateManagerAccountInput = {
-  email: string;
-  fullName: string;
-};
-
-export type CreateManagerAccountResponse = {
-  id: string;
-  email: string;
-  fullName: string;
-  role: 'ADMIN';
-  mustChangePassword: boolean;
-  createdAt: string;
 };
 
 export async function fetchTherapists(
@@ -51,15 +36,6 @@ export async function fetchTherapists(
 
   const response = await apiGet<TherapistsListResponse>(`/admin/therapists?${query.toString()}`);
   return role ? response : filterClinicalTherapists(response);
-}
-
-export async function createManagerAccount(
-  input: CreateManagerAccountInput,
-): Promise<CreateManagerAccountResponse> {
-  if (isMockMode()) {
-    return mockCreateManagerAccount(input);
-  }
-  return apiPost<CreateManagerAccountResponse>('/admin/therapists', input);
 }
 
 export async function fetchTherapist(id: string): Promise<TherapistDetail> {

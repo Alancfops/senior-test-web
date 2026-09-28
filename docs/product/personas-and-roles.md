@@ -70,8 +70,7 @@ flowchart LR
 |------|-------|------------|-----------------|------------|
 | `THERAPIST` | padrão atual | ✅ | ❌ | Próprios pacientes/avaliações |
 | `ASSISTANT` | novo (ajudante) | ❌ | ✅ | Gerencia apenas THERAPIST (comuns) + seus pacientes; vê a trilha de auditoria (somente leitura) |
-| `ADMIN` | novo (professora) | ❌ (ou ✅ read-only futuro) | ✅ | Gerencia ASSISTANT + THERAPIST; aprova/rejeita solicitações de acesso |
-| `SUPER_ADMIN` | novo (bootstrap) | ❌ | ✅ | Full CRUD — inclui contas ADMIN/ASSISTANT; cria ADMIN diretamente |
+| `ADMIN` | novo (professora, conta única) | ❌ (ou ✅ read-only futuro) | ✅ | Gerencia ASSISTANT + THERAPIST; aprova/rejeita solicitações de acesso. Conta criada/recuperada/trocada só via `npm run admin:set` no backend |
 
 ### Matriz de permissões (MVP)
 
