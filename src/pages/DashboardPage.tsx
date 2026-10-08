@@ -46,7 +46,7 @@ export function DashboardPage() {
   const pendingAccessCount = accessRequests?.data.length ?? 0;
 
   return (
-    <AppShell title="Início" description="Visão geral do gerenciador clínico.">
+    <AppShell title="Início" description="Visão geral do gerenciador">
       <div className="space-y-6">
         <WelcomeBanner
           userName={user?.fullName ?? 'Administrador'}
@@ -58,9 +58,22 @@ export function DashboardPage() {
         {!loading ? (
           <>
             <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-              <StatCard label="Fisioterapeutas" value={therapistCount} />
-              <StatCard label="Pacientes" value={patientCount} accent="secondary" />
-              <StatCard label="Avaliações (equipe)" value={assessmentCount} />
+              <StatCard
+                label="Fisioterapeutas"
+                value={therapistCount}
+                icon={<IconUsers className="size-4" />}
+              />
+              <StatCard
+                label="Pacientes"
+                value={patientCount}
+                accent="secondary"
+                icon={<IconPatient className="size-4" />}
+              />
+              <StatCard
+                label="Avaliações (equipe)"
+                value={assessmentCount}
+                icon={<IconClipboard className="size-4" />}
+              />
             </div>
 
             <section>

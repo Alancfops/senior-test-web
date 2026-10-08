@@ -211,7 +211,7 @@ export function AssessmentDetailPage() {
 
         {data && !isLoading && answers.length === 0 && data.status === 'FINALIZED' ? (
           <section className="stf-card px-4 py-5 text-sm text-[var(--stf-text-muted)] sm:px-5">
-            Não há respostas detalhadas disponíveis no payload desta avaliação.
+            Não há respostas detalhadas registradas para esta avaliação.
           </section>
         ) : null}
       </div>

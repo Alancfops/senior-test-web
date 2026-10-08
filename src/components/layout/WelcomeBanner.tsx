@@ -36,15 +36,16 @@ export function WelcomeBanner({ userName, subtitle }: WelcomeBannerProps) {
 type StatCardProps = {
   label: string;
   value: string | number;
+  icon: ReactNode;
   accent?: 'primary' | 'secondary';
 };
 
-export function StatCard({ label, value, accent = 'primary' }: StatCardProps) {
+export function StatCard({ label, value, icon, accent = 'primary' }: StatCardProps) {
   const accentColor =
     accent === 'secondary' ? 'var(--stf-secondary)' : 'var(--stf-primary)';
 
   return (
-    <div className="stf-card p-5 transition-shadow hover:shadow-stf-md">
+    <div className="stf-card p-5 shadow-none">
       <div className="mb-3 flex items-start justify-between">
         <div
           className="h-1 w-10 rounded-full"
@@ -55,10 +56,7 @@ export function StatCard({ label, value, accent = 'primary' }: StatCardProps) {
           className="flex size-8 items-center justify-center rounded-stf-sm bg-[color-mix(in_srgb,var(--stf-primary)_10%,var(--stf-surface))] text-[var(--stf-primary)]"
           aria-hidden
         >
-          <svg className="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-            <path d="M14 2v6h6M8 13h8M8 17h5" />
-          </svg>
+          {icon}
         </div>
       </div>
       <p className="text-2xl font-bold text-[var(--stf-text)]">{value}</p>
@@ -78,7 +76,7 @@ export function QuickLinkCard({ to, title, description, icon }: QuickLinkCardPro
   return (
     <Link
       to={to}
-      className="group flex items-start gap-4 rounded-stf-lg border border-[var(--stf-border)] bg-[var(--stf-page-bg)] p-4 no-underline shadow-stf transition-all hover:-translate-y-0.5 hover:border-[color-mix(in_srgb,var(--stf-primary)_35%,var(--stf-border))] hover:shadow-stf-md"
+      className="group flex items-start gap-4 rounded-stf-lg border border-[var(--stf-border)] bg-[var(--stf-page-bg)] p-4 no-underline transition-colors hover:border-[color-mix(in_srgb,var(--stf-primary)_35%,var(--stf-border))]"
     >
       <div className="flex size-11 shrink-0 items-center justify-center rounded-stf bg-[color-mix(in_srgb,var(--stf-primary)_12%,var(--stf-surface))] text-[var(--stf-primary)] transition-colors group-hover:bg-[var(--stf-primary)] group-hover:text-[var(--stf-on-primary)]">
         {icon}

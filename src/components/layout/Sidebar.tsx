@@ -8,6 +8,7 @@ import {
   IconHelp,
   IconHome,
   IconInbox,
+  IconInfo,
   IconLogout,
   IconPatient,
   IconUsers,
@@ -60,6 +61,13 @@ const navSections: NavSection[] = [
       { to: '/reports', label: 'Relatórios PDF', end: true, icon: IconFile },
     ],
   },
+  {
+    title: 'Referência',
+    items: [
+      { to: '/testes/duvidas', label: 'Dúvidas sobre testes', end: true, icon: IconHelp },
+      { to: '/system-info', label: 'Informações do sistema', end: true, icon: IconInfo },
+    ],
+  },
 ];
 
 type SidebarProps = {
@@ -107,26 +115,19 @@ export function Sidebar({ open = false, onClose }: SidebarProps) {
           </button>
 
           <img
-            src="/logo-seniortest-wordmark.png"
+            src="/logo-seniorteste-nome.svg"
             alt=""
-            width={148}
-            height={44}
+            width={170}
+            height={36}
             className="mx-auto h-9 w-auto lg:hidden"
           />
           <img
-            src="/logo-seniortest-mark.png"
+            src="/logo-seniorteste-vertical.svg"
             alt=""
-            width={147}
-            height={174}
+            width={170}
+            height={152}
             className="mx-auto hidden h-[88px] w-auto lg:block"
           />
-          <p className="mt-3 text-sm font-bold text-[var(--stf-text)]">Gerenciador Web</p>
-          <p className="text-xs font-medium leading-snug text-[var(--stf-primary)]">
-            Sênior Teste Funcional
-          </p>
-          <p className="mt-2 hidden text-[11px] leading-relaxed text-[var(--stf-text-muted)] sm:block">
-            Conta administrativa exclusiva do painel web para supervisão do app mobile.
-          </p>
         </div>
 
         <nav className="flex flex-1 flex-col gap-5 overflow-y-auto p-3">
@@ -144,7 +145,7 @@ export function Sidebar({ open = false, onClose }: SidebarProps) {
                       onClick={onClose}
                       className={({ isActive }) =>
                         [
-                          'flex min-h-11 items-center gap-3 rounded-stf-lg px-3 py-2.5 text-sm font-medium transition-all',
+                          'flex min-h-11 items-center gap-3 rounded-stf-lg px-3 py-2.5 text-sm font-medium no-underline hover:no-underline transition-all',
                           isActive
                             ? 'bg-[var(--stf-primary)] text-[var(--stf-on-primary)] shadow-stf-md'
                             : 'text-[var(--stf-text)] hover:bg-[var(--stf-page-bg)] hover:text-[var(--stf-primary-dark)]',
@@ -169,38 +170,6 @@ export function Sidebar({ open = false, onClose }: SidebarProps) {
               </ul>
             </div>
           ))}
-
-          <div>
-            <p className="mb-2 px-2 text-[11px] font-bold uppercase tracking-wider text-[var(--stf-text-muted)]">
-              Referência
-            </p>
-            <NavLink
-              to="/testes/duvidas"
-              end
-              onClick={onClose}
-              className={({ isActive }) =>
-                [
-                  'flex min-h-11 items-center gap-3 rounded-stf-lg px-3 py-2.5 text-sm font-medium transition-all',
-                  isActive
-                    ? 'bg-[var(--stf-primary)] text-[var(--stf-on-primary)] shadow-stf-md'
-                    : 'text-[var(--stf-text)] hover:bg-[var(--stf-page-bg)] hover:text-[var(--stf-primary-dark)]',
-                ].join(' ')
-              }
-            >
-              {({ isActive }) => (
-                <>
-                  <IconHelp
-                    className={[
-                      'size-5 shrink-0',
-                      isActive ? 'text-[var(--stf-on-primary)]' : 'text-[var(--stf-primary)]',
-                    ].join(' ')}
-                    aria-hidden
-                  />
-                  <span>Dúvidas sobre testes</span>
-                </>
-              )}
-            </NavLink>
-          </div>
         </nav>
 
         <div className="border-t border-[var(--stf-border)] p-4">

@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form';
 import { Button } from '@/components/ui/Button';
 import { Modal } from '@/components/ui/Modal';
 import { SelectField } from '@/components/ui/SelectField';
+import { IconArrowLeft } from '@/components/icons/NavIcons';
 
 type TransferPatientModalProps = {
   open: boolean;
@@ -85,9 +86,13 @@ export function TransferPatientModal({
           <p className="text-xs font-semibold uppercase tracking-wide text-[var(--stf-primary-dark)]">
             Resumo da transferência
           </p>
-          <p className="mt-1 text-sm text-[var(--stf-text)]">
+          <p className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-[var(--stf-text)]">
             <strong>{fromTherapistName}</strong>
-            <span className="mx-2 text-[var(--stf-text-muted)]">→</span>
+            <IconArrowLeft
+              className="size-4 shrink-0 rotate-180 text-[var(--stf-text-muted)]"
+              aria-label="para"
+              role="img"
+            />
             <strong>{targetLabel}</strong>
           </p>
         </div>

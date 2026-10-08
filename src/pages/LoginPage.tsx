@@ -64,26 +64,14 @@ export function LoginPage() {
 
   return (
     <AuthLayout>
-      <div className="stf-card p-4 sm:p-6 md:p-8 lg:border-0 lg:bg-transparent lg:p-0 lg:shadow-none">
-        <div className="mb-6 flex flex-col items-center sm:mb-8 lg:hidden">
-          <img
-            src="/logo-seniortest-wordmark.png"
-            alt="Sênior Teste Funcional"
-            width={200}
-            height={60}
-            className="h-10 w-auto sm:h-12"
-          />
-        </div>
-
+      <div className="stf-card p-6 sm:p-8 lg:p-10">
         <div>
-          <h1 className="text-center text-2xl font-bold text-[var(--stf-primary-dark)] sm:text-3xl">
-            Fazer Login
-          </h1>
-          <p className="mt-2 text-center text-sm font-medium text-[var(--stf-text)] sm:text-base">
-            Conta administrativa exclusiva do painel web para supervisão do app mobile.
+          <h1 className="text-2xl font-bold text-[var(--stf-primary-dark)] sm:text-3xl">Login</h1>
+          <p className="mt-1.5 text-[11px] font-semibold uppercase tracking-wider text-[var(--stf-text-muted)]">
+            Sênior Teste Funcional
           </p>
 
-          <form className="mt-6 space-y-4 sm:mt-8" onSubmit={onSubmit} noValidate>
+          <form className="mt-6 space-y-4" onSubmit={onSubmit} noValidate>
             <IconTextInput
               type="email"
               placeholder="E-mail"

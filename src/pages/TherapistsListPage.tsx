@@ -41,6 +41,7 @@ export function TherapistsListPage() {
 
   return (
     <AppShell
+      backLink={{ to: '/dashboard', label: 'Voltar ao início' }}
       title="Fisioterapeutas"
       description="Equipe cadastrada no sistema."
       actions={

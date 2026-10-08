@@ -39,6 +39,7 @@ export function PatientsListPage() {
 
   return (
     <AppShell
+      backLink={{ to: '/dashboard', label: 'Voltar ao início' }}
       title="Pacientes"
       description="Todos os pacientes cadastrados. Visão transversal para o administrador."
       actions={

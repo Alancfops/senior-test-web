@@ -69,10 +69,10 @@ export function AppShell({
               <IconMenu className="size-5" />
             </button>
             <img
-              src="/logo-seniortest-wordmark.png"
+              src="/logo-seniorteste-nome.svg"
               alt="Sênior Teste Funcional"
-              width={120}
-              height={36}
+              width={132}
+              height={28}
               className="h-7 w-auto"
             />
           </div>
@@ -87,20 +87,20 @@ export function AppShell({
 
           <div className="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-start sm:justify-between">
             <div className="min-w-0 flex-1">
+              {description ? (
+                <p
+                  className="mb-1 max-w-3xl break-words text-xs text-[var(--stf-text-muted)] md:truncate"
+                  title={description}
+                >
+                  {description}
+                </p>
+              ) : null}
               <h1
                 className="hyphens-none break-words text-xl font-bold text-[var(--stf-text)] sm:text-2xl md:truncate"
                 title={title}
               >
                 {title}
               </h1>
-              {description ? (
-                <p
-                  className="mt-1 max-w-3xl break-words text-sm text-[var(--stf-text-muted)] md:truncate"
-                  title={description}
-                >
-                  {description}
-                </p>
-              ) : null}
             </div>
             {actions ? (
               <div className="flex w-full shrink-0 flex-col gap-2 sm:w-auto sm:flex-row sm:items-end">

@@ -117,10 +117,14 @@
     white-space: nowrap;
   }
 
+  .stf-table thead tr {
+    background: var(--stf-header-gradient);
+  }
+
   .stf-table th {
     @apply border-b px-4 py-3 text-center text-xs font-semibold uppercase tracking-wide sm:px-5 sm:py-3.5;
     border-color: transparent;
-    background-color: var(--stf-table-head-bg);
+    background-color: transparent;
     color: var(--stf-on-primary);
     min-height: var(--stf-row-height);
     hyphens: none;

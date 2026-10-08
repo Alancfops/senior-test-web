@@ -49,6 +49,7 @@ export function AssistantsPage() {
 
   return (
     <AppShell
+      backLink={{ to: '/dashboard', label: 'Voltar ao início' }}
       title="Ajudantes"
       description="Contas de ajudante com acesso ao painel web."
       actions={
