@@ -136,7 +136,7 @@ export function EvolutionLineChart({
             points={polyline}
           />
 
-          {coords.map((point) => {
+          {coords.map((point, index) => {
             const isActive = point.id === activePointId;
             const isFocused = point.id === focusedPointId;
             const isHighlighted = isActive || isFocused;
@@ -194,7 +194,7 @@ export function EvolutionLineChart({
                 <text
                   x={point.x}
                   y={chartHeight - 8}
-                  textAnchor="middle"
+                  textAnchor={xLabelAnchor(index, coords.length)}
                   style={{ fontSize: chart.labelSize }}
                   className={[
                     isHighlighted
@@ -257,4 +257,12 @@ export function EvolutionLineChart({
       )}
     </figure>
   );
+}
+
+/** Primeiro/último rótulo do eixo X alinhados à borda — evita corte no SVG estreito. */
+function xLabelAnchor(index: number, total: number): 'start' | 'middle' | 'end' {
+  if (total < 2) return 'middle';
+  if (index === 0) return 'start';
+  if (index === total - 1) return 'end';
+  return 'middle';
 }

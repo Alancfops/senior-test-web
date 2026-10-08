@@ -2,11 +2,11 @@ import type { TimeseriesPoint } from '@/types/api';
 
 export type ChartInstrumentCode = 'TUG' | 'KATZ' | 'BERG' | 'TINETTI' | 'MEEM';
 
-/** Escala Y por instrumento (paridade RF012 / app mobile). */
+/** Escala Y por instrumento — pontuação máxima de cada escala (TUG é dinâmico). */
 export const CHART_MAX_VALUE: Record<ChartInstrumentCode, number> = {
   TUG: 20,
   KATZ: 6,
-  BERG: 90,
+  BERG: 56,
   TINETTI: 28,
   MEEM: 30,
 };
@@ -38,9 +38,11 @@ export function getChartMaxValue(
   return configured;
 }
 
+/** Divide o eixo em 3–5 faixas iguais com valores inteiros (ex.: Berg 0/14/28/42/56). */
 export function buildYAxisTicks(maxValue: number): number[] {
-  const step = maxValue / 3;
-  return [0, step, step * 2, maxValue].map((value) => Math.round(value));
+  const segments = [3, 4, 5].find((count) => maxValue % count === 0) ?? 3;
+  const step = maxValue / segments;
+  return Array.from({ length: segments + 1 }, (_, index) => Math.round(step * index));
 }
 
 export function formatChartDateLabel(isoDate: string): string {
