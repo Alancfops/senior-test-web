@@ -3,6 +3,8 @@ import type { AuditLogItem } from '@/types/api';
 
 export type AuditTargetView = {
   label: string;
+  /** Nome completo do alvo, quando registrado no audit. */
+  name: string | null;
   /** Rota interna quando o alvo ainda é navegável. */
   to: string | null;
   title: string;
@@ -25,6 +27,7 @@ export function resolveAuditTarget(log: AuditLogItem): AuditTargetView {
       log.action === 'DELETE_PATIENT' ? null : `/patients/${log.targetId}`;
     return {
       label,
+      name,
       to,
       title: name ?? 'Ver perfil do paciente',
     };
@@ -36,6 +39,7 @@ export function resolveAuditTarget(log: AuditLogItem): AuditTargetView {
     const label = name ? formatShortDisplayName(name) : 'Avaliação';
     return {
       label,
+      name,
       to: patientId ? `/patients/${patientId}` : null,
       title: name ?? 'Ver perfil do paciente',
     };
@@ -48,6 +52,7 @@ export function resolveAuditTarget(log: AuditLogItem): AuditTargetView {
     const label = name ? formatShortDisplayName(name) : 'Fisioterapeuta';
     return {
       label,
+      name,
       to: null,
       title: name ?? 'Fisioterapeuta',
     };
@@ -55,6 +60,7 @@ export function resolveAuditTarget(log: AuditLogItem): AuditTargetView {
 
   return {
     label: 'Registro',
+    name: null,
     to: null,
     title: 'Registro',
   };

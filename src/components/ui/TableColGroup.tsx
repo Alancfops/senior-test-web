@@ -6,7 +6,8 @@ type ColGroupProps = {
     | 'therapist-patients'
     | 'therapists-list'
     | 'patient-assessments'
-    | 'access-requests';
+    | 'access-requests'
+    | 'audit-logs';
 };
 
 /**
@@ -39,7 +40,6 @@ export function TableColGroup({ variant }: ColGroupProps) {
           <col style={{ width: '12%' }} />
           <col style={{ width: '24%' }} />
           <col style={{ width: '12%' }} />
-          <col style={{ width: '0' }} />
           <col className="stf-col-actions" />
         </colgroup>
       );
@@ -59,7 +59,6 @@ export function TableColGroup({ variant }: ColGroupProps) {
           <col style={{ width: '12%' }} />
           <col style={{ width: '16%' }} />
           <col style={{ width: '14%' }} />
-          <col style={{ width: '0' }} />
           <col className="stf-col-actions-wide" />
         </colgroup>
       );
@@ -79,7 +78,6 @@ export function TableColGroup({ variant }: ColGroupProps) {
           <col style={{ width: '32%' }} />
           <col style={{ width: '12%' }} />
           <col style={{ width: '12%' }} />
-          <col style={{ width: '0' }} />
           <col className="stf-col-actions" />
         </colgroup>
       );
@@ -100,6 +98,16 @@ export function TableColGroup({ variant }: ColGroupProps) {
           <col style={{ width: '32%' }} />
           <col style={{ width: '18%' }} />
           <col style={{ width: '22%' }} />
+        </colgroup>
+      );
+    case 'audit-logs':
+      return (
+        <colgroup>
+          <col style={{ width: '18%' }} />
+          <col style={{ width: '20%' }} />
+          <col style={{ width: '24%' }} />
+          <col style={{ width: '24%' }} />
+          <col style={{ width: '14%' }} />
         </colgroup>
       );
     default:

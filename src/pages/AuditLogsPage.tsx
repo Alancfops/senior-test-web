@@ -1,6 +1,10 @@
 import { useState } from 'react';
+import { AuditLogDetailModal } from '@/components/audit/AuditLogDetailModal';
+import { IconEye } from '@/components/icons/ActionIcons';
 import { AppShell } from '@/components/layout/AppShell';
+import { ActionButton, TableActions } from '@/components/ui/TableActions';
 import { SelectField } from '@/components/ui/SelectField';
+import { TableColGroup } from '@/components/ui/TableColGroup';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { Spinner } from '@/components/ui/Spinner';
@@ -18,6 +22,7 @@ const actionOptions: Array<{ value: string; label: string }> = [
 
 export function AuditLogsPage() {
   const [action, setAction] = useState<AdminAuditAction | ''>('');
+  const [selectedLog, setSelectedLog] = useState<AuditLogItem | null>(null);
   const { data, isLoading, isError, error, refetch } = useAuditLogs({
     action: action || undefined,
   });
@@ -53,36 +58,50 @@ export function AuditLogsPage() {
           <div className="overflow-x-hidden">
             <table className="stf-table">
               <caption className="sr-only">Registros da trilha de auditoria administrativa</caption>
+              <TableColGroup variant="audit-logs" />
               <thead>
                 <tr>
                   <th scope="col" className="stf-table-col-leading">
                     Data
                   </th>
                   <th scope="col" className="stf-table-col-secondary">
-                    Admin
+                    Usuário
                   </th>
                   <th scope="col" className="stf-table-col-secondary">
                     Ação
                   </th>
-                  <th scope="col" className="stf-table-col-secondary stf-table-col-text">
-                    Alvo
+                  <th scope="col" className="stf-table-col-secondary">
+                    Registro afetado
+                  </th>
+                  <th scope="col" className="stf-table-col-actions">
+                    Ações
                   </th>
                 </tr>
               </thead>
               <tbody>
                 {data.data.map((log) => (
-                  <AuditLogRow key={log.id} log={log} />
+                  <AuditLogRow key={log.id} log={log} onOpenDetails={setSelectedLog} />
                 ))}
               </tbody>
             </table>
           </div>
         ) : null}
       </div>
+
+      {selectedLog ? (
+        <AuditLogDetailModal log={selectedLog} onClose={() => setSelectedLog(null)} />
+      ) : null}
     </AppShell>
   );
 }
 
-function AuditLogRow({ log }: { log: AuditLogItem }) {
+function AuditLogRow({
+  log,
+  onOpenDetails,
+}: {
+  log: AuditLogItem;
+  onOpenDetails: (log: AuditLogItem) => void;
+}) {
   const target = resolveAuditTarget(log);
 
   return (
@@ -97,8 +116,15 @@ function AuditLogRow({ log }: { log: AuditLogItem }) {
       </td>
       <td className="stf-table-col-secondary">{log.adminName}</td>
       <td className="stf-table-col-secondary">{AUDIT_ACTION_LABELS[log.action]}</td>
-      <td className="stf-table-col-secondary stf-table-col-text">
+      <td className="stf-table-col-secondary">
         <AuditTargetLink target={target} />
+      </td>
+      <td className="stf-table-col-actions">
+        <TableActions>
+          <ActionButton icon={<IconEye />} onClick={() => onOpenDetails(log)}>
+            Ver detalhes
+          </ActionButton>
+        </TableActions>
       </td>
     </tr>
   );
