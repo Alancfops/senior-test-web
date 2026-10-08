@@ -15,6 +15,7 @@ import { NotFoundPage } from '@/pages/NotFoundPage';
 import { PatientProfilePage } from '@/pages/PatientProfilePage';
 import { PatientsListPage } from '@/pages/PatientsListPage';
 import { ReportsPage } from '@/pages/ReportsPage';
+import { SystemInfoPage } from '@/pages/SystemInfoPage';
 import { TestDoubtsPage } from '@/pages/TestDoubtsPage';
 import { TherapistDetailPage } from '@/pages/TherapistDetailPage';
 import { TherapistsListPage } from '@/pages/TherapistsListPage';
@@ -49,6 +50,7 @@ export const router = createBrowserRouter([
       { path: '/audit-logs', element: <AuditLogsPage /> },
       { path: '/reports', element: <ReportsPage /> },
       { path: '/testes/duvidas', element: <TestDoubtsPage /> },
+      { path: '/system-info', element: <SystemInfoPage /> },
     ],
   },
   { path: '*', element: <NotFoundPage /> },
