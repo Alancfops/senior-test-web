@@ -23,7 +23,7 @@ senior-test-funcional/backend/src/admin/
 ```
 
 Testes e2e: `senior-test-funcional/backend/test/admin.e2e-spec.ts`  
-Seed admin (dev): `npm run prisma db seed` — variáveis `ADMIN_SEED_*` em `backend/.env.example`
+Conta ADMIN: `npm run admin:set` (`backend/scripts/set-admin.ts`) — o seed não cria admin
 
 O gerenciador web (`stf-gerenciador-web`) **consome** estas rotas.
 
@@ -305,7 +305,7 @@ A conta é gerida só por script no backend STF (`backend/scripts/set-admin.ts`)
 - Gera senha temporária exibida uma vez no terminal; `mustChangePassword: true` força a troca no 1º login.
 - `--replace` rebaixa a professora anterior para `ASSISTANT` (preserva a trilha de auditoria); a nova professora pode removê-la depois pelo painel.
 - O script recusa rodar se houver mais de uma conta `ADMIN`.
-- Seed dev (`npx prisma db seed`) só cria `ADMIN` quando ainda não há outra professora definida.
+- Seed dev (`npx prisma db seed`) não cria `ADMIN` — só dados demo.
 
 ---
 

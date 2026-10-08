@@ -122,7 +122,7 @@ Admin **não substitui** estas rotas — convive em paralelo.
 # STF
 cd ../senior-test-funcional
 make migrate          # inclui migration admin
-cd backend && npx prisma db seed   # cria admin@clinica.exemplo / Admin1234
+cd backend && npm run admin:set -- --email admin@clinica.exemplo --name "Admin"   # senha temporária no terminal
 
 # Login admin
 curl -s -X POST http://localhost:3000/auth/login \

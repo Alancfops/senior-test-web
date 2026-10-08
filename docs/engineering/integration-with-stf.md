@@ -88,7 +88,7 @@ Schema e migration: [data-model-extensions.md](data-model-extensions.md) · migr
 
 - JWT inclui `role`; `JwtStrategy` **revalida** role no banco a cada request
 - `AdminGuard` → 403 `"Acesso restrito a administradores."`
-- Seed dev: `npx prisma db seed` — `admin@clinica.exemplo` / `Admin1234` (configurável via `ADMIN_SEED_*`)
+- Conta ADMIN: `npm run admin:set -- --email <email> --name "<nome>"` — o seed não cria admin
 
 ---
 

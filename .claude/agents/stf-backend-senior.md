@@ -135,7 +135,7 @@ Verify full request/response in `admin-api.md` before any change.
 | Regression | existing fisio e2e | After auth/guard/schema changes |
 | Unit | service methods | Complex transfer/delete validation |
 
-Seed for dev: `npx prisma db seed` — `admin@clinica.exemplo` / `Admin1234`
+ADMIN account: `npm run admin:set` (`scripts/set-admin.ts`) — the seed does not create an admin
 
 ## Git (STF repo)
 

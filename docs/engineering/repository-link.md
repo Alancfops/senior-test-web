@@ -66,8 +66,7 @@ npm run dev
 |-------|---------|
 | API saudável | `curl http://localhost:3000/health` |
 | Swagger (tag admin) | http://localhost:3000/api/docs |
-| Seed admin (1ª vez) | `cd ../senior-test-funcional/backend && npx prisma db seed` |
-| Login admin default | `admin@clinica.exemplo` / `Admin1234` |
+| Criar/recuperar admin | `cd ../senior-test-funcional/backend && npm run admin:set -- --email <email> --name "<nome>"` |
 | URL no gerenciador | `VITE_STF_API_URL=http://localhost:3000` |
 
 ---

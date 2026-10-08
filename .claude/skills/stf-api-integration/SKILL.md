@@ -54,7 +54,7 @@ cp .env.example .env   # VITE_STF_API_URL=http://localhost:3000
 | API | `http://localhost:3000/health` |
 | Swagger | `http://localhost:3000/api/docs` (tag `admin`) |
 | CORS no STF | `CORS_ORIGINS=http://localhost:5173` |
-| Seed admin | `admin@clinica.exemplo` / `Admin1234` |
+| Conta admin | `cd backend && npm run admin:set -- --email <email> --name "<nome>"` |
 
 Produção: `VITE_STF_API_URL` com **HTTPS** apenas.
 
