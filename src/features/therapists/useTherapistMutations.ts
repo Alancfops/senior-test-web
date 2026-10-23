@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { deleteTherapist, fetchTherapist } from '@/lib/api/therapists';
+import { deleteTherapist, fetchTherapist, revokeAssistant } from '@/lib/api/therapists';
 
 export function useTherapist(id: string) {
   return useQuery({
@@ -14,6 +14,17 @@ export function useDeleteTherapist() {
 
   return useMutation({
     mutationFn: (id: string) => deleteTherapist(id),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ['admin'] });
+    },
+  });
+}
+
+export function useRevokeAssistant() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (id: string) => revokeAssistant(id),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ['admin'] });
     },

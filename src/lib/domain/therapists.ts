@@ -1,20 +1,18 @@
-import type { TherapistListItem, TherapistsListResponse } from '@/types/api';
+import type { TherapistListItem, TherapistRole } from '@/types/api';
 
-/** Fisioterapeutas clínicos (app mobile) — exclui conta ADMIN do painel web. */
-export function isClinicalTherapist(therapist: Pick<TherapistListItem, 'role'>): boolean {
-  return therapist.role === 'THERAPIST';
-}
+/**
+ * Espelha o escopo da API: professora exclui ajudante/fisio; ajudante só fisio.
+ * A conta da professora só muda via `admin:set` no backend.
+ */
+const MANAGED_ROLES: Record<TherapistRole, TherapistRole[]> = {
+  ADMIN: ['ASSISTANT', 'THERAPIST'],
+  ASSISTANT: ['THERAPIST'],
+  THERAPIST: [],
+};
 
-export function filterClinicalTherapists(
-  response: TherapistsListResponse,
-): TherapistsListResponse {
-  const data = response.data.filter(isClinicalTherapist);
-  return {
-    data,
-    meta: {
-      ...response.meta,
-      total: data.length,
-      totalPages: Math.max(1, Math.ceil(data.length / response.meta.limit)),
-    },
-  };
+export function canDeleteTherapist(
+  therapist: Pick<TherapistListItem, 'role'>,
+  requesterRole: TherapistRole | undefined,
+): boolean {
+  return requesterRole ? MANAGED_ROLES[requesterRole].includes(therapist.role) : false;
 }

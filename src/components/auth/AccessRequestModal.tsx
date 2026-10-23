@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { IconMail, IconUser } from '@/components/icons/AuthIcons';
+import { IconLock, IconMail, IconUser } from '@/components/icons/AuthIcons';
 import { Button } from '@/components/ui/Button';
 import { IconTextInput } from '@/components/ui/IconTextInput';
 import { Modal } from '@/components/ui/Modal';
@@ -11,6 +11,8 @@ import {
   adminAccessRequestSchema,
   type AdminAccessRequestFormValues,
 } from '@/features/auth/passwordSchema';
+
+const EMPTY_VALUES: AdminAccessRequestFormValues = { email: '', fullName: '', password: '' };
 
 type AccessRequestModalProps = {
   open: boolean;
@@ -28,13 +30,13 @@ export function AccessRequestModal({ open, onClose }: AccessRequestModalProps) {
     formState: { errors, isSubmitting },
   } = useForm<AdminAccessRequestFormValues>({
     resolver: zodResolver(adminAccessRequestSchema),
-    defaultValues: { email: '', fullName: '' },
+    defaultValues: EMPTY_VALUES,
   });
 
   const handleClose = () => {
     setSuccessMessage(null);
     setApiError(null);
-    reset({ email: '', fullName: '' });
+    reset(EMPTY_VALUES);
     onClose();
   };
 
@@ -46,7 +48,7 @@ export function AccessRequestModal({ open, onClose }: AccessRequestModalProps) {
         response.message ||
           'Se os dados estiverem corretos, sua solicitação será analisada. Você receberá um e-mail quando houver uma resposta.',
       );
-      reset({ email: '', fullName: '' });
+      reset(EMPTY_VALUES);
     } catch (error) {
       setApiError(
         error instanceof ApiError
@@ -96,10 +98,17 @@ export function AccessRequestModal({ open, onClose }: AccessRequestModalProps) {
           {successMessage}
         </p>
       ) : (
-        <form id="access-request-form" className="space-y-4 text-left" onSubmit={onSubmit} noValidate>
+        <form
+          id="access-request-form"
+          className="space-y-4 text-left"
+          onSubmit={onSubmit}
+          noValidate
+          autoComplete="off"
+        >
           <p className="text-sm text-[var(--stf-text-muted)]">
-            Informe seus dados. Um administrador analisará o pedido e você receberá um e-mail com
-            a resposta.
+            Para ser ajudante, você precisa ter uma conta no app Sênior Teste. Informe seus dados
+            e a senha do app: a professora analisará o pedido e você receberá um e-mail com a
+            resposta.
           </p>
 
           <IconTextInput
@@ -114,10 +123,20 @@ export function AccessRequestModal({ open, onClose }: AccessRequestModalProps) {
           <IconTextInput
             type="email"
             placeholder="E-mail"
-            autoComplete="email"
+            autoComplete="off"
             leftIcon={<IconMail className="size-5" />}
             {...register('email')}
             error={errors.email?.message}
+          />
+
+          <IconTextInput
+            type="password"
+            placeholder="Senha do app"
+            autoComplete="new-password"
+            leftIcon={<IconLock className="size-5" />}
+            hint="Use a mesma senha do app Sênior Teste."
+            {...register('password')}
+            error={errors.password?.message}
           />
 
           {apiError ? (

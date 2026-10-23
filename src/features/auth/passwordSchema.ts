@@ -78,6 +78,8 @@ export const changePasswordSchema = z
 export const adminAccessRequestSchema = z.object({
   email: emailSchema,
   fullName: fullNameSchema,
+  /** Senha da conta do app — o ajudante é a própria conta mobile promovida. */
+  password: z.string().min(1, 'Informe a senha do app.'),
 });
 
 export const verifyResetCodeSchema = z.object({

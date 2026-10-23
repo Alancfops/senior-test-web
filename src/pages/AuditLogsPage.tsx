@@ -2,6 +2,12 @@ import { useState } from 'react';
 import { AuditLogDetailModal } from '@/components/audit/AuditLogDetailModal';
 import { IconEye } from '@/components/icons/ActionIcons';
 import { AppShell } from '@/components/layout/AppShell';
+import {
+  MobileCard,
+  MobileCardField,
+  MobileCardFields,
+  MobileCardList,
+} from '@/components/ui/MobileCardList';
 import { ActionButton, TableActions } from '@/components/ui/TableActions';
 import { SelectField } from '@/components/ui/SelectField';
 import { TableColGroup } from '@/components/ui/TableColGroup';
@@ -10,7 +16,7 @@ import { ErrorState } from '@/components/ui/ErrorState';
 import { Spinner } from '@/components/ui/Spinner';
 import { useAuditLogs } from '@/features/audit/useAuditLogs';
 import { resolveAuditTarget } from '@/lib/audit/formatAuditTarget';
-import { formatDateTime } from '@/lib/format';
+import { formatDateTime, formatCount } from '@/lib/format';
 import { ApiError } from '@/lib/api/errors';
 import type { AdminAuditAction, AuditLogItem } from '@/types/api';
 import { AUDIT_ACTION_LABELS } from '@/types/api';
@@ -55,36 +61,46 @@ export function AuditLogsPage() {
         ) : null}
 
         {!isLoading && !isError && data && data.data.length > 0 ? (
-          <div className="overflow-x-hidden">
-            <table className="stf-table">
-              <caption className="sr-only">Registros da trilha de auditoria administrativa</caption>
-              <TableColGroup variant="audit-logs" />
-              <thead>
-                <tr>
-                  <th scope="col" className="stf-table-col-leading">
-                    Data
-                  </th>
-                  <th scope="col" className="stf-table-col-secondary">
-                    Usuário
-                  </th>
-                  <th scope="col" className="stf-table-col-secondary">
-                    Ação
-                  </th>
-                  <th scope="col" className="stf-table-col-secondary">
-                    Registro afetado
-                  </th>
-                  <th scope="col" className="stf-table-col-actions">
-                    Ações
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {data.data.map((log) => (
-                  <AuditLogRow key={log.id} log={log} onOpenDetails={setSelectedLog} />
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <>
+            <MobileCardList
+              label="Registros da trilha de auditoria administrativa"
+              countLabel={formatCount(data.data.length, 'registro', 'registros')}
+            >
+              {data.data.map((log) => (
+                <AuditLogCard key={log.id} log={log} onOpenDetails={setSelectedLog} />
+              ))}
+            </MobileCardList>
+            <div className="hidden overflow-x-hidden md:block">
+              <table className="stf-table">
+                <caption className="sr-only">Registros da trilha de auditoria administrativa</caption>
+                <TableColGroup variant="audit-logs" />
+                <thead>
+                  <tr>
+                    <th scope="col" className="stf-table-col-leading">
+                      Data
+                    </th>
+                    <th scope="col" className="stf-table-col-secondary">
+                      Usuário
+                    </th>
+                    <th scope="col" className="stf-table-col-secondary">
+                      Ação
+                    </th>
+                    <th scope="col" className="stf-table-col-secondary">
+                      Registro afetado
+                    </th>
+                    <th scope="col" className="stf-table-col-actions">
+                      Ações
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {data.data.map((log) => (
+                    <AuditLogRow key={log.id} log={log} onOpenDetails={setSelectedLog} />
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
         ) : null}
       </div>
 
@@ -108,11 +124,6 @@ function AuditLogRow({
     <tr>
       <td className="stf-table-col-leading text-[var(--stf-text-muted)]">
         {formatDateTime(log.createdAt)}
-        <span className="mt-1.5 block hyphens-none break-words text-xs leading-relaxed text-[var(--stf-text-muted)] md:hidden">
-          {log.adminName} · {AUDIT_ACTION_LABELS[log.action]}
-          {' · '}
-          <AuditTargetLink target={target} />
-        </span>
       </td>
       <td className="stf-table-col-secondary">{log.adminName}</td>
       <td className="stf-table-col-secondary">{AUDIT_ACTION_LABELS[log.action]}</td>
@@ -127,6 +138,37 @@ function AuditLogRow({
         </TableActions>
       </td>
     </tr>
+  );
+}
+
+function AuditLogCard({
+  log,
+  onOpenDetails,
+}: {
+  log: AuditLogItem;
+  onOpenDetails: (log: AuditLogItem) => void;
+}) {
+  const target = resolveAuditTarget(log);
+
+  return (
+    <MobileCard
+      title={AUDIT_ACTION_LABELS[log.action]}
+      subtitle={formatDateTime(log.createdAt)}
+      aside={
+        <ActionButton icon={<IconEye />} onClick={() => onOpenDetails(log)}>
+          Ver detalhes
+        </ActionButton>
+      }
+    >
+      <MobileCardFields>
+        <MobileCardField label="Usuário" full>
+          {log.adminName}
+        </MobileCardField>
+        <MobileCardField label="Registro afetado" full>
+          <AuditTargetLink target={target} />
+        </MobileCardField>
+      </MobileCardFields>
+    </MobileCard>
   );
 }
 

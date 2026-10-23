@@ -1,12 +1,17 @@
 import { isMockMode } from '@/lib/api/config';
-import { apiDelete, apiGet } from '@/lib/api/client';
-import { filterClinicalTherapists } from '@/lib/domain/therapists';
+import { apiDelete, apiGet, apiPost } from '@/lib/api/client';
 import {
   mockDeleteTherapist,
   mockGetTherapist,
   mockListTherapists,
+  mockRevokeAssistant,
 } from '@/mocks/mockApi';
-import type { TherapistDetail, TherapistRole, TherapistsListResponse } from '@/types/api';
+import type {
+  RevokeAssistantResponse,
+  TherapistDetail,
+  TherapistRole,
+  TherapistsListResponse,
+} from '@/types/api';
 
 export type TherapistsQueryParams = {
   search?: string;
@@ -19,8 +24,7 @@ export async function fetchTherapists(
   params: TherapistsQueryParams = {},
 ): Promise<TherapistsListResponse> {
   if (isMockMode()) {
-    const response = await mockListTherapists(params.role);
-    return params.role ? response : filterClinicalTherapists(response);
+    return mockListTherapists(params.role);
   }
 
   const { search, page = 1, limit = 25, role } = params;
@@ -34,8 +38,7 @@ export async function fetchTherapists(
     query.set('role', role);
   }
 
-  const response = await apiGet<TherapistsListResponse>(`/admin/therapists?${query.toString()}`);
-  return role ? response : filterClinicalTherapists(response);
+  return apiGet<TherapistsListResponse>(`/admin/therapists?${query.toString()}`);
 }
 
 export async function fetchTherapist(id: string): Promise<TherapistDetail> {
@@ -50,4 +53,12 @@ export async function deleteTherapist(id: string): Promise<void> {
     return mockDeleteTherapist(id);
   }
   await apiDelete(`/admin/therapists/${id}`);
+}
+
+/** Revoga o acesso de ajudante: a conta volta a fisioterapeuta e mantém os pacientes no app. */
+export async function revokeAssistant(id: string): Promise<RevokeAssistantResponse> {
+  if (isMockMode()) {
+    return mockRevokeAssistant(id);
+  }
+  return apiPost<RevokeAssistantResponse>(`/admin/assistants/${id}/revoke`);
 }

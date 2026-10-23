@@ -27,10 +27,11 @@ describe('passwordSchema', () => {
 });
 
 describe('adminAccessRequestSchema', () => {
-  it('aceita nome e e-mail válidos', () => {
+  it('aceita nome, e-mail e senha do app', () => {
     const result = adminAccessRequestSchema.safeParse({
       email: 'Novo@Clinica.Exemplo',
       fullName: 'Maria Silva',
+      password: 'Abcd1234',
     });
     expect(result.success).toBe(true);
     if (result.success) {
@@ -42,6 +43,16 @@ describe('adminAccessRequestSchema', () => {
     const result = adminAccessRequestSchema.safeParse({
       email: 'novo@clinica.exemplo',
       fullName: 'Maria 123',
+      password: 'Abcd1234',
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it('exige a senha da conta do app', () => {
+    const result = adminAccessRequestSchema.safeParse({
+      email: 'novo@clinica.exemplo',
+      fullName: 'Maria Silva',
+      password: '',
     });
     expect(result.success).toBe(false);
   });

@@ -34,3 +34,8 @@ export function buildAssessmentReportFilename(patientFullName: string): string {
   const name = cleaned || 'Paciente';
   return `Relatório - ${name}.pdf`;
 }
+
+/** "1 paciente" / "3 pacientes". */
+export function formatCount(count: number, singular: string, plural: string): string {
+  return `${count} ${count === 1 ? singular : plural}`;
+}

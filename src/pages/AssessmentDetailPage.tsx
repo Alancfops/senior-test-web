@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link, useLocation, useParams } from 'react-router-dom';
 import { AppShell } from '@/components/layout/AppShell';
 import { IconDownload } from '@/components/icons/ActionIcons';
-import { TableMobileMeta } from '@/components/ui/EllipsisText';
+import { MobileCard, MobileCardList } from '@/components/ui/MobileCardList';
 import { ClassificationBadge } from '@/components/ui/ClassificationBadge';
 import { Button } from '@/components/ui/Button';
 import { ErrorState } from '@/components/ui/ErrorState';
@@ -13,7 +13,7 @@ import {
   downloadAssessmentReport,
   triggerBlobDownload,
 } from '@/lib/api/patients';
-import { formatDateTime, buildAssessmentReportFilename } from '@/lib/format';
+import { formatDateTime, buildAssessmentReportFilename, formatCount } from '@/lib/format';
 import { ApiError } from '@/lib/api/errors';
 import { INSTRUMENT_LABELS } from '@/types/api';
 import { readBackNavigation } from '@/lib/navigation/backNavigation';
@@ -173,39 +173,60 @@ export function AssessmentDetailPage() {
                 Itens aplicados no instrumento, com início da pergunta/instrução quando disponível.
               </p>
             </div>
-            <div className="overflow-x-hidden">
-              <table className="stf-table">
-                <caption className="sr-only">Respostas registradas na avaliação</caption>
-                <thead>
-                  <tr>
-                    <th scope="col" className="stf-table-col-leading">Item</th>
-                    <th scope="col" className="stf-table-col-secondary stf-table-col-text">
-                      Pergunta / instrução
-                    </th>
-                    <th scope="col" className="stf-table-col-actions">Resposta</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {answers.map((row) => (
-                    <tr key={`${row.title}-${row.question}`}>
-                      <td className="stf-table-col-leading font-medium text-[var(--stf-text)]">
-                        <span className="block break-words leading-snug">{row.title}</span>
-                        <TableMobileMeta>{row.question}</TableMobileMeta>
-                      </td>
-                      <td
-                        className="stf-table-col-secondary stf-table-col-text text-[var(--stf-text-muted)]"
-                        title={row.question}
-                      >
-                        {row.question}
-                      </td>
-                      <td className="stf-table-col-actions font-medium text-[var(--stf-text)]">
+            <>
+              <MobileCardList
+                label="Respostas registradas na avaliação"
+                countLabel={formatCount(answers.length, 'item', 'itens')}
+              >
+                {answers.map((row) => (
+                  <MobileCard
+                    key={`${row.title}-${row.question}`}
+                    title={row.title}
+                    aside={
+                      <span className="max-w-[45%] break-words pr-1.5 pt-1 text-right text-sm font-semibold text-[var(--stf-text)]">
                         {row.value}
-                      </td>
+                      </span>
+                    }
+                  >
+                    {row.question ? (
+                      <p className="mt-2 break-words text-sm text-[var(--stf-text-muted)]">{row.question}</p>
+                    ) : null}
+                  </MobileCard>
+                ))}
+              </MobileCardList>
+              <div className="hidden overflow-x-hidden md:block">
+                <table className="stf-table">
+                  <caption className="sr-only">Respostas registradas na avaliação</caption>
+                  <thead>
+                    <tr>
+                      <th scope="col" className="stf-table-col-leading">Item</th>
+                      <th scope="col" className="stf-table-col-secondary stf-table-col-text">
+                        Pergunta / instrução
+                      </th>
+                      <th scope="col" className="stf-table-col-actions">Resposta</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody>
+                    {answers.map((row) => (
+                      <tr key={`${row.title}-${row.question}`}>
+                        <td className="stf-table-col-leading font-medium text-[var(--stf-text)]">
+                          <span className="block break-words leading-snug">{row.title}</span>
+                        </td>
+                        <td
+                          className="stf-table-col-secondary stf-table-col-text text-[var(--stf-text-muted)]"
+                          title={row.question}
+                        >
+                          {row.question}
+                        </td>
+                        <td className="stf-table-col-actions font-medium text-[var(--stf-text)]">
+                          {row.value}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </>
           </section>
         ) : null}
 

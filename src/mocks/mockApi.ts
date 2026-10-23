@@ -9,9 +9,11 @@ import {
   removePatient,
   removeTherapist,
   resolveAccessRequest,
+  setTherapistRole,
   transferPatient,
 } from '@/mocks/mockStore';
 import type {
+  AccessRequestActionResponse,
   AccessRequestsListResponse,
   AdminAccessRequestStatus,
   AdminAuditAction,
@@ -22,6 +24,7 @@ import type {
   MessageResponse,
   PatientsListResponse,
   PatientProfile,
+  RevokeAssistantResponse,
   TherapistRole,
   TherapistsListResponse,
   TherapistDetail,
@@ -117,6 +120,32 @@ export async function mockDeleteTherapist(id: string): Promise<void> {
       email: therapist.email,
     },
   });
+}
+
+export async function mockRevokeAssistant(id: string): Promise<RevokeAssistantResponse> {
+  await delay();
+  const assistant = getMockState().therapists.find((t) => t.id === id);
+  if (!assistant) {
+    throw new ApiError('Ajudante não encontrado.', 404);
+  }
+  if (assistant.role !== 'ASSISTANT') {
+    throw new ApiError('Esta conta não é de ajudante.', 409);
+  }
+  setTherapistRole(id, 'THERAPIST');
+  appendAuditLog({
+    adminId: MOCK_IDS.therapistAdmin,
+    adminName: 'Administrador',
+    action: 'REVOKE_ASSISTANT',
+    targetType: 'Therapist',
+    targetId: id,
+    metadata: {
+      fullName: assistant.fullName,
+      email: assistant.email,
+      fromRole: 'ASSISTANT',
+      toRole: 'THERAPIST',
+    },
+  });
+  return { id, role: 'THERAPIST' };
 }
 
 export async function mockGetPatient(id: string): Promise<PatientProfile> {
@@ -353,11 +382,13 @@ export async function mockListAccessRequests(
   return { data: structuredClone(data) };
 }
 
-export async function mockApproveAccessRequest(id: string): Promise<{ id: string }> {
+export async function mockApproveAccessRequest(
+  id: string,
+): Promise<AccessRequestActionResponse> {
   await delay();
   try {
-    const request = resolveAccessRequest(id, 'APPROVED');
-    return { id: request.id };
+    resolveAccessRequest(id, 'APPROVED');
+    return { notificationSent: true };
   } catch (error) {
     if (error instanceof Error && error.message === 'not_found') {
       throw new ApiError('Solicitação não encontrada.', 404);
@@ -366,10 +397,19 @@ export async function mockApproveAccessRequest(id: string): Promise<{ id: string
   }
 }
 
-export async function mockRejectAccessRequest(id: string) {
+export async function mockRejectAccessRequest(id: string): Promise<AccessRequestActionResponse> {
   await delay();
   try {
-    return resolveAccessRequest(id, 'REJECTED');
+    const request = resolveAccessRequest(id, 'REJECTED');
+    appendAuditLog({
+      adminId: MOCK_IDS.therapistAdmin,
+      adminName: 'Administrador',
+      action: 'REJECT_ACCESS_REQUEST',
+      targetType: 'AccessRequest',
+      targetId: id,
+      metadata: { fullName: request.fullName, email: request.email },
+    });
+    return { notificationSent: true };
   } catch (error) {
     if (error instanceof Error && error.message === 'not_found') {
       throw new ApiError('Solicitação não encontrada.', 404);

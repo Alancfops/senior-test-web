@@ -40,6 +40,16 @@ export type AccessRequestsListResponse = {
   data: AccessRequestItem[];
 };
 
+/** Aprovar/recusar: a decisão persiste mesmo se o e-mail de aviso falhar. */
+export type AccessRequestActionResponse = {
+  notificationSent: boolean;
+};
+
+export type RevokeAssistantResponse = {
+  id: string;
+  role: TherapistRole;
+};
+
 export type TherapistListItem = {
   id: string;
   fullName: string;
@@ -166,14 +176,17 @@ export type AdminAuditAction =
   | 'TRANSFER_PATIENT'
   | 'DELETE_THERAPIST'
   | 'DOWNLOAD_REPORT'
-  | 'CREATE_THERAPIST';
+  | 'CREATE_THERAPIST'
+  | 'PROMOTE_ASSISTANT'
+  | 'REVOKE_ASSISTANT'
+  | 'REJECT_ACCESS_REQUEST';
 
 export type AuditLogItem = {
   id: string;
   adminId: string;
   adminName: string;
   action: AdminAuditAction;
-  targetType: 'Patient' | 'Therapist' | 'Assessment';
+  targetType: 'Patient' | 'Therapist' | 'Assessment' | 'AccessRequest';
   targetId: string;
   metadata: Record<string, unknown>;
   createdAt: string;
@@ -214,10 +227,11 @@ export const INSTRUMENT_LABELS: Record<string, string> = {
 };
 
 export const SCHOOLING_LABELS: Record<string, string> = {
-  '0_anos': 'Analfabeto',
-  '1_4_anos': '1–4 anos',
-  '5_8_anos': '5–8 anos',
-  '9_anos_ou_mais': '9 anos ou mais',
+  analfabeto: 'Analfabeto',
+  '1_4_anos': '1 a 4 anos de estudo',
+  '5_8_anos': '5 a 8 anos de estudo',
+  '9_11_anos': '9 a 11 anos de estudo',
+  mais_11_anos: 'Mais de 11 anos de estudo',
 };
 
 export const AUDIT_ACTION_LABELS: Record<AdminAuditAction, string> = {
@@ -226,6 +240,9 @@ export const AUDIT_ACTION_LABELS: Record<AdminAuditAction, string> = {
   DELETE_THERAPIST: 'Exclusão de fisioterapeuta',
   DOWNLOAD_REPORT: 'Download de relatório',
   CREATE_THERAPIST: 'Criação de conta',
+  PROMOTE_ASSISTANT: 'Aprovação de ajudante',
+  REVOKE_ASSISTANT: 'Revogação de ajudante',
+  REJECT_ACCESS_REQUEST: 'Rejeição de solicitação',
 };
 
 export const ROLE_LABELS: Record<TherapistRole, string> = {

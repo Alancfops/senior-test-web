@@ -8,7 +8,13 @@ import { ErrorState } from '@/components/ui/ErrorState';
 import { EvolutionLineChart } from '@/components/ui/EvolutionLineChart';
 import { SelectField } from '@/components/ui/SelectField';
 import { Spinner } from '@/components/ui/Spinner';
-import { EllipsisText, TableMobileMeta } from '@/components/ui/EllipsisText';
+import { EllipsisText } from '@/components/ui/EllipsisText';
+import {
+  MobileCard,
+  MobileCardList,
+  MobileToneBadge,
+  MobileToneNote,
+} from '@/components/ui/MobileCardList';
 import { ActionLink } from '@/components/ui/TableActions';
 import { TableColGroup } from '@/components/ui/TableColGroup';
 import {
@@ -18,12 +24,13 @@ import {
   isChartInstrumentCode,
   mapTimeseriesToChartPoints,
 } from '@/features/assessments/chartConfig';
+import { resolveClassificationTone } from '@/features/assessments/classificationTone';
 import {
   usePatient,
   usePatientAssessments,
   useTimeseries,
 } from '@/features/patients/usePatients';
-import { formatDateTime, formatGender } from '@/lib/format';
+import { formatDateTime, formatGender, formatCount } from '@/lib/format';
 import { ApiError } from '@/lib/api/errors';
 import { INSTRUMENT_LABELS, SCHOOLING_LABELS } from '@/types/api';
 import { readBackNavigation } from '@/lib/navigation/backNavigation';
@@ -91,6 +98,19 @@ export function PatientProfilePage() {
     backTo: patient ? `/therapists/${patient.therapist.id}` : '/patients',
     backLabel: patient ? 'Voltar para o fisioterapeuta' : 'Voltar para pacientes',
   });
+
+  const renderAssessmentLink = (assessmentId: string) => (
+    <ActionLink
+      to={`/patients/${id}/assessment/${assessmentId}`}
+      state={{
+        backTo: `/patients/${id}`,
+        backLabel: 'Voltar para o paciente',
+      }}
+      icon={<IconEye />}
+    >
+      Ver detalhe
+    </ActionLink>
+  );
 
   return (
     <AppShell
@@ -193,76 +213,94 @@ export function PatientProfilePage() {
             ) : null}
 
             {!loadingAssessments && filteredHistory.length > 0 ? (
-              <div className="overflow-x-hidden">
-                <table className="stf-table">
-                  <TableColGroup variant="patient-assessments" />
-                  <caption className="sr-only">
-                    Histórico de avaliações finalizadas do paciente
-                  </caption>
-                  <thead>
-                    <tr>
-                      <th scope="col" className="stf-table-col-leading">Instrumento</th>
-                      <th scope="col" className="stf-table-col-secondary">Resultado</th>
-                      <th scope="col" className="stf-table-col-secondary">Classificação</th>
-                      <th scope="col" className="stf-table-col-secondary">
-                        Data
-                      </th>
-                      <th scope="col" className="stf-table-col-actions">
-                        Ações
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {filteredHistory.map((assessment) => (
-                      <tr key={assessment.id}>
-                        <td className="stf-table-col-leading">
-                          <span className="block break-words font-medium leading-snug text-[var(--stf-text)]">
-                            {INSTRUMENT_LABELS[assessment.instrumentCode] ??
-                              assessment.instrumentCode}
-                          </span>
-                          <TableMobileMeta>
-                            {assessment.result?.rawLabel ?? '-'}
-                            {assessment.result?.classificationLabel
-                              ? ` · ${assessment.result.classificationLabel}`
-                              : ''}
-                            {' · '}
-                            {formatDateTime(assessment.finalizedAt ?? assessment.startedAt)}
-                          </TableMobileMeta>
-                        </td>
-                        <td className="stf-table-col-secondary">
-                          {assessment.result?.rawLabel ?? '-'}
-                        </td>
-                        <td className="stf-table-col-secondary text-center">
-                          {assessment.result ? (
-                            <ClassificationBadge
-                              label={assessment.result.classificationLabel}
-                              code={assessment.result.classificationCode}
-                              meta={assessment.result.classificationMeta}
-                            />
-                          ) : (
-                            '-'
-                          )}
-                        </td>
-                        <td className="stf-table-col-secondary text-[var(--stf-text-muted)]">
-                          {formatDateTime(assessment.finalizedAt ?? assessment.startedAt)}
-                        </td>
-                        <td className="stf-table-col-actions">
-                          <ActionLink
-                            to={`/patients/${id}/assessment/${assessment.id}`}
-                            state={{
-                              backTo: `/patients/${id}`,
-                              backLabel: 'Voltar para o paciente',
-                            }}
-                            icon={<IconEye />}
-                          >
-                            Ver detalhe
-                          </ActionLink>
-                        </td>
+              <>
+                <MobileCardList
+                  label="Histórico de avaliações finalizadas do paciente"
+                  countLabel={formatCount(filteredHistory.length, 'avaliação', 'avaliações')}
+                >
+                  {filteredHistory.map((assessment) => {
+                    const tone = assessment.result
+                      ? resolveClassificationTone({
+                          code: assessment.result.classificationCode,
+                          label: assessment.result.classificationLabel,
+                          meta: assessment.result.classificationMeta,
+                        })
+                      : null;
+                    return (
+                      <MobileCard
+                        key={assessment.id}
+                        title={INSTRUMENT_LABELS[assessment.instrumentCode] ?? assessment.instrumentCode}
+                        subtitle={formatDateTime(assessment.finalizedAt ?? assessment.startedAt)}
+                        aside={
+                          <>
+                            {assessment.result && tone ? (
+                              <MobileToneBadge tone={tone}>{assessment.result.rawLabel}</MobileToneBadge>
+                            ) : null}
+                            {renderAssessmentLink(assessment.id)}
+                          </>
+                        }
+                      >
+                        {assessment.result && tone ? (
+                          <MobileToneNote tone={tone}>{assessment.result.classificationLabel}</MobileToneNote>
+                        ) : null}
+                      </MobileCard>
+                    );
+                  })}
+                </MobileCardList>
+                <div className="hidden overflow-x-hidden md:block">
+                  <table className="stf-table">
+                    <TableColGroup variant="patient-assessments" />
+                    <caption className="sr-only">
+                      Histórico de avaliações finalizadas do paciente
+                    </caption>
+                    <thead>
+                      <tr>
+                        <th scope="col" className="stf-table-col-leading">Instrumento</th>
+                        <th scope="col" className="stf-table-col-secondary">Resultado</th>
+                        <th scope="col" className="stf-table-col-secondary">Classificação</th>
+                        <th scope="col" className="stf-table-col-secondary">
+                          Data
+                        </th>
+                        <th scope="col" className="stf-table-col-actions">
+                          Ações
+                        </th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                    </thead>
+                    <tbody>
+                      {filteredHistory.map((assessment) => (
+                        <tr key={assessment.id}>
+                          <td className="stf-table-col-leading">
+                            <span className="block break-words font-medium leading-snug text-[var(--stf-text)]">
+                              {INSTRUMENT_LABELS[assessment.instrumentCode] ??
+                                assessment.instrumentCode}
+                            </span>
+                          </td>
+                          <td className="stf-table-col-secondary">
+                            {assessment.result?.rawLabel ?? '-'}
+                          </td>
+                          <td className="stf-table-col-secondary text-center">
+                            {assessment.result ? (
+                              <ClassificationBadge
+                                label={assessment.result.classificationLabel}
+                                code={assessment.result.classificationCode}
+                                meta={assessment.result.classificationMeta}
+                              />
+                            ) : (
+                              '-'
+                            )}
+                          </td>
+                          <td className="stf-table-col-secondary text-[var(--stf-text-muted)]">
+                            {formatDateTime(assessment.finalizedAt ?? assessment.startedAt)}
+                          </td>
+                          <td className="stf-table-col-actions">
+                            {renderAssessmentLink(assessment.id)}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </>
             ) : null}
           </section>
 

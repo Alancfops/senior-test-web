@@ -56,6 +56,7 @@ enum AdminAuditAction {
 ```
 
 - `Therapist.role` — default `THERAPIST`
+- `Therapist.email` — **único**: uma conta por pessoa. Professora (`ADMIN`) e ajudante (`ASSISTANT`) usam a **mesma conta e senha** no app e no gerenciador; `role` só define o acesso web
 - Tabela `AdminAuditLog` — ver [data-model-extensions.md](../engineering/data-model-extensions.md)
 
 ### 2.2 JWT
@@ -102,7 +103,7 @@ O admin **não** tem rota de login separada. Usa as rotas `/auth/*` já implemen
 }
 ```
 
-> `panel: 'web'` substitui o antigo `role: 'ADMIN'` fixo — qualquer um dos 2 papéis web (`ASSISTANT`, `ADMIN`) pode logar neste painel; enviar `role` fixo quebraria o login de `ASSISTANT`. O mesmo campo `panel: 'web'` é enviado em `/auth/forgot-password`, `/auth/verify-reset-code` e `/auth/reset-password`.
+> `panel: 'web'` restringe o login a `ASSISTANT`/`ADMIN` (conta `THERAPIST` → `401` genérico). Sem `panel` (app mobile), qualquer papel entra — inclusive a professora. O antigo campo `role` foi removido do corpo (ignorado se enviado). O mesmo `panel: 'web'` é enviado em `/auth/forgot-password`, `/auth/verify-reset-code` e `/auth/reset-password`.
 
 **Response `201`** — NestJS default para POST (e2e confirma):
 
@@ -144,25 +145,44 @@ O admin **não** tem rota de login separada. Usa as rotas `/auth/*` já implemen
 | POST | `/auth/verify-reset-code` | Validar código |
 | POST | `/auth/reset-password` | Nova senha |
 
-Admin usa o **mesmo fluxo** do app mobile, enviando `panel: "web"` no corpo em vez de `role`.
+Admin usa o **mesmo fluxo** do app mobile, enviando `panel: "web"` no corpo. Como a conta é única, a nova senha vale no app e no gerenciador.
 
 ### 3.3 POST `/auth/admin-access-request` (público, sem autenticação)
 
-Fluxo de "solicitar acesso" do painel web (formulário público). Mesmo endpoint de antes — o que muda é o papel criado na aprovação.
+Fluxo "solicitar acesso" do painel web. O ajudante é a **própria conta do app** (`THERAPIST`) promovida a `ASSISTANT` após aprovação — mesma senha no app e no gerenciador, sem senha temporária.
 
 **Request**
 
 ```json
-{ "email": "novo@clinica.exemplo", "fullName": "Nova Ajudante" }
+{ "email": "aluno@clinica.exemplo", "fullName": "Aluno Ajudante", "password": "<senha do app>" }
 ```
+
+- `password` é a senha da conta `THERAPIST` do app; a API valida e vincula a solicitação (`therapistId`).
+- Conta inexistente, senha errada, conta já ajudante ou pedido `PENDING` existente → **mesma resposta genérica**, sem criar registro (anti-enumeração).
 
 **Response `201`**
 
 ```json
-{ "message": "Se os dados estiverem corretos, sua solicitação será analisada..." }
+{ "message": "Se os dados forem válidos, sua solicitação será analisada." }
 ```
 
-**Aprovação (`/admin/access-requests/:id/approve`)** — agora cria uma conta **`ASSISTANT`** (ajudante), não mais `ADMIN`. Somente a professora (`role === 'ADMIN'`) pode aprovar/rejeitar (antes era restrito a um e-mail bootstrap fixo). Mesma mecânica de senha temporária (`mustChangePassword: true`, sem prazo de expiração — a senha continua válida até o usuário trocá-la em `/auth/change-password`).
+### 3.4 POST `/admin/access-requests/:id/approve` · `/reject` (só `ADMIN`)
+
+- **Approve:** promove a conta vinculada `THERAPIST → ASSISTANT` (audit `PROMOTE_ASSISTANT`) e envia e-mail de aprovação. `409` se a solicitação já foi resolvida, se é antiga (sem `therapistId`) ou se a conta não é mais `THERAPIST`.
+- **Reject:** marca `REJECTED` (audit `REJECT_ACCESS_REQUEST`, `targetType: "AccessRequest"`, metadata `{ fullName, email }`) e envia e-mail informando que a solicitação não foi aceita. A conta do app não muda.
+- Ambas retornam `notificationSent: boolean`. Falha no e-mail **não** desfaz a decisão — a UI apenas avisa.
+
+```json
+{ "id": "uuid", "email": "aluno@clinica.exemplo", "fullName": "Aluno Ajudante", "role": "ASSISTANT", "createdAt": "…", "notificationSent": true }
+```
+
+### 3.5 POST `/admin/assistants/:id/revoke` (só `ADMIN`)
+
+Remove o acesso de ajudante: a conta volta a `THERAPIST` (audit `REVOKE_ASSISTANT`) e mantém pacientes e avaliações no app. Não exclui nada. `404` se não existir; `409` se a conta não for `ASSISTANT` .
+
+```json
+{ "id": "uuid", "role": "THERAPIST" }
+```
 
 ---
 
@@ -181,7 +201,7 @@ Fluxo de "solicitar acesso" do painel web (formulário público). Mesmo endpoint
 | `limit` | int | `25` | Itens por página (máx. 100) |
 | `sortBy` | enum | `fullName` | `fullName` \| `email` \| `createdAt` |
 | `sortOrder` | enum | `asc` | `asc` \| `desc` |
-| `role` | `TherapistRole` | — | Filtra por papel (`THERAPIST`, `ASSISTANT`) — usado pela tela Ajudantes. `ADMIN` filtrando por `ADMIN` → `403` |
+| `role` | `TherapistRole` | — | Filtra por papel — usado pela tela Ajudantes. Sem filtro, retorna **todas as contas** (fisio, ajudante e professora), já que todas atendem pacientes pelo app. Vale para `ADMIN` e `ASSISTANT` |
 
 **Response `200`**
 
@@ -273,7 +293,8 @@ Fluxo de "solicitar acesso" do painel web (formulário público). Mesmo endpoint
 **Regras (RB-05)**
 
 - Bloquear se `patientCount > 0` → `409 Conflict`
-- Conta `ADMIN` (professora) está fora do escopo de gestão do painel → `403 Forbidden` (troca/recuperação só via `npm run admin:set` no backend, ver §4.4)
+- Escopo de exclusão: `ADMIN` exclui `ASSISTANT`/`THERAPIST`; `ASSISTANT` só `THERAPIST`. Fora disso → `403 Forbidden`
+- Conta `ADMIN` (professora) aparece em `GET /admin/therapists[/:id]`, mas nunca é excluída pelo painel (troca/recuperação só via `npm run admin:set` no backend, ver §4.4)
 - Sucesso → cascade em `PasswordResetToken`; pacientes **não** existem (pré-condição)
 
 **Response `204`** — sem corpo.
@@ -298,11 +319,14 @@ A conta é gerida só por script no backend STF (`backend/scripts/set-admin.ts`)
 
 | Caso | Comando (em `senior-test-funcional/backend`) |
 |------|-----------------------------------------------|
-| Criar a professora (sem `ADMIN` no banco) | `npm run admin:set -- --email <e-mail> --name "<nome>"` |
+| Definir a professora (sem `ADMIN` no banco) | `npm run admin:set -- --email <e-mail> --name "<nome>"` |
 | Recuperar acesso (mesmo e-mail) | `npm run admin:set -- --email <e-mail>` |
 | Trocar a professora responsável | `npm run admin:set -- --email <novo e-mail> --name "<nome>" --replace` |
 
-- Gera senha temporária exibida uma vez no terminal; `mustChangePassword: true` força a troca no 1º login.
+- A ordem app ↔ gerenciador não importa:
+  - **Já tem conta no app** → a conta é promovida a `ADMIN`, mantém senha e pacientes; recebe só um aviso por e-mail.
+  - **Ainda não tem** → conta criada com senha temporária (e-mail ou terminal) e `mustChangePassword: true`, que força a troca no 1º login do gerenciador; a mesma conta já entra no app (cadastro no app com esse e-mail → `409`).
+- Recuperação gera nova senha temporária, válida nos dois.
 - `--replace` rebaixa a professora anterior para `ASSISTANT` (preserva a trilha de auditoria); a nova professora pode removê-la depois pelo painel.
 - O script recusa rodar se houver mais de uma conta `ADMIN`.
 - Seed dev (`npx prisma db seed`) não cria `ADMIN` — só dados demo.
@@ -616,7 +640,7 @@ Corpo: bytes do PDF.
 | 2 | GET | `/admin/therapists` | GW002 | ✅ `?role=` opcional | — |
 | 3 | GET | `/admin/therapists/:id` | GW003 | ✅ | — |
 | 4 | DELETE | `/admin/therapists/:id` | GW006 | ✅ | ✅ |
-| 5 | POST | `/auth/admin-access-request` | Solicitar acesso | ✅ público — aprovação cria `ASSISTANT` | ✅ (na aprovação) |
+| 5 | POST | `/auth/admin-access-request` | Solicitar acesso | ✅ público — exige senha da conta do app | — |
 | 6 | GET | `/admin/patients/:id` | GW007 | ✅ | — |
 | 7 | GET | `/admin/patients/:id/assessments` | GW008 | ✅ | — |
 | 8 | GET | `/admin/patients/:id/assessments/:assessmentId` | GW007 | ✅ | — |
@@ -625,6 +649,8 @@ Corpo: bytes do PDF.
 | 11 | POST | `/admin/patients/:id/transfer` | GW005 | ✅ | ✅ |
 | 12 | POST | `/admin/reports/assessments/:assessmentId` | GW009 | ✅ | ✅ |
 | 13 | GET | `/admin/audit-logs` | GW010 | ✅ | — |
+| 14 | POST | `/admin/access-requests/:id/approve` · `/reject` | Solicitações | ✅ promove conta do app / recusa + e-mail | ✅ (approve e reject) |
+| 15 | POST | `/admin/assistants/:id/revoke` | Ajudantes | ✅ volta a `THERAPIST` | ✅ |
 
 ---
 

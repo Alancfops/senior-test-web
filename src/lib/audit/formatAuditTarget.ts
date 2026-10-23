@@ -58,6 +58,16 @@ export function resolveAuditTarget(log: AuditLogItem): AuditTargetView {
     };
   }
 
+  if (log.targetType === 'AccessRequest') {
+    const name = metaString(meta, 'fullName');
+    return {
+      label: name ? formatShortDisplayName(name) : 'Solicitação de acesso',
+      name,
+      to: null,
+      title: name ?? 'Solicitação de acesso',
+    };
+  }
+
   return {
     label: 'Registro',
     name: null,

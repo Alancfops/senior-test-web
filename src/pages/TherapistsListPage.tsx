@@ -6,15 +6,25 @@ import { EmptyState } from '@/components/ui/EmptyState';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { SearchInput } from '@/components/ui/SearchInput';
 import { Spinner } from '@/components/ui/Spinner';
-import { EllipsisText, TableMobileMeta, TablePrimaryText } from '@/components/ui/EllipsisText';
+import { EllipsisText, TablePrimaryText } from '@/components/ui/EllipsisText';
+import {
+  MobileCard,
+  MobileCardField,
+  MobileCardFields,
+  MobileCardList,
+} from '@/components/ui/MobileCardList';
 import { TableColGroup } from '@/components/ui/TableColGroup';
 import { ActionButton, ActionLink, TableActions } from '@/components/ui/TableActions';
+import { useAuth } from '@/features/auth/AuthContext';
 import { useDeleteTherapist } from '@/features/therapists/useTherapistMutations';
 import { useTherapists } from '@/features/therapists/useTherapists';
-import { formatDateTime } from '@/lib/format';
+import { formatDateTime, formatCount } from '@/lib/format';
 import { ApiError } from '@/lib/api/errors';
+import { canDeleteTherapist } from '@/lib/domain/therapists';
+import { ROLE_LABELS, type TherapistListItem } from '@/types/api';
 
 export function TherapistsListPage() {
+  const { user } = useAuth();
   const { data, isLoading, isError, error, refetch } = useTherapists();
   const deleteTherapist = useDeleteTherapist();
   const [search, setSearch] = useState('');
@@ -38,6 +48,29 @@ export function TherapistsListPage() {
         therapist.email.toLowerCase().includes(query),
     );
   }, [data?.data, search]);
+
+  const renderActions = (therapist: TherapistListItem) => (
+    <TableActions>
+      <ActionLink to={`/therapists/${therapist.id}`} icon={<IconEye />}>
+        Ver detalhe
+      </ActionLink>
+      {canDeleteTherapist(therapist, user?.role) ? (
+        <ActionButton
+          variant="destructive"
+          icon={<IconTrash />}
+          onClick={() =>
+            setDeleteTarget({
+              id: therapist.id,
+              fullName: therapist.fullName,
+              patientCount: therapist.patientCount,
+            })
+          }
+        >
+          Excluir
+        </ActionButton>
+      ) : null}
+    </TableActions>
+  );
 
   return (
     <AppShell
@@ -72,77 +105,87 @@ export function TherapistsListPage() {
         ) : null}
 
         {!isLoading && !isError && filteredTherapists.length > 0 ? (
-          <div className="overflow-x-hidden">
-            <table className="stf-table">
-              <TableColGroup variant="therapists-list" />
-              <caption className="sr-only">Lista de fisioterapeutas cadastrados</caption>
-              <thead>
-                <tr>
-                  <th scope="col" className="stf-table-col-leading">Nome</th>
-                  <th scope="col" className="stf-table-col-secondary">
-                    E-mail
-                  </th>
-                  <th scope="col" className="stf-table-col-secondary">
-                    Pacientes
-                  </th>
-                  <th scope="col" className="stf-table-col-secondary">
-                    Avaliações
-                  </th>
-                  <th scope="col" className="stf-table-col-tertiary">
-                    Última atividade
-                  </th>
-                  <th scope="col" className="stf-table-col-actions">
-                    Ações
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredTherapists.map((therapist) => (
-                  <tr key={therapist.id}>
-                    <td className="stf-table-col-leading font-medium text-[var(--stf-text)]">
-                      <TablePrimaryText text={therapist.fullName} />
-                      <TableMobileMeta>
-                        {therapist.email}
-                        {' · '}
-                        {therapist.patientCount} pac. · {therapist.assessmentCount} aval.
-                        {therapist.lastActivityAt
-                          ? ` · ${formatDateTime(therapist.lastActivityAt)}`
-                          : ''}
-                      </TableMobileMeta>
-                    </td>
-                    <td className="stf-table-col-secondary text-[var(--stf-text-muted)]">
-                      <EllipsisText text={therapist.email} maxLines={2} />
-                    </td>
-                    <td className="stf-table-col-secondary">{therapist.patientCount}</td>
-                    <td className="stf-table-col-secondary">{therapist.assessmentCount}</td>
-                    <td className="stf-table-col-tertiary text-[var(--stf-text-muted)]">
+          <>
+            <MobileCardList
+              label="Lista de fisioterapeutas cadastrados"
+              countLabel={formatCount(filteredTherapists.length, 'fisioterapeuta', 'fisioterapeutas')}
+            >
+              {filteredTherapists.map((therapist) => (
+                <MobileCard
+                  key={therapist.id}
+                  title={therapist.fullName}
+                  subtitle={ROLE_LABELS[therapist.role]}
+                  aside={renderActions(therapist)}
+                >
+                  <MobileCardFields>
+                    <MobileCardField label="E-mail" full>
+                      {therapist.email}
+                    </MobileCardField>
+                    <MobileCardField label="Pacientes" strong>
+                      {therapist.patientCount}
+                    </MobileCardField>
+                    <MobileCardField label="Avaliações" strong>
+                      {therapist.assessmentCount}
+                    </MobileCardField>
+                    <MobileCardField label="Última atividade" full>
                       {formatDateTime(therapist.lastActivityAt)}
-                    </td>
-                    <td className="stf-table-col-actions">
-                      <TableActions>
-                        <ActionLink to={`/therapists/${therapist.id}`} icon={<IconEye />}>
-                          Ver detalhe
-                        </ActionLink>
-                        <ActionButton
-                          variant="destructive"
-                          icon={<IconTrash />}
-                          onClick={() =>
-                            setDeleteTarget({
-                              id: therapist.id,
-                              fullName: therapist.fullName,
-                              patientCount: therapist.patientCount,
-                            })
-                          }
-                        >
-                          Excluir
-                        </ActionButton>
-                      </TableActions>
-                    </td>
+                    </MobileCardField>
+                  </MobileCardFields>
+                </MobileCard>
+              ))}
+            </MobileCardList>
+            <div className="hidden overflow-x-hidden md:block">
+              <table className="stf-table">
+                <TableColGroup variant="therapists-list" />
+                <caption className="sr-only">Lista de fisioterapeutas cadastrados</caption>
+                <thead>
+                  <tr>
+                    <th scope="col" className="stf-table-col-leading">Nome</th>
+                    <th scope="col" className="stf-table-col-secondary">
+                      E-mail
+                    </th>
+                    <th scope="col" className="stf-table-col-secondary">
+                      Pacientes
+                    </th>
+                    <th scope="col" className="stf-table-col-secondary">
+                      Avaliações
+                    </th>
+                    <th scope="col" className="stf-table-col-tertiary">
+                      Última atividade
+                    </th>
+                    <th scope="col" className="stf-table-col-actions">
+                      Ações
+                    </th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody>
+                  {filteredTherapists.map((therapist) => (
+                    <tr key={therapist.id}>
+                      <td className="stf-table-col-leading font-medium text-[var(--stf-text)]">
+                        <TablePrimaryText text={therapist.fullName} />
+                        {therapist.role !== 'THERAPIST' ? (
+                          <span className="block text-xs font-normal text-[var(--stf-text-muted)]">
+                            {ROLE_LABELS[therapist.role]}
+                          </span>
+                        ) : null}
+                      </td>
+                      <td className="stf-table-col-secondary text-[var(--stf-text-muted)]">
+                        <EllipsisText text={therapist.email} maxLines={2} />
+                      </td>
+                      <td className="stf-table-col-secondary">{therapist.patientCount}</td>
+                      <td className="stf-table-col-secondary">{therapist.assessmentCount}</td>
+                      <td className="stf-table-col-tertiary text-[var(--stf-text-muted)]">
+                        {formatDateTime(therapist.lastActivityAt)}
+                      </td>
+                      <td className="stf-table-col-actions">
+                        {renderActions(therapist)}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
         ) : null}
       </div>
 

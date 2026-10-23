@@ -9,14 +9,23 @@ import { Button } from '@/components/ui/Button';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { Spinner } from '@/components/ui/Spinner';
-import { TableMobileMeta, TablePrimaryText } from '@/components/ui/EllipsisText';
+import { TablePrimaryText } from '@/components/ui/EllipsisText';
+import {
+  MobileCard,
+  MobileCardField,
+  MobileCardFields,
+  MobileCardList,
+} from '@/components/ui/MobileCardList';
 import { ActionButton, ActionLink, TableActions } from '@/components/ui/TableActions';
 import { TableColGroup } from '@/components/ui/TableColGroup';
+import { useAuth } from '@/features/auth/AuthContext';
 import { useDeletePatient, useTransferPatient } from '@/features/patients/usePatients';
 import { useDeleteTherapist, useTherapist } from '@/features/therapists/useTherapistMutations';
 import { useTherapists } from '@/features/therapists/useTherapists';
-import { formatDateTime, formatGender } from '@/lib/format';
+import { formatDateTime, formatGender, formatCount } from '@/lib/format';
 import { ApiError } from '@/lib/api/errors';
+import { canDeleteTherapist } from '@/lib/domain/therapists';
+import type { TherapistPatientSummary } from '@/types/api';
 
 type PatientAction = {
   id: string;
@@ -26,6 +35,7 @@ type PatientAction = {
 export function TherapistDetailPage() {
   const { id = '' } = useParams();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const { data, isLoading, isError, error, refetch } = useTherapist(id);
   const { data: therapistsList } = useTherapists();
   const deleteTherapist = useDeleteTherapist();
@@ -42,8 +52,46 @@ export function TherapistDetailPage() {
 
   const therapistOptions =
     therapistsList?.data
-      .filter((therapist) => therapist.id !== id && therapist.role === 'THERAPIST')
+      .filter((therapist) => therapist.id !== id)
       .map((therapist) => ({ value: therapist.id, label: therapist.fullName })) ?? [];
+
+  const renderPatientActions = (patient: TherapistPatientSummary) => (
+    <TableActions>
+      <ActionLink
+        to={`/patients/${patient.id}`}
+        state={{
+          backTo: `/therapists/${id}`,
+          backLabel: 'Voltar para o fisioterapeuta',
+        }}
+        icon={<IconEye />}
+      >
+        Ver perfil
+      </ActionLink>
+      <ActionButton
+        icon={<IconTransfer />}
+        onClick={() =>
+          setTransferTarget({
+            id: patient.id,
+            fullName: patient.fullName,
+          })
+        }
+      >
+        Transferir
+      </ActionButton>
+      <ActionButton
+        variant="destructive"
+        icon={<IconTrash />}
+        onClick={() =>
+          setDeletePatientTarget({
+            id: patient.id,
+            fullName: patient.fullName,
+          })
+        }
+      >
+        Excluir
+      </ActionButton>
+    </TableActions>
+  );
 
   return (
     <AppShell
@@ -56,7 +104,7 @@ export function TherapistDetailPage() {
         </Link>
       }
       actions={
-        data ? (
+        data && canDeleteTherapist(data, user?.role) ? (
           <Button
             variant="destructive"
             className="w-full sm:w-auto"
@@ -92,94 +140,76 @@ export function TherapistDetailPage() {
                 description="Este fisioterapeuta ainda não possui pacientes cadastrados."
               />
             ) : (
-              <div className="overflow-x-hidden">
-                <table className="stf-table">
-                  <TableColGroup variant="therapist-patients" />
-                  <caption className="sr-only">
-                    Pacientes vinculados ao fisioterapeuta
-                  </caption>
-                  <thead>
-                    <tr>
-                      <th scope="col" className="stf-table-col-leading">Nome</th>
-                      <th scope="col" className="stf-table-col-secondary">Idade</th>
-                      <th scope="col" className="stf-table-col-secondary stf-cell-gender">
-                        Sexo
-                      </th>
-                      <th scope="col" className="stf-table-col-secondary">
-                        Avaliações
-                      </th>
-                      <th scope="col" className="stf-table-col-tertiary">
-                        Última avaliação
-                      </th>
-                      <th scope="col" className="stf-table-col-actions">
-                        Ações
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {data.patients.map((patient) => (
-                      <tr key={patient.id}>
-                        <td className="stf-table-col-leading font-medium text-[var(--stf-text)]">
-                          <TablePrimaryText text={patient.fullName} />
-                          <TableMobileMeta>
-                            {patient.age} anos · {formatGender(patient.gender)}
-                            {' · '}
-                            {patient.assessmentCount} aval.
-                            {patient.lastAssessmentAt
-                              ? ` · ${formatDateTime(patient.lastAssessmentAt)}`
-                              : ''}
-                          </TableMobileMeta>
-                        </td>
-                        <td className="stf-table-col-secondary">{patient.age}</td>
-                        <td className="stf-table-col-secondary stf-cell-gender">
-                          {formatGender(patient.gender)}
-                        </td>
-                        <td className="stf-table-col-secondary">{patient.assessmentCount}</td>
-                        <td className="stf-table-col-tertiary text-[var(--stf-text-muted)]">
+              <>
+                <MobileCardList
+                  label="Pacientes vinculados ao fisioterapeuta"
+                  countLabel={formatCount(data.patients.length, 'paciente', 'pacientes')}
+                >
+                  {data.patients.map((patient) => (
+                    <MobileCard
+                      key={patient.id}
+                      title={patient.fullName}
+                      subtitle={`${patient.age} anos · ${formatGender(patient.gender)}`}
+                      aside={renderPatientActions(patient)}
+                    >
+                      <MobileCardFields>
+                        <MobileCardField label="Avaliações" strong>
+                          {patient.assessmentCount}
+                        </MobileCardField>
+                        <MobileCardField label="Última avaliação">
                           {formatDateTime(patient.lastAssessmentAt)}
-                        </td>
-                        <td className="stf-table-col-actions">
-                          <TableActions>
-                            <ActionLink
-                              to={`/patients/${patient.id}`}
-                              state={{
-                                backTo: `/therapists/${id}`,
-                                backLabel: 'Voltar para o fisioterapeuta',
-                              }}
-                              icon={<IconEye />}
-                            >
-                              Ver perfil
-                            </ActionLink>
-                            <ActionButton
-                              icon={<IconTransfer />}
-                              onClick={() =>
-                                setTransferTarget({
-                                  id: patient.id,
-                                  fullName: patient.fullName,
-                                })
-                              }
-                            >
-                              Transferir
-                            </ActionButton>
-                            <ActionButton
-                              variant="destructive"
-                              icon={<IconTrash />}
-                              onClick={() =>
-                                setDeletePatientTarget({
-                                  id: patient.id,
-                                  fullName: patient.fullName,
-                                })
-                              }
-                            >
-                              Excluir
-                            </ActionButton>
-                          </TableActions>
-                        </td>
+                        </MobileCardField>
+                      </MobileCardFields>
+                    </MobileCard>
+                  ))}
+                </MobileCardList>
+                <div className="hidden overflow-x-hidden md:block">
+                  <table className="stf-table">
+                    <TableColGroup variant="therapist-patients" />
+                    <caption className="sr-only">
+                      Pacientes vinculados ao fisioterapeuta
+                    </caption>
+                    <thead>
+                      <tr>
+                        <th scope="col" className="stf-table-col-leading">Nome</th>
+                        <th scope="col" className="stf-table-col-secondary">Idade</th>
+                        <th scope="col" className="stf-table-col-secondary stf-cell-gender">
+                          Sexo
+                        </th>
+                        <th scope="col" className="stf-table-col-secondary">
+                          Avaliações
+                        </th>
+                        <th scope="col" className="stf-table-col-tertiary">
+                          Última avaliação
+                        </th>
+                        <th scope="col" className="stf-table-col-actions">
+                          Ações
+                        </th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                    </thead>
+                    <tbody>
+                      {data.patients.map((patient) => (
+                        <tr key={patient.id}>
+                          <td className="stf-table-col-leading font-medium text-[var(--stf-text)]">
+                            <TablePrimaryText text={patient.fullName} />
+                          </td>
+                          <td className="stf-table-col-secondary">{patient.age}</td>
+                          <td className="stf-table-col-secondary stf-cell-gender">
+                            {formatGender(patient.gender)}
+                          </td>
+                          <td className="stf-table-col-secondary">{patient.assessmentCount}</td>
+                          <td className="stf-table-col-tertiary text-[var(--stf-text-muted)]">
+                            {formatDateTime(patient.lastAssessmentAt)}
+                          </td>
+                          <td className="stf-table-col-actions">
+                            {renderPatientActions(patient)}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </>
             )}
           </>
         ) : null}

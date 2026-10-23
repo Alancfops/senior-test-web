@@ -6,7 +6,7 @@ import {
   mockRejectAccessRequest,
 } from '@/mocks/mockApi';
 import type {
-  AccessRequestItem,
+  AccessRequestActionResponse,
   AccessRequestsListResponse,
   AdminAccessRequestStatus,
 } from '@/types/api';
@@ -29,16 +29,16 @@ export async function fetchAccessRequests(
   return apiGet<AccessRequestsListResponse>(`/admin/access-requests?${query.toString()}`);
 }
 
-export async function approveAccessRequest(id: string): Promise<unknown> {
+export async function approveAccessRequest(id: string): Promise<AccessRequestActionResponse> {
   if (isMockMode()) {
     return mockApproveAccessRequest(id);
   }
-  return apiPost(`/admin/access-requests/${id}/approve`);
+  return apiPost<AccessRequestActionResponse>(`/admin/access-requests/${id}/approve`);
 }
 
-export async function rejectAccessRequest(id: string): Promise<AccessRequestItem | unknown> {
+export async function rejectAccessRequest(id: string): Promise<AccessRequestActionResponse> {
   if (isMockMode()) {
     return mockRejectAccessRequest(id);
   }
-  return apiPost(`/admin/access-requests/${id}/reject`);
+  return apiPost<AccessRequestActionResponse>(`/admin/access-requests/${id}/reject`);
 }

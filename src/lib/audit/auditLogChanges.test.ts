@@ -83,4 +83,57 @@ describe('buildAuditLogChanges', () => {
     expect(changes.before.fields).toHaveLength(0);
     expect(changes.after.fields).toContainEqual({ label: 'Perfil', value: 'Ajudante' });
   });
+
+  it('shows role change when an app account is promoted to assistant', () => {
+    const changes = buildAuditLogChanges(
+      makeLog({
+        action: 'PROMOTE_ASSISTANT',
+        targetType: 'Therapist',
+        metadata: {
+          fullName: 'Carla',
+          email: 'carla@example.com',
+          fromRole: 'THERAPIST',
+          toRole: 'ASSISTANT',
+        },
+      }),
+      resolve,
+    );
+
+    expect(changes.before.fields).toContainEqual({ label: 'Perfil', value: 'Fisioterapeuta' });
+    expect(changes.after.fields).toContainEqual({ label: 'Perfil', value: 'Ajudante' });
+  });
+
+  it('shows role change when assistant access is revoked', () => {
+    const changes = buildAuditLogChanges(
+      makeLog({
+        action: 'REVOKE_ASSISTANT',
+        targetType: 'Therapist',
+        metadata: {
+          fullName: 'Carla',
+          email: 'carla@example.com',
+          fromRole: 'ASSISTANT',
+          toRole: 'THERAPIST',
+        },
+      }),
+      resolve,
+    );
+
+    expect(changes.before.fields).toContainEqual({ label: 'Perfil', value: 'Ajudante' });
+    expect(changes.after.fields).toContainEqual({ label: 'Perfil', value: 'Fisioterapeuta' });
+  });
+
+  it('shows request status change when access request is rejected', () => {
+    const changes = buildAuditLogChanges(
+      makeLog({
+        action: 'REJECT_ACCESS_REQUEST',
+        targetType: 'AccessRequest',
+        metadata: { fullName: 'Diego', email: 'diego@example.com' },
+      }),
+      resolve,
+    );
+
+    expect(changes.before.fields).toContainEqual({ label: 'Situação', value: 'Pendente' });
+    expect(changes.after.fields).toContainEqual({ label: 'Situação', value: 'Rejeitada' });
+    expect(changes.after.fields).toContainEqual({ label: 'E-mail', value: 'diego@example.com' });
+  });
 });

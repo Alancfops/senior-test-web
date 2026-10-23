@@ -1,5 +1,3 @@
-import type { ReactNode } from 'react';
-
 type EllipsisTextProps = {
   text: string;
   className?: string;
@@ -49,14 +47,5 @@ export function TablePrimaryText({
       maxLines={2}
       className={['font-semibold text-[var(--stf-text)]', className].join(' ')}
     />
-  );
-}
-
-/** Meta secundária abaixo do nome no mobile (email, stats, etc.). */
-export function TableMobileMeta({ children }: { children: ReactNode }) {
-  return (
-    <span className="mt-1.5 block hyphens-none break-words text-xs font-normal leading-relaxed text-[var(--stf-text-muted)] md:hidden">
-      {children}
-    </span>
   );
 }

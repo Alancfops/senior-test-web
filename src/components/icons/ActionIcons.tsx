@@ -20,6 +20,15 @@ export function IconTrash({ className = 'size-4', ...rest }: IconProps) {
   );
 }
 
+export function IconUserMinus({ className = 'size-4', ...rest }: IconProps) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden {...rest}>
+      <circle cx="9" cy="8" r="4" />
+      <path strokeLinecap="round" strokeLinejoin="round" d="M2 21v-1a7 7 0 0 1 14 0v1M16 11h6" />
+    </svg>
+  );
+}
+
 export function IconTransfer({ className = 'size-4', ...rest }: IconProps) {
   return (
     <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden {...rest}>

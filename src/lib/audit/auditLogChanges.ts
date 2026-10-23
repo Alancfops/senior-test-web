@@ -19,6 +19,7 @@ export const AUDIT_ENTITY_LABELS: Record<AuditLogItem['targetType'], string> = {
   Patient: 'Paciente',
   Therapist: 'Conta de usuário',
   Assessment: 'Avaliação',
+  AccessRequest: 'Solicitação de acesso',
 };
 
 /** Resolve nome de fisioterapeuta a partir do ID gravado no audit (nunca exibido). */
@@ -106,6 +107,37 @@ export function buildAuditLogChanges(
           ...field('E-mail', metaString(meta, 'email')),
           ...field('Perfil', role ? (ROLE_LABELS[role] ?? role) : null),
         ]),
+      };
+    }
+
+    case 'PROMOTE_ASSISTANT':
+    case 'REVOKE_ASSISTANT': {
+      const fromRole = metaString(meta, 'fromRole') as TherapistRole | null;
+      const toRole = metaString(meta, 'toRole') as TherapistRole | null;
+      const identity = [
+        ...field('Nome', metaString(meta, 'fullName')),
+        ...field('E-mail', metaString(meta, 'email')),
+      ];
+      return {
+        before: snapshot([
+          ...identity,
+          ...field('Perfil', fromRole ? (ROLE_LABELS[fromRole] ?? fromRole) : null),
+        ]),
+        after: snapshot([
+          ...identity,
+          ...field('Perfil', toRole ? (ROLE_LABELS[toRole] ?? toRole) : null),
+        ]),
+      };
+    }
+
+    case 'REJECT_ACCESS_REQUEST': {
+      const identity = [
+        ...field('Nome', metaString(meta, 'fullName')),
+        ...field('E-mail', metaString(meta, 'email')),
+      ];
+      return {
+        before: snapshot([...identity, { label: 'Situação', value: 'Pendente' }]),
+        after: snapshot([...identity, { label: 'Situação', value: 'Rejeitada' }]),
       };
     }
 

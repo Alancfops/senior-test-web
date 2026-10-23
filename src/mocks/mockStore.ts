@@ -6,6 +6,7 @@ import type {
   PatientProfile,
   TherapistDetail,
   TherapistListItem,
+  TherapistRole,
 } from '@/types/api';
 
 export const MOCK_IDS = {
@@ -99,7 +100,7 @@ function buildInitialState(): MockState {
       age: 68,
       gender: 'feminino',
       contact: '(11) 91234-5678',
-      schoolingBand: '9_anos_ou_mais',
+      schoolingBand: 'mais_11_anos',
       avatarUrl: null,
       createdAt: '2026-05-12T10:30:00.000Z',
       therapist: {
@@ -505,6 +506,15 @@ export function resolveAccessRequest(
   };
 
   if (status === 'APPROVED') {
+    // Promove a conta do app com o mesmo e-mail; seeds sem conta correspondente ganham uma.
+    const appAccount = state.therapists.find(
+      (t) => t.email === request.email && t.role === 'THERAPIST',
+    );
+    if (appAccount) {
+      setTherapistRole(appAccount.id, 'ASSISTANT');
+      return structuredClone(request);
+    }
+
     const newId = crypto.randomUUID();
     const createdAt = new Date().toISOString();
     addTherapist(
@@ -531,6 +541,13 @@ export function resolveAccessRequest(
   }
 
   return structuredClone(request);
+}
+
+export function setTherapistRole(therapistId: string, role: TherapistRole): void {
+  const therapist = state.therapists.find((t) => t.id === therapistId);
+  if (therapist) therapist.role = role;
+  const detail = state.therapistDetails[therapistId];
+  if (detail) detail.role = role;
 }
 
 export function addTherapist(therapist: TherapistListItem, detail: TherapistDetail): void {
