@@ -1,6 +1,4 @@
-import { isMockMode } from '@/lib/api/config';
 import { apiGet } from '@/lib/api/client';
-import { mockListAuditLogs } from '@/mocks/mockApi';
 import type { AdminAuditAction, AuditLogsResponse } from '@/types/api';
 
 export type AuditLogsQueryParams = {
@@ -12,10 +10,6 @@ export type AuditLogsQueryParams = {
 export async function fetchAuditLogs(
   params: AuditLogsQueryParams = {},
 ): Promise<AuditLogsResponse> {
-  if (isMockMode()) {
-    return mockListAuditLogs(params.action);
-  }
-
   const { action, page = 1, limit = 25 } = params;
   const query = new URLSearchParams();
   query.set('page', String(page));

@@ -2,7 +2,6 @@ import { useEffect, useId, useState, type ReactNode } from 'react';
 import { useLocation } from 'react-router-dom';
 import { AppFooter } from '@/components/layout/AppFooter';
 import { Sidebar } from '@/components/layout/Sidebar';
-import { PrototypeBanner } from '@/components/layout/PrototypeBanner';
 import { PageBackLink } from '@/components/ui/PageBackLink';
 import { IconMenu } from '@/components/icons/NavIcons';
 
@@ -53,8 +52,6 @@ export function AppShell({
       <Sidebar open={menuOpen} onClose={() => setMenuOpen(false)} />
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <PrototypeBanner />
-
         <header className="border-b border-[var(--stf-border)] bg-[var(--stf-surface)] px-4 py-4 shadow-stf sm:px-6 sm:py-5">
           <div className="relative mb-3 flex h-11 items-center justify-center lg:hidden">
             <button
