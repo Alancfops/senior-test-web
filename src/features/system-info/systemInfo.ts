@@ -1,6 +1,11 @@
 /** Créditos — espelha "Informações do Sistema" do app mobile STF. */
 export const SYSTEM_INFO = {
-  developedByLogo: '/logo-cesmac-citec.png',
+  developedBy: {
+    name: 'CESMAC CITEC',
+    logo: '/logo-cesmac-citec.png',
+    description:
+      'Sistema desenvolvido pelo Centro de Inovação Tecnológica do CESMAC, com participação de professores, pesquisadores, desenvolvedores e designers.',
+  },
   professorsAndResearchers: [
     'Érika Prado',
     'Hugo Basilio',
