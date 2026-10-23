@@ -67,11 +67,13 @@ export const INSTRUMENT_HELP_SECTIONS: InstrumentHelpSection[] = [
     scoreSummary:
       'Soma das pontuações dos 14 itens da Escala de Berg (0 a 4 por item). Pontuação máxima: 56 pontos.',
     classifications: [
-      { range: '0–20', description: 'Risco gravíssimo de quedas.', tone: 'risk' },
-      { range: '21–40', description: 'Risco moderado a alto de quedas.', tone: 'warning' },
-      { range: '41–56', description: 'Baixo risco de quedas.', tone: 'good' },
+      { range: '0–20', description: 'Prejuízo do equilíbrio.', tone: 'risk' },
+      { range: '21–40', description: 'Equilíbrio aceitável.', tone: 'warning' },
+      { range: '41–56', description: 'Bom equilíbrio.', tone: 'good' },
     ],
     chartHint: CHART_IMPROVEMENT_HINT.BERG,
+    notes:
+      'Valores abaixo de 45 são usados com frequência como alerta para maior risco de quedas, mas o ponto de corte pode variar.',
   },
   {
     code: 'TINETTI',
