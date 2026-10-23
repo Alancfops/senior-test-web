@@ -27,7 +27,7 @@ Arquitetura **cliente-servidor com API REST centralizada**: dois clientes (mobil
 |------------|-------------|---------|--------------|
 | App mobile | `senior-test-funcional/frontend` | Fisioterapeuta | `THERAPIST` |
 | Gerenciador web | `stf-gerenciador-web` | Administradora e assistentes | `ADMIN`, `ASSISTANT` |
-| API REST | `senior-test-funcional/backend` | (serve os dois clientes) | — |
+| API REST | `stf-api` | (serve os dois clientes) | — |
 | Banco de dados | PostgreSQL (Docker em dev) | — | — |
 
 ---
@@ -209,7 +209,7 @@ classDiagram
     Therapist ..> TherapistRole
 ```
 
-> Os atributos foram simplificados para a apresentação. O esquema completo está em `senior-test-funcional/backend/prisma/schema.prisma`.
+> Os atributos foram simplificados para a apresentação. O esquema completo está em `stf-api/prisma/schema.prisma`.
 
 ### 2.4 Diagrama de sequência — login no gerenciador web
 

@@ -2,7 +2,7 @@
 
 Painel administrativo web do **Sênior Teste Funcional (STF)** — SPA Vite + React para o fisioterapeuta **admin** supervisionar fisioterapeutas, pacientes e relatórios clínicos.
 
-Este repositório é **apenas o cliente web**. A API NestJS, o banco PostgreSQL e o app mobile ficam em `../senior-test-funcional`.
+Este repositório é **apenas o cliente web**. A API NestJS e o banco PostgreSQL ficam em `../stf-api`; o app mobile em `../senior-test-funcional`.
 
 ---
 
@@ -10,12 +10,13 @@ Este repositório é **apenas o cliente web**. A API NestJS, o banco PostgreSQL 
 
 | Repositório | Caminho | Papel |
 |-------------|---------|-------|
-| **STF (mobile + API)** | `../senior-test-funcional` | App Expo, API NestJS, PostgreSQL, domínio clínico |
+| **STF API** | `../stf-api` | API NestJS, PostgreSQL, domínio clínico, PDF |
+| **STF mobile** | `../senior-test-funcional` | App Expo + especificação de produto (`docs/`) |
 | **Gerenciador web** | este repo | UI admin, docs GW001–GW010, integração `/admin/*` |
 
 ### Regra de ouro
 
-**Não editar, criar, mover ou apagar arquivos em `senior-test-funcional/`** salvo se o usuário **pedir explicitamente** alteração naquele repositório.
+**Não editar, criar, mover ou apagar arquivos em `stf-api/` ou `senior-test-funcional/`** salvo se o usuário **pedir explicitamente** alteração naquele repositório.
 
 - Explorar o STF: **somente leitura** (Read, Grep, curl, Swagger)
 - Lacuna na API: informar o usuário — **não** implementar no STF automaticamente
@@ -50,13 +51,13 @@ UI segue **template base** (Figma/MCP ou arquivo) adaptado ao admin STF — toke
 API STF rodando com CORS liberado para o Vite:
 
 ```bash
-# Terminal 1 — STF
-cd ../senior-test-funcional
+# Terminal 1 — API
+cd ../stf-api
 make setup          # primeira vez
-make start-backend  # ou make start
+make start
 ```
 
-No STF (`backend/.env`): `CORS_ORIGINS=http://localhost:5173`
+No STF API (`stf-api/.env`): `CORS_ORIGINS=http://localhost:5173`
 
 ### Gerenciador (frontend)
 
@@ -75,7 +76,7 @@ npm run dev         # http://localhost:5173
 |-------|----------------|
 | Health API | `curl http://localhost:3000/health` |
 | Swagger (tag admin) | http://localhost:3000/api/docs |
-| Criar/recuperar admin | `cd ../senior-test-funcional/backend && npm run admin:set -- --email <email> --name "<nome>"` (senha temporária exibida uma vez; troca obrigatória no 1º login) |
+| Criar/recuperar admin | `cd ../stf-api && npm run admin:set -- --email <email> --name "<nome>"` (senha temporária exibida uma vez; troca obrigatória no 1º login) |
 
 ### Comandos esperados
 

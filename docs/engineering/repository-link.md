@@ -50,10 +50,10 @@ flowchart LR
 ## Desenvolvimento local
 
 ```bash
-# Terminal 1 — STF (API + Postgres)
-cd ../senior-test-funcional
+# Terminal 1 — API + Postgres
+cd ../stf-api
 make setup    # primeira vez
-make start-backend   # ou make start
+make start
 
 # Terminal 2 — Gerenciador (quando existir frontend/)
 cd ../stf-gerenciador-web
@@ -66,7 +66,7 @@ npm run dev
 |-------|---------|
 | API saudável | `curl http://localhost:3000/health` |
 | Swagger (tag admin) | http://localhost:3000/api/docs |
-| Criar/recuperar admin | `cd ../senior-test-funcional/backend && npm run admin:set -- --email <email> --name "<nome>"` |
+| Criar/recuperar admin | `cd ../stf-api && npm run admin:set -- --email <email> --name "<nome>"` |
 | URL no gerenciador | `VITE_STF_API_URL=http://localhost:3000` |
 
 ---

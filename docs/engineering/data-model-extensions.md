@@ -1,7 +1,7 @@
 # Extensões do modelo de dados
 
 **Status:** ✅ **implementado** no STF — migration `20260818180000_add_admin_role_and_audit_log`  
-**Schema:** `senior-test-funcional/backend/prisma/schema.prisma`
+**Schema:** `stf-api/prisma/schema.prisma`
 
 Modelo base: [senior-test-funcional/docs/engineering/data-model.md](../../senior-test-funcional/docs/engineering/data-model.md)
 

@@ -1,14 +1,14 @@
 ---
-description: STF é somente leitura — consumir API/docs; nunca alterar senior-test-funcional sem pedido explícito
+description: STF é somente leitura — consumir API/docs; nunca alterar stf-api ou senior-test-funcional sem pedido explícito
 ---
 
 # Fronteira STF — apenas consumir
 
-Este repo (`stf-gerenciador-web`) é **cliente web**. O produto base vive em **`../senior-test-funcional`** (mobile + API + banco). Spec admin: `docs/contracts/admin-api.md`.
+Este repo (`stf-gerenciador-web`) é **cliente web**. O produto base vive em **`../stf-api`** (API + banco) e **`../senior-test-funcional`** (app mobile + especificação). Spec admin: `docs/contracts/admin-api.md`.
 
 ## Regra de ouro
 
-**Não editar, criar, mover ou apagar arquivos em `senior-test-funcional/`** — salvo se o usuário **pedir explicitamente** alteração naquele repositório na mensagem atual.
+**Não editar, criar, mover ou apagar arquivos em `stf-api/` ou `senior-test-funcional/`** — salvo se o usuário **pedir explicitamente** alteração naquele repositório na mensagem atual.
 
 Explorar o STF para entender contrato, tipos ou comportamento: **somente leitura** (Read, Grep, curl, Swagger).
 
@@ -23,12 +23,12 @@ Explorar o STF para entender contrato, tipos ou comportamento: **somente leitura
 
 | Ação | Onde |
 |------|------|
-| Editar backend, Prisma, migrations, seeds | `senior-test-funcional/backend/` |
+| Editar backend, Prisma, migrations, seeds | `stf-api/` |
 | Editar app mobile Expo | `senior-test-funcional/frontend/` |
-| Commits, branches ou PRs no STF | `senior-test-funcional/` |
+| Commits, branches ou PRs no STF | `stf-api/`, `senior-test-funcional/` |
 | Duplicar scoring, PDF, instrumentos ou regras clínicas no browser | este repo |
 | Copiar/colar serviços Nest/Prisma do STF para cá | este repo |
-| `git` write, patches ou scripts que modifiquem o STF | `senior-test-funcional/` |
+| `git` write, patches ou scripts que modifiquem o STF | `stf-api/`, `senior-test-funcional/` |
 
 ## Se faltar algo na API
 

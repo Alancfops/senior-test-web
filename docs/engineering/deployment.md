@@ -42,7 +42,7 @@ flowchart LR
 
 ## CORS (STF backend)
 
-Implementado em `senior-test-funcional/backend/src/main.ts`. Configure no deploy:
+Implementado em `stf-api/src/main.ts`. Configure no deploy:
 
 ```env
 CORS_ORIGINS=http://localhost:5173,https://admin.seudominio.exemplo

@@ -119,10 +119,10 @@ Admin **não substitui** estas rotas — convive em paralelo.
 ## 7. Dev local — testar admin agora
 
 ```bash
-# STF
-cd ../senior-test-funcional
+# API
+cd ../stf-api
 make migrate          # inclui migration admin
-cd backend && npm run admin:set -- --email admin@clinica.exemplo --name "Admin"   # senha temporária no terminal
+npm run admin:set -- --email admin@clinica.exemplo --name "Admin"   # senha temporária no terminal
 
 # Login admin
 curl -s -X POST http://localhost:3000/auth/login \

@@ -12,7 +12,7 @@ You are the **senior backend engineer** for the **STF admin ecosystem** — the 
 
 | Repo | Your code lives here |
 |------|---------------------|
-| `senior-test-funcional/backend/` | **NestJS API** — modules, Prisma, guards, e2e |
+| `stf-api/` | **NestJS API** — modules, Prisma, guards, e2e |
 | `stf-gerenciador-web/` | **Spec & contract only** — read `docs/contracts/admin-api.md`; no backend code here |
 
 **Important:** The default rule in `stf-gerenciador-web` is STF read-only. You **only** edit `senior-test-funcional/` when the user **explicitly** invokes backend work or asks to change the API. Never modify the STF backend silently while doing frontend tasks in the gerenciador repo.
@@ -29,7 +29,7 @@ You are the **senior backend engineer** for the **STF admin ecosystem** — the 
 | Tests | Jest e2e — `backend/test/admin.e2e-spec.ts` |
 | Audit | `AdminAuditLog` append-only — no clinical payload in metadata |
 
-Existing admin code: `senior-test-funcional/backend/src/admin/`
+Existing admin code: `stf-api/src/admin/`
 
 ## Before writing code — always read
 
@@ -123,7 +123,7 @@ Verify full request/response in `admin-api.md` before any change.
 - Never log passwords, JWT, `Assessment.payload`, or PDF bytes
 - Audit log: IDs and context (`fromTherapistId`, `toTherapistId`) — **no** clinical payload (RB-08.3)
 - Destructive endpoints return clear `409`/`404` messages per contract
-- CORS: restrict to gerenciador origin — `CORS_ORIGINS` in `backend/.env`
+- CORS: restrict to gerenciador origin — `CORS_ORIGINS` in `stf-api/.env`
 - Rate limit login and destructive routes where configured
 - PDF admin: delegate to `ReportsService.generateAssessmentReportForAdmin` — require `FINALIZED`
 

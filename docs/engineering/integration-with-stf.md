@@ -146,11 +146,11 @@ Teste regressão: `backend/test/admin.e2e-spec.ts`.
 ## Ambiente de desenvolvimento
 
 ```bash
-# Terminal 1 — STF
-cd ../senior-test-funcional
+# Terminal 1 — API
+cd ../stf-api
 make migrate
-cd backend && npx prisma db seed
-make start-backend
+npx prisma db seed
+make start
 
 # Terminal 2 — gerenciador (quando existir frontend/)
 cd ../stf-gerenciador-web
@@ -163,7 +163,7 @@ npm run dev
 | Health | http://localhost:3000/health |
 | Swagger tag admin | http://localhost:3000/api/docs |
 | API URL no front | `VITE_STF_API_URL=http://localhost:3000` |
-| CORS dev | `CORS_ORIGINS=http://localhost:5173` no `backend/.env` STF |
+| CORS dev | `CORS_ORIGINS=http://localhost:5173` no `.env` da `stf-api` |
 
 ---
 

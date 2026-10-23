@@ -60,7 +60,7 @@ flowchart LR
 
 **Variável no front:** `VITE_STF_API_URL` → URL da API **sem barra final** (ver [.env.example](.env.example)).
 
-**CORS no STF** (`backend/.env`): incluir a origem do gerenciador — ex. `CORS_ORIGINS=http://localhost:5173` em dev.
+**CORS na API** (`stf-api/.env`): incluir a origem do gerenciador — ex. `CORS_ORIGINS=http://localhost:5173` em dev.
 
 ### Autenticação (recarga F5)
 

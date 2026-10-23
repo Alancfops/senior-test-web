@@ -5,7 +5,7 @@ description: Connects the STF admin web client to the NestJS API — auth JWT, t
 
 # STF API Integration
 
-Cliente web consome a API em `senior-test-funcional/backend`.
+Cliente web consome a API em `../stf-api` (extraída de `senior-test-funcional/backend`).
 
 ## Base de trabalho
 
@@ -41,9 +41,9 @@ Mapa GW → endpoint: [reference.md](reference.md)
 ## Ambiente local
 
 ```bash
-# STF (Terminal 1) — read-only neste repo
-cd ../senior-test-funcional
-make migrate && cd backend && npx prisma db seed && cd .. && make start-backend
+# API (Terminal 1) — read-only neste repo
+cd ../stf-api
+make migrate && npx prisma db seed && make start
 
 # Gerenciador (Terminal 2)
 cp .env.example .env   # VITE_STF_API_URL=http://localhost:3000
@@ -54,7 +54,7 @@ cp .env.example .env   # VITE_STF_API_URL=http://localhost:3000
 | API | `http://localhost:3000/health` |
 | Swagger | `http://localhost:3000/api/docs` (tag `admin`) |
 | CORS no STF | `CORS_ORIGINS=http://localhost:5173` |
-| Conta admin | `cd backend && npm run admin:set -- --email <email> --name "<nome>"` |
+| Conta admin | `cd ../stf-api && npm run admin:set -- --email <email> --name "<nome>"` |
 
 Produção: `VITE_STF_API_URL` com **HTTPS** apenas.
 

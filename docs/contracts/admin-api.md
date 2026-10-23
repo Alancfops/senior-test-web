@@ -1,6 +1,6 @@
 # API Admin — especificação de endpoints
 
-**Status:** ✅ **implementado** em `senior-test-funcional/backend` (`AdminModule`)  
+**Status:** ✅ **implementado** em `stf-api` (`AdminModule`)  
 **Verificação:** 2026-08-18 — [../engineering/gap-analysis-stf.md](../engineering/gap-analysis-stf.md)  
 **Tag OpenAPI:** `admin`  
 **Prefixo:** `/admin`  
@@ -13,7 +13,7 @@
 Implementação em:
 
 ```
-senior-test-funcional/backend/src/admin/
+stf-api/src/admin/
 ├── admin.module.ts
 ├── admin.controller.ts
 ├── admin.service.ts
@@ -22,7 +22,7 @@ senior-test-funcional/backend/src/admin/
 └── schemas/admin.schemas.ts
 ```
 
-Testes e2e: `senior-test-funcional/backend/test/admin.e2e-spec.ts`  
+Testes e2e: `stf-api/test/admin.e2e-spec.ts`  
 Conta ADMIN: `npm run admin:set` (`backend/scripts/set-admin.ts`) — o seed não cria admin
 
 O gerenciador web (`stf-gerenciador-web`) **consome** estas rotas.
@@ -317,7 +317,7 @@ Modelo de **dois papéis web**: professora (`ADMIN`, conta única) + ajudante (`
 
 A conta é gerida só por script no backend STF (`backend/scripts/set-admin.ts`):
 
-| Caso | Comando (em `senior-test-funcional/backend`) |
+| Caso | Comando (em `stf-api`) |
 |------|-----------------------------------------------|
 | Definir a professora (sem `ADMIN` no banco) | `npm run admin:set -- --email <e-mail> --name "<nome>"` |
 | Recuperar acesso (mesmo e-mail) | `npm run admin:set -- --email <e-mail>` |
@@ -656,7 +656,7 @@ Corpo: bytes do PDF.
 
 ## 9. CORS e configuração
 
-Variável no STF (`backend/.env`):
+Variável no STF API (`stf-api/.env`):
 
 ```env
 CORS_ORIGINS=http://localhost:5173,https://admin.seudominio.exemplo

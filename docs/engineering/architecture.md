@@ -83,7 +83,7 @@ flowchart TB
 
 ## 4. Módulo Admin (STF — ✅ implementado)
 
-Código em `senior-test-funcional/backend/src/admin/`:
+Código em `stf-api/src/admin/`:
 
 | Arquivo | Responsabilidade |
 |---------|------------------|
