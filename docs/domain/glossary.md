@@ -32,7 +32,7 @@ Termos do gerenciador web e do ecossistema STF.
 | `TINETTI` | Escala de Tinetti | Soma 0–28 |
 | `MEEM` | Mini-Exame do Estado Mental | Soma 0–30 + cortes por escolaridade |
 
-Detalhe clínico: [senior-test-funcional/docs/clinical-protocols/](../../senior-test-funcional/docs/clinical-protocols/)
+Detalhe clínico: [senior-test-funcional/docs/clinical-protocols/](../../../senior-test-funcional/docs/clinical-protocols)
 
 ---
 
@@ -47,4 +47,4 @@ Detalhe clínico: [senior-test-funcional/docs/clinical-protocols/](../../senior-
 | Instrumento | `instruments` | Catálogo fixo (5 itens) |
 | AdminAuditLog | `admin_audit_logs` | Trilha de ações admin |
 
-Modelo completo: [senior-test-funcional/docs/engineering/data-model.md](../../senior-test-funcional/docs/engineering/data-model.md)
+Modelo completo: [senior-test-funcional/docs/engineering/data-model.md](../../../stf-api/docs/engineering/data-model.md)

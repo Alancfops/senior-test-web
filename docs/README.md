@@ -62,7 +62,7 @@ Este projeto **gerencia** o ecossistema descrito em [`senior-test-funcional`](..
 | PRD do produto base | [senior-test-funcional/docs/product/PRD.md](../../senior-test-funcional/docs/product/PRD.md) |
 | RFs RF001–RF013 | [senior-test-funcional/docs/product/requirements.md](../../senior-test-funcional/docs/product/requirements.md) |
 | Arquitetura STF | [senior-test-funcional/docs/engineering/architecture.md](../../senior-test-funcional/docs/engineering/architecture.md) |
-| Modelo de dados STF | [senior-test-funcional/docs/engineering/data-model.md](../../senior-test-funcional/docs/engineering/data-model.md) |
+| Modelo de dados STF | [senior-test-funcional/docs/engineering/data-model.md](../../stf-api/docs/engineering/data-model.md) |
 | LGPD | [senior-test-funcional/docs/product/privacy-and-lgpd.md](../../senior-test-funcional/docs/product/privacy-and-lgpd.md) |
 
 ---

@@ -192,4 +192,4 @@ classDiagram
 ## Referências
 
 - [../engineering/data-model-extensions.md](../engineering/data-model-extensions.md)
-- [senior-test-funcional/docs/engineering/data-model.md](../../../senior-test-funcional/docs/engineering/data-model.md)
+- [senior-test-funcional/docs/engineering/data-model.md](../../../stf-api/docs/engineering/data-model.md)

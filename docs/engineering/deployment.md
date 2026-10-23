@@ -60,7 +60,7 @@ Split por vírgula. Dev Vite usa porta **5173** por padrão.
 | Admin web | `admin.stf.exemplo.com` |
 | Mobile | App stores / Expo Go (dev) |
 
-Domínio próprio continua **fora de escopo TCC** conforme [project-decisions.md](../../senior-test-funcional/docs/engineering/project-decisions.md) — usar URLs dos PaaS até decisão contrária.
+Domínio próprio continua **fora de escopo TCC** conforme [project-decisions.md](../../../senior-test-funcional/docs/engineering/project-decisions.md) — usar URLs dos PaaS até decisão contrária.
 
 ---
 
@@ -72,11 +72,11 @@ Domínio próprio continua **fora de escopo TCC** conforme [project-decisions.md
 - [x] Audit log habilitado (GW010 — API)
 - [ ] CORS com origem do gerenciador (configurar `CORS_ORIGINS` no deploy)
 - [ ] `VITE_STF_API_URL` apontando para API de produção
-- [ ] Revisão LGPD institucional ([privacy-and-lgpd.md](../../senior-test-funcional/docs/product/privacy-and-lgpd.md))
+- [ ] Revisão LGPD institucional ([privacy-and-lgpd.md](../../../senior-test-funcional/docs/product/privacy-and-lgpd.md))
 
 ---
 
 ## Referências STF
 
-- [senior-test-funcional/docs/engineering/architecture.md §9](../../senior-test-funcional/docs/engineering/architecture.md)
-- [senior-test-funcional/docs/product/privacy-and-lgpd.md §8](../../senior-test-funcional/docs/product/privacy-and-lgpd.md)
+- [senior-test-funcional/docs/engineering/architecture.md §9](../../../senior-test-funcional/docs/engineering/architecture.md)
+- [senior-test-funcional/docs/product/privacy-and-lgpd.md §8](../../../senior-test-funcional/docs/product/privacy-and-lgpd.md)

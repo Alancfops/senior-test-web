@@ -108,4 +108,4 @@ O gerenciador trata o admin como **usuário de negócio**, não como superusuár
 | Fisio comum | Operador assistencial — dados dos **seus** pacientes |
 | Admin | Acesso ampliado por **necessidade de supervisão** — exige base legal e registro (ver [business-rules.md](../domain/business-rules.md)) |
 
-Referência: [senior-test-funcional/docs/product/privacy-and-lgpd.md](../../senior-test-funcional/docs/product/privacy-and-lgpd.md)
+Referência: [senior-test-funcional/docs/product/privacy-and-lgpd.md](../../../senior-test-funcional/docs/product/privacy-and-lgpd.md)

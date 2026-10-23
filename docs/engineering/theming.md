@@ -3,7 +3,7 @@
 **Template base UI:** layout e componentes seguem um **template de referência** (a ser fornecido via Figma/MCP ou arquivo). Telas provisórias devem ser realinhadas quando o template estiver disponível.  
 **Cores e tokens:** alinhados ao app mobile STF (Figma `mtMbhRez2Xy2k414cfzcFm`) — **sobrescrevem** estilos genéricos do template quando houver conflito.
 
-Fonte canônica no STF: [`senior-test-funcional/frontend/src/theme/tokens.ts`](../../senior-test-funcional/frontend/src/theme/tokens.ts)
+Fonte canônica no STF: [`senior-test-funcional/frontend/src/theme/tokens.ts`](../../../senior-test-funcional/frontend/src/theme/tokens.ts)
 
 ---
 
@@ -114,5 +114,5 @@ Resultados de avaliação trazem `classificationMeta` (JSON) da API — cores de
 
 ## Referências
 
-- [senior-test-funcional/docs/frontend/figma-map.md](../../senior-test-funcional/docs/frontend/figma-map.md)
-- [senior-test-funcional/docs/frontend/README.md](../../senior-test-funcional/docs/frontend/README.md)
+- [senior-test-funcional/docs/frontend/figma-map.md](../../../senior-test-funcional/docs/frontend/figma-map.md)
+- [senior-test-funcional/docs/frontend/README.md](../../../senior-test-funcional/docs/frontend/README.md)

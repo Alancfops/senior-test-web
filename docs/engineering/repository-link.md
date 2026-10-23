@@ -89,11 +89,11 @@ npx openapi-typescript http://localhost:3000/api/docs-json -o src/api/schema.d.t
 
 | Preciso de… | Onde ler |
 |-------------|----------|
-| Instrumentos, scoring, PDF RF013 | [senior-test-funcional/docs/](../../senior-test-funcional/docs/README.md) |
-| Modelo de dados base | [senior-test-funcional/docs/engineering/data-model.md](../../senior-test-funcional/docs/engineering/data-model.md) |
-| Comportamento API | [senior-test-funcional/docs/backend/README.md](../../senior-test-funcional/docs/backend/README.md) |
-| Tokens visuais mobile | [senior-test-funcional/frontend/src/theme/tokens.ts](../../senior-test-funcional/frontend/src/theme/tokens.ts) |
-| Decisões TCC (e-mail, domínio) | [senior-test-funcional/docs/engineering/project-decisions.md](../../senior-test-funcional/docs/engineering/project-decisions.md) |
+| Instrumentos, scoring, PDF RF013 | [senior-test-funcional/docs/](../../../senior-test-funcional/docs/README.md) |
+| Modelo de dados base | [senior-test-funcional/docs/engineering/data-model.md](../../../stf-api/docs/engineering/data-model.md) |
+| Comportamento API | [senior-test-funcional/docs/backend/README.md](../../../stf-api/docs/backend/README.md) |
+| Tokens visuais mobile | [senior-test-funcional/frontend/src/theme/tokens.ts](../../../senior-test-funcional/frontend/src/theme/tokens.ts) |
+| Decisões TCC (e-mail, domínio) | [senior-test-funcional/docs/engineering/project-decisions.md](../../../senior-test-funcional/docs/engineering/project-decisions.md) |
 | Escopo admin | [docs/product/](../product/) neste repo |
 
 ---

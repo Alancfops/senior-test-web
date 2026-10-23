@@ -70,7 +70,7 @@ O gerenciador web **quebra o isolamento apenas para o papel admin**, mantendo-o 
 
 ## Dependências
 
-Este projeto **depende** do monorepo [`senior-test-funcional`](../../senior-test-funcional):
+Este projeto **depende** do monorepo [`senior-test-funcional`](../../../senior-test-funcional):
 
 - **API NestJS** — fonte da verdade; gerenciador consome e estende endpoints
 - **PostgreSQL** — mesmo banco; extensões de schema para papel admin e auditoria

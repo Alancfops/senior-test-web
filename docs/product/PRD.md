@@ -1,7 +1,7 @@
 # PRD — STF Gerenciador Web
 
 **Versão:** 2026-08 (revisão documental — API admin verificada no STF)  
-**Produto base:** [Sênior Teste Funcional](../../senior-test-funcional/docs/product/PRD.md)
+**Produto base:** [Sênior Teste Funcional](../../../senior-test-funcional/docs/product/PRD.md)
 
 ---
 
@@ -80,7 +80,7 @@ Ver [personas-and-roles.md](personas-and-roles.md).
 | RNF001 | HTTPS obrigatório em produção |
 | RNF002 | Sessão admin com timeout configurável |
 | RNF003 | Ações destrutivas exigem confirmação explícita (modal + digitar nome ou checkbox) |
-| RNF004 | Conformidade LGPD — ver [senior-test-funcional/docs/product/privacy-and-lgpd.md](../../senior-test-funcional/docs/product/privacy-and-lgpd.md) e extensões em [domain/business-rules.md](../domain/business-rules.md) |
+| RNF004 | Conformidade LGPD — ver [senior-test-funcional/docs/product/privacy-and-lgpd.md](../../../senior-test-funcional/docs/product/privacy-and-lgpd.md) e extensões em [domain/business-rules.md](../domain/business-rules.md) |
 | RNF005 | Responsivo para desktop (primário); tablet aceitável |
 | RNF006 | Latência de listagens < 2s para até 100 fisios / 1000 pacientes |
 

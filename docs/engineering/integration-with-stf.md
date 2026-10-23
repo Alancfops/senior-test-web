@@ -179,7 +179,7 @@ npm run dev
 
 ## Referências STF
 
-- [backend/README.md](../../senior-test-funcional/docs/backend/README.md)
-- [data-model.md](../../senior-test-funcional/docs/engineering/data-model.md)
-- [architecture.md](../../senior-test-funcional/docs/engineering/architecture.md)
+- [backend/README.md](../../../stf-api/docs/backend/README.md)
+- [data-model.md](../../../stf-api/docs/engineering/data-model.md)
+- [architecture.md](../../../senior-test-funcional/docs/engineering/architecture.md)
 - [gap-analysis-stf.md](gap-analysis-stf.md)

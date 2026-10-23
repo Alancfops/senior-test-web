@@ -1,7 +1,7 @@
 # Arquitetura — STF Gerenciador Web
 
 **Status:** stack **decidida** — ver [stack.md](stack.md)  
-**Alinhamento:** [senior-test-funcional/docs/engineering/architecture.md](../../senior-test-funcional/docs/engineering/architecture.md)  
+**Alinhamento:** [senior-test-funcional/docs/engineering/architecture.md](../../../senior-test-funcional/docs/engineering/architecture.md)  
 **Lacunas API:** [gap-analysis-stf.md](gap-analysis-stf.md)
 
 ---

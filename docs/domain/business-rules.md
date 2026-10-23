@@ -110,7 +110,7 @@ Patient.therapist_id = B
 | RB-08.3 | Audit log não deve conter payloads clínicos completos — apenas IDs e metadados |
 | RB-08.4 | Transferência não altera titularidade LGPD do paciente (continua sendo o paciente); muda responsável operacional |
 
-Referência: [senior-test-funcional/docs/product/privacy-and-lgpd.md](../../senior-test-funcional/docs/product/privacy-and-lgpd.md)
+Referência: [senior-test-funcional/docs/product/privacy-and-lgpd.md](../../../senior-test-funcional/docs/product/privacy-and-lgpd.md)
 
 ---
 
