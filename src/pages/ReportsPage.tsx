@@ -6,6 +6,7 @@ import { AppShell } from '@/components/layout/AppShell';
 import { IconDownload, IconEye } from '@/components/icons/ActionIcons';
 import { IconFile } from '@/components/icons/NavIcons';
 import { Button } from '@/components/ui/Button';
+import { DateRangePicker } from '@/components/ui/DateRangePicker';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { SearchInput } from '@/components/ui/SearchInput';
@@ -15,11 +16,27 @@ import { useAuditLogs } from '@/features/audit/useAuditLogs';
 import { usePatientAssessments, usePatientsList } from '@/features/patients/usePatients';
 import {
   downloadAssessmentReport,
+  downloadGeneralReport,
   triggerBlobDownload,
 } from '@/lib/api/patients';
 import { ApiError } from '@/lib/api/errors';
-import { buildAssessmentReportFilename, formatDateTime, formatShortDisplayName } from '@/lib/format';
-import { INSTRUMENT_LABELS } from '@/types/api';
+import {
+  buildAssessmentReportFilename,
+  formatDateTime,
+  formatGeneralReportPeriod,
+  formatShortDisplayName,
+  getSemesterBounds,
+  toIsoDate,
+} from '@/lib/format';
+import { INSTRUMENT_LABELS, type AdminAuditAction } from '@/types/api';
+
+/** Um semestre letivo (jul–dez tem 184 dias): limita o volume lido pela API ao agregar. */
+const GENERAL_REPORT_MAX_DAYS = 184;
+
+const REPORT_DOWNLOAD_ACTIONS: AdminAuditAction[] = [
+  'DOWNLOAD_REPORT',
+  'DOWNLOAD_GENERAL_REPORT',
+];
 
 export function ReportsPage() {
   const queryClient = useQueryClient();
@@ -30,7 +47,7 @@ export function ReportsPage() {
     isError: auditError,
     error: auditErr,
     refetch: refetchAudit,
-  } = useAuditLogs({ action: 'DOWNLOAD_REPORT', limit: 50 });
+  } = useAuditLogs({ actions: REPORT_DOWNLOAD_ACTIONS, limit: 50 });
 
   const [patientSearch, setPatientSearch] = useState('');
   const [selectedPatientId, setSelectedPatientId] = useState('');
@@ -107,6 +124,28 @@ export function ReportsPage() {
     }
   }
 
+  const [generalFrom, setGeneralFrom] = useState(() => getSemesterBounds(new Date()).from);
+  const [generalTo, setGeneralTo] = useState(() => toIsoDate(new Date()));
+  const [generalGenerating, setGeneralGenerating] = useState(false);
+  const [generalError, setGeneralError] = useState<string | null>(null);
+  const [generalSuccess, setGeneralSuccess] = useState<string | null>(null);
+
+  async function handleGeneralDownload() {
+    setGeneralError(null);
+    setGeneralSuccess(null);
+    setGeneralGenerating(true);
+    try {
+      const { blob, filename } = await downloadGeneralReport(generalFrom, generalTo);
+      triggerBlobDownload(blob, filename);
+      setGeneralSuccess('PDF gerado e baixado. O download ficou registrado na auditoria.');
+      void queryClient.invalidateQueries({ queryKey: ['admin', 'audit-logs'] });
+    } catch (err) {
+      setGeneralError(err instanceof ApiError ? err.message : 'Erro ao gerar PDF.');
+    } finally {
+      setGeneralGenerating(false);
+    }
+  }
+
   const auditErrorMessage =
     auditErr instanceof ApiError
       ? auditErr.message
@@ -122,11 +161,65 @@ export function ReportsPage() {
         <section className="stf-card p-4 sm:p-5">
           <div className="flex items-start gap-3">
             <div className="flex size-11 shrink-0 items-center justify-center rounded-stf-lg bg-[color-mix(in_srgb,var(--stf-primary)_12%,var(--stf-surface))] text-[var(--stf-primary)]">
+              <IconFile className="size-5" />
+            </div>
+            <div className="min-w-0 flex-1">
+              <h2 className="text-base font-semibold text-[var(--stf-text)]">
+                Relatório geral
+              </h2>
+              <p className="mt-1 text-sm text-[var(--stf-text-muted)]">
+                Resumo dos testes de todos os pacientes atendidos no período (até um
+                semestre), sem identificação de pacientes.
+              </p>
+            </div>
+          </div>
+
+          <div className="mt-5 space-y-4">
+            <DateRangePicker
+              label="Período de análise"
+              from={generalFrom}
+              to={generalTo}
+              max={toIsoDate(new Date())}
+              maxDays={GENERAL_REPORT_MAX_DAYS}
+              maxLabel="um semestre"
+              onChange={(range) => {
+                setGeneralFrom(range.from);
+                setGeneralTo(range.to);
+                setGeneralError(null);
+                setGeneralSuccess(null);
+              }}
+            />
+
+            <Button
+              className="w-full sm:w-auto"
+              loading={generalGenerating}
+              onClick={() => void handleGeneralDownload()}
+            >
+              <IconDownload />
+              Gerar relatório geral
+            </Button>
+
+            {generalError ? (
+              <p role="alert" className="text-sm text-[var(--stf-error)]">
+                {generalError}
+              </p>
+            ) : null}
+            {generalSuccess ? (
+              <p role="status" className="text-sm text-[var(--stf-secondary)]">
+                {generalSuccess}
+              </p>
+            ) : null}
+          </div>
+        </section>
+
+        <section className="stf-card p-4 sm:p-5">
+          <div className="flex items-start gap-3">
+            <div className="flex size-11 shrink-0 items-center justify-center rounded-stf-lg bg-[color-mix(in_srgb,var(--stf-primary)_12%,var(--stf-surface))] text-[var(--stf-primary)]">
               <IconDownload className="size-5" />
             </div>
             <div className="min-w-0 flex-1">
               <h2 className="text-base font-semibold text-[var(--stf-text)]">
-                Gerar relatório
+                Relatório por paciente
               </h2>
               <p className="mt-1 text-sm text-[var(--stf-text-muted)]">
                 Selecione um paciente com avaliações finalizadas e baixe o PDF institucional.
@@ -284,6 +377,28 @@ export function ReportsPage() {
             <ul className="divide-y divide-[var(--stf-border)]">
               {auditData.data.map((log) => {
                 const meta = log.metadata ?? {};
+                if (log.action === 'DOWNLOAD_GENERAL_REPORT') {
+                  const period = formatGeneralReportPeriod(meta);
+                  return (
+                    <li
+                      key={log.id}
+                      className="flex flex-col gap-1 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-5"
+                    >
+                      <div className="min-w-0">
+                        <p className="text-sm font-medium text-[var(--stf-text)]">
+                          Relatório geral{period ? ` · ${period}` : null}
+                        </p>
+                        <p className="text-xs text-[var(--stf-text-muted)]">
+                          Baixado por {log.adminName}
+                        </p>
+                      </div>
+                      <p className="shrink-0 text-xs text-[var(--stf-text-muted)]">
+                        {formatDateTime(log.createdAt)}
+                      </p>
+                    </li>
+                  );
+                }
+
                 const patientName =
                   typeof meta.patientName === 'string' ? meta.patientName : null;
                 const patientId =

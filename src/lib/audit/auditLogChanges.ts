@@ -1,4 +1,4 @@
-import { formatDateTime } from '@/lib/format';
+import { formatDateTime, formatGeneralReportPeriod } from '@/lib/format';
 import type { AuditLogItem, TherapistRole } from '@/types/api';
 import { INSTRUMENT_LABELS, ROLE_LABELS } from '@/types/api';
 
@@ -20,6 +20,7 @@ export const AUDIT_ENTITY_LABELS: Record<AuditLogItem['targetType'], string> = {
   Therapist: 'Conta de usuário',
   Assessment: 'Avaliação',
   AccessRequest: 'Solicitação de acesso',
+  GeneralReport: 'Relatório geral',
 };
 
 /** Resolve nome de fisioterapeuta a partir do ID gravado no audit (nunca exibido). */
@@ -157,6 +158,15 @@ export function buildAuditLogChanges(
         ]),
       };
     }
+
+    case 'DOWNLOAD_GENERAL_REPORT':
+      return {
+        before: snapshot([], 'Sem alteração de dados'),
+        after: snapshot([
+          { label: 'Relatório', value: 'PDF geral gerado para download' },
+          ...field('Período', formatGeneralReportPeriod(meta)),
+        ]),
+      };
 
     default:
       return { before: snapshot([]), after: snapshot([]) };

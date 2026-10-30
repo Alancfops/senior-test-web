@@ -39,3 +39,26 @@ export function buildAssessmentReportFilename(patientFullName: string): string {
 export function formatCount(count: number, singular: string, plural: string): string {
   return `${count} ${count === 1 ? singular : plural}`;
 }
+
+/** Data local no formato `YYYY-MM-DD` (sem conversão para UTC). */
+export function toIsoDate(date: Date): string {
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${date.getFullYear()}-${month}-${day}`;
+}
+
+/** Semestre letivo (jan–jun ou jul–dez) que contém a data, em `YYYY-MM-DD`. */
+export function getSemesterBounds(date: Date): { from: string; to: string } {
+  const year = date.getFullYear();
+  return date.getMonth() < 6
+    ? { from: `${year}-01-01`, to: `${year}-06-30` }
+    : { from: `${year}-07-01`, to: `${year}-12-31` };
+}
+
+/** Período do relatório geral gravado no audit (`from`/`to` em `YYYY-MM-DD`), como `dd/mm/aaaa a dd/mm/aaaa`. */
+export function formatGeneralReportPeriod(meta: Record<string, unknown>): string | null {
+  const { from, to } = meta;
+  if (typeof from !== 'string' || typeof to !== 'string') return null;
+  const toLabel = (value: string) => value.split('-').reverse().join('/');
+  return `${toLabel(from)} a ${toLabel(to)}`;
+}

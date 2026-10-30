@@ -1,4 +1,4 @@
-import { formatShortDisplayName } from '@/lib/format';
+import { formatGeneralReportPeriod, formatShortDisplayName } from '@/lib/format';
 import type { AuditLogItem } from '@/types/api';
 
 export type AuditTargetView = {
@@ -65,6 +65,16 @@ export function resolveAuditTarget(log: AuditLogItem): AuditTargetView {
       name,
       to: null,
       title: name ?? 'Solicitação de acesso',
+    };
+  }
+
+  if (log.targetType === 'GeneralReport') {
+    const period = formatGeneralReportPeriod(meta);
+    return {
+      label: period ?? 'Relatório geral',
+      name: null,
+      to: null,
+      title: 'Relatório geral',
     };
   }
 
