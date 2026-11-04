@@ -22,6 +22,7 @@ import {
 import { ApiError } from '@/lib/api/errors';
 import {
   buildAssessmentReportFilename,
+  buildGeneralReportFilename,
   formatDateTime,
   formatGeneralReportPeriod,
   formatShortDisplayName,
@@ -135,7 +136,11 @@ export function ReportsPage() {
     setGeneralSuccess(null);
     setGeneralGenerating(true);
     try {
-      const { blob, filename } = await downloadGeneralReport(generalFrom, generalTo);
+      const { blob, filename } = await downloadGeneralReport(
+        generalFrom,
+        generalTo,
+        buildGeneralReportFilename(generalFrom, generalTo, new Date()),
+      );
       triggerBlobDownload(blob, filename);
       setGeneralSuccess('PDF gerado e baixado. O download ficou registrado na auditoria.');
       void queryClient.invalidateQueries({ queryKey: ['admin', 'audit-logs'] });

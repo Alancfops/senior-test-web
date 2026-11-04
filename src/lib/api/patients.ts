@@ -121,6 +121,7 @@ export async function downloadAssessmentReport(
 export async function downloadGeneralReport(
   from: string,
   to: string,
+  filename: string,
 ): Promise<DownloadedAssessmentReport> {
   const baseUrl = import.meta.env.VITE_STF_API_URL?.replace(/\/$/, '');
   const token = getAccessToken();
@@ -140,10 +141,6 @@ export async function downloadGeneralReport(
   if (!response.ok) {
     throw await toApiError(response);
   }
-
-  const filename =
-    parseContentDispositionFilename(response.headers.get('Content-Disposition')) ??
-    `relatorio-geral_${from}_a_${to}.pdf`;
 
   return { blob: await response.blob(), filename };
 }

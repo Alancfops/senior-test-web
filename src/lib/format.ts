@@ -65,6 +65,41 @@ export function getSemesterBounds(date: Date): { from: string; to: string } {
     : { from: `${year}-07-01`, to: `${year}-12-31` };
 }
 
+function daysBetweenInclusive(from: string, to: string): number {
+  const [fy, fm, fd] = from.split('-').map(Number);
+  const [ty, tm, td] = to.split('-').map(Number);
+  return Math.round((Date.UTC(ty, tm - 1, td) - Date.UTC(fy, fm - 1, fd)) / 86_400_000) + 1;
+}
+
+/**
+ * Rótulo legível do período do relatório geral (ex.: "Últimos 30 dias", "2 meses",
+ * "Este semestre"), usado no nome do arquivo PDF.
+ */
+export function describeGeneralReportPeriod(from: string, to: string, today: Date): string {
+  const todayIso = toIsoDate(today);
+  const semester = getSemesterBounds(today);
+  if (from === semester.from && (to === todayIso || to === semester.to)) return 'Este semestre';
+
+  const [fromYear, fromMonth, fromDay] = from.split('-').map(Number);
+  const [toYear, toMonth, toDay] = to.split('-').map(Number);
+  const lastDayOfToMonth = new Date(toYear, toMonth, 0).getDate();
+  const isWholeMonths = fromDay === 1 && toDay === lastDayOfToMonth;
+  if (isWholeMonths) {
+    const months = (toYear - fromYear) * 12 + (toMonth - fromMonth) + 1;
+    if (months === 6) return 'Semestre';
+    return months === 1 ? '1 mês' : `${months} meses`;
+  }
+
+  const days = daysBetweenInclusive(from, to);
+  const label = days === 1 ? '1 dia' : `${days} dias`;
+  return to === todayIso ? `Últimos ${label}` : label;
+}
+
+/** Nome do PDF do relatório geral: "Relatório Geral - Últimos 30 dias.pdf". */
+export function buildGeneralReportFilename(from: string, to: string, today: Date): string {
+  return `Relatório Geral - ${describeGeneralReportPeriod(from, to, today)}.pdf`;
+}
+
 /** Período do relatório geral gravado no audit (`from`/`to` em `YYYY-MM-DD`), como `dd/mm/aaaa a dd/mm/aaaa`. */
 export function formatGeneralReportPeriod(meta: Record<string, unknown>): string | null {
   const { from, to } = meta;
