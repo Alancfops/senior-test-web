@@ -52,6 +52,7 @@ enum AdminAuditAction {
   TRANSFER_PATIENT
   DELETE_THERAPIST
   DOWNLOAD_REPORT
+  DOWNLOAD_GENERAL_REPORT
 }
 ```
 
@@ -586,6 +587,23 @@ Corpo: bytes do PDF.
 | `instrumentCode` | Instrumento (TUG, BERG, …) |
 | `finalizedAt` | Data/hora da avaliação finalizada |
 
+### 6.2 POST `/admin/reports/general`
+
+Gera o PDF agregado do período (ADMIN e ASSISTANT), sem dado identificável de paciente.
+
+**Body:** `{ "from": "YYYY-MM-DD", "to": "YYYY-MM-DD" }` — dias interpretados em America/Maceio, `to` inclusivo, máximo de 184 dias (um semestre).
+
+**Response `201`:** `application/pdf`, arquivo `relatorio-geral_<from>_a_<to>.pdf`.
+
+**Erros**
+
+| Status | Quando |
+|--------|--------|
+| `400` | Data inválida, `to` anterior a `from` ou período acima de 184 dias |
+| `404` | Nenhuma avaliação finalizada no período |
+
+**Auditoria:** `DOWNLOAD_GENERAL_REPORT`, `targetType: "GeneralReport"`, `targetId` = id do emissor, metadata `{ from, to }`.
+
 ---
 
 ## 7. Auditoria
@@ -599,6 +617,7 @@ Corpo: bytes do PDF.
 | Param | Tipo | Descrição |
 |-------|------|-----------|
 | `action` | enum | Filtrar por ação |
+| `actions` | string | Várias ações separadas por vírgula; tem precedência sobre `action` |
 | `adminId` | UUID | Filtrar por admin |
 | `from` | ISO date | Início do período |
 | `to` | ISO date | Fim do período |
@@ -648,6 +667,7 @@ Corpo: bytes do PDF.
 | 10 | DELETE | `/admin/patients/:id` | GW004 | ✅ | ✅ |
 | 11 | POST | `/admin/patients/:id/transfer` | GW005 | ✅ | ✅ |
 | 12 | POST | `/admin/reports/assessments/:assessmentId` | GW009 | ✅ | ✅ |
+| 12a | POST | `/admin/reports/general` | Relatório geral | ✅ | ✅ |
 | 13 | GET | `/admin/audit-logs` | GW010 | ✅ | — |
 | 14 | POST | `/admin/access-requests/:id/approve` · `/reject` | Solicitações | ✅ promove conta do app / recusa + e-mail | ✅ (approve e reject) |
 | 15 | POST | `/admin/assistants/:id/revoke` | Ajudantes | ✅ volta a `THERAPIST` | ✅ |

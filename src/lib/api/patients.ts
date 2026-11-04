@@ -118,6 +118,33 @@ export async function downloadAssessmentReport(
   return { blob: await response.blob(), filename };
 }
 
+export async function downloadGeneralReport(
+  from: string,
+  to: string,
+  filename: string,
+): Promise<DownloadedAssessmentReport> {
+  const baseUrl = import.meta.env.VITE_STF_API_URL?.replace(/\/$/, '');
+  const token = getAccessToken();
+  if (!baseUrl) {
+    throw new ApiError('API não configurada.', 0);
+  }
+
+  const response = await fetch(`${baseUrl}/admin/reports/general`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+    body: JSON.stringify({ from, to }),
+  });
+
+  if (!response.ok) {
+    throw await toApiError(response);
+  }
+
+  return { blob: await response.blob(), filename };
+}
+
 export function triggerBlobDownload(blob: Blob, filename: string): void {
   const url = URL.createObjectURL(blob);
   const anchor = document.createElement('a');

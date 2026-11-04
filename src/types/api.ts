@@ -176,6 +176,7 @@ export type AdminAuditAction =
   | 'TRANSFER_PATIENT'
   | 'DELETE_THERAPIST'
   | 'DOWNLOAD_REPORT'
+  | 'DOWNLOAD_GENERAL_REPORT'
   | 'CREATE_THERAPIST'
   | 'PROMOTE_ASSISTANT'
   | 'REVOKE_ASSISTANT'
@@ -186,7 +187,7 @@ export type AuditLogItem = {
   adminId: string;
   adminName: string;
   action: AdminAuditAction;
-  targetType: 'Patient' | 'Therapist' | 'Assessment' | 'AccessRequest';
+  targetType: 'Patient' | 'Therapist' | 'Assessment' | 'AccessRequest' | 'GeneralReport';
   targetId: string;
   metadata: Record<string, unknown>;
   createdAt: string;
@@ -239,6 +240,7 @@ export const AUDIT_ACTION_LABELS: Record<AdminAuditAction, string> = {
   TRANSFER_PATIENT: 'Transferência de paciente',
   DELETE_THERAPIST: 'Exclusão de fisioterapeuta',
   DOWNLOAD_REPORT: 'Download de relatório',
+  DOWNLOAD_GENERAL_REPORT: 'Download de relatório geral',
   CREATE_THERAPIST: 'Criação de conta',
   PROMOTE_ASSISTANT: 'Aprovação de ajudante',
   REVOKE_ASSISTANT: 'Revogação de ajudante',
