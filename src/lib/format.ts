@@ -23,6 +23,16 @@ export function formatShortDisplayName(fullName: string, maxWords = 2): string {
   return `${parts.slice(0, maxWords).join(' ')}…`;
 }
 
+const NAME_PARTICLES = new Set(['da', 'de', 'do', 'das', 'dos', 'e']);
+
+/** Dois primeiros nomes para saudação, sem reticências ("Ana de Souza Lima" → "Ana de Souza"). */
+export function formatGreetingName(fullName: string): string {
+  const parts = fullName.trim().split(/\s+/).filter(Boolean);
+  if (parts.length <= 2) return parts.join(' ');
+  const end = NAME_PARTICLES.has(parts[1].toLowerCase()) ? 3 : 2;
+  return parts.slice(0, end).join(' ');
+}
+
 /** Nome de arquivo de PDF — mesma regra do app mobile STF. */
 export function buildAssessmentReportFilename(patientFullName: string): string {
   const cleaned = patientFullName

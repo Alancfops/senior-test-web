@@ -49,7 +49,7 @@ export function DashboardPage() {
     <AppShell title="Início" description="Visão geral do gerenciador">
       <div className="space-y-6">
         <WelcomeBanner
-          userName={user?.fullName ?? 'Administrador'}
+          userName={user?.fullName?.trim() || 'Administrador'}
           subtitle="Supervisione a equipe de fisioterapeutas no app mobile, sem operar avaliações por aqui."
         />
 

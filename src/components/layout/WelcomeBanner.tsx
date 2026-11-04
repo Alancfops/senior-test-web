@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import type { ReactNode } from 'react';
+import { formatGreetingName } from '@/lib/format';
 
 type WelcomeBannerProps = {
   userName: string;
@@ -8,6 +9,7 @@ type WelcomeBannerProps = {
 
 export function WelcomeBanner({ userName, subtitle }: WelcomeBannerProps) {
   const initial = userName.charAt(0).toUpperCase();
+  const shortName = formatGreetingName(userName);
 
   return (
     <section
@@ -19,7 +21,10 @@ export function WelcomeBanner({ userName, subtitle }: WelcomeBannerProps) {
           <p className="text-xs font-semibold uppercase tracking-wide text-white/90 sm:text-sm">
             Sênior Teste Funcional
           </p>
-          <h2 className="mt-1 text-xl font-bold sm:text-2xl">Olá, {userName}!</h2>
+          <h2 className="mt-1 text-xl font-bold sm:text-2xl">
+            Olá, <span className="sm:hidden">{shortName}</span>
+            <span className="hidden sm:inline">{userName}</span>!
+          </h2>
           <p className="mt-2 text-sm leading-relaxed text-white/90">{subtitle}</p>
         </div>
         <div
