@@ -1,165 +1,138 @@
 # STF Gerenciador Web
 
-Painel web administrativo do **Sênior Teste Funcional (STF)** — plataforma mobile para fisioterapeutas acompanharem pacientes idosos com instrumentos funcionais padronizados.
-
-Este repositório concentra o **gerenciador web**: interface para o fisioterapeuta **administrador** (chefe da equipe) supervisionar fisioterapeutas, pacientes e relatórios clínicos, sem as restrições de escopo do aplicativo mobile.
+Painel web de supervisão do **Sênior Teste Funcional (STF)**. É por aqui que a **professora** (conta `ADMIN`) e seus **ajudantes** (`ASSISTANT`) acompanham os fisioterapeutas — alunos de fisioterapia da clínica-escola —, os pacientes idosos que eles avaliam e os relatórios clínicos gerados pelo sistema.
 
 ---
 
-## Relação com o STF mobile
+## O ecossistema STF — três sistemas, uma API
 
-| Repositório | Caminho / remote | Papel |
-|-------------|------------------|-------|
-| **STF (mobile + API)** | Local: [`../senior-test-funcional`](../senior-test-funcional) · Remote: [`git@github.com:Alancfops/senior-test-funcional.git`](https://github.com/Alancfops/senior-test-funcional) | App Expo, API NestJS, PostgreSQL, especificação clínica |
-| **STF Gerenciador Web** | este repositório | Painel admin web que estende a API existente |
+O STF é dividido em três repositórios, clonados lado a lado na mesma pasta:
 
-O gerenciador **não substitui** o app mobile. Ele complementa o ecossistema com visão transversal e operações administrativas que o app, por design, não oferece (isolamento por `therapist_id`).
+```
+myProjects/
+├── stf-api/                 → API + banco de dados (o "cérebro")
+├── senior-test-funcional/   → App mobile do fisioterapeuta + especificação do produto
+└── stf-gerenciador-web/     → Painel web da professora (este repositório)
+```
 
-Documentação canônica do produto base: [senior-test-funcional/docs/README.md](../senior-test-funcional/docs/README.md) ([GitHub](https://github.com/Alancfops/senior-test-funcional))
-
----
-
-## Como funciona — diagrama e URLs
-
-### Fluxo (visão geral)
+| Sistema | Quem usa | O que faz | Tecnologia |
+|---------|----------|-----------|------------|
+| **[STF API](https://github.com/Alancfops/stf-api)** (`stf-api`) | Ninguém diretamente — atende os dois clientes | Guarda contas, pacientes e avaliações; calcula pontuações e classificações dos instrumentos clínicos; gera os PDFs; controla permissões, auditoria e e-mails | NestJS · Prisma · PostgreSQL |
+| **[App mobile](https://github.com/Alancfops/senior-test-funcional)** (`senior-test-funcional`) | Fisioterapeutas (alunos) | Cadastra pacientes, aplica os testes funcionais (TUG, Katz, Berg, Tinetti, MEEM) passo a passo, mostra histórico, gráfico de evolução e PDF de cada avaliação | Expo · React Native |
+| **Gerenciador web** (este repo) | Professora e ajudantes | Visão de toda a equipe: lista alunos e pacientes, transfere/exclui registros, aprova ajudantes, baixa relatórios (individuais e geral) e consulta a trilha de auditoria | Vite · React · TypeScript |
 
 ```mermaid
 flowchart LR
-    subgraph usuarios["Usuários"]
-        ADMIN["Admin\n(fisio chefe)"]
-        FISIO["Fisioterapeuta\n(app mobile)"]
-    end
-
-    subgraph web["Gerenciador Web\n(este repo — Vite SPA)"]
-        SPA["React + TanStack Query\nJWT em sessionStorage"]
-    end
-
-    subgraph stf["Sênior Teste Funcional"]
-        APP["App Expo\n(RN)"]
-        API["API NestJS\n/auth + /admin"]
-        DB[("PostgreSQL")]
-    end
-
-    ADMIN -->|"HTTPS\nBearer JWT ADMIN"| SPA
-    FISIO --> APP
-    SPA -->|"REST\nVITE_STF_API_URL"| API
-    APP -->|"REST\nJWT THERAPIST"| API
-    API --> DB
+    ALUNO["Fisioterapeuta / aluno"] --> APP["App mobile<br/>(Expo)"]
+    PROF["Professora / ajudantes"] --> WEB["Gerenciador web<br/>(Vite SPA)"]
+    APP -->|"REST + JWT<br/>/auth, /patients, /assessments, /reports"| API["STF API<br/>(NestJS)"]
+    WEB -->|"REST + JWT<br/>/auth, /admin/*"| API
+    API --> DB[("PostgreSQL")]
 ```
 
-> Diagrama detalhado e variantes: [docs/diagrams/system-context.md](docs/diagrams/system-context.md) · [docs/engineering/architecture.md](docs/engineering/architecture.md)
+**Princípio central:** a API é a única fonte da verdade. Nenhum dos clientes calcula pontuação, interpreta resultado clínico ou monta PDF — eles só exibem o que a API devolve. Por isso uma correção de regra clínica vale para o app e para o painel ao mesmo tempo.
 
-### Modelo de URLs
+### Papéis
 
-| Papel | Dev (local) | Produção (exemplo) |
-|-------|-------------|---------------------|
-| **Gerenciador web** | `http://localhost:5173` | `https://admin.seudominio.exemplo.com` |
-| **API STF** | `http://localhost:3000` | `https://api.seudominio.exemplo.com` |
-| **Health check** | `http://localhost:3000/health` | `https://api.seudominio.exemplo.com/health` |
-| **Swagger (admin)** | `http://localhost:3000/api/docs` | `https://api.seudominio.exemplo.com/api/docs` |
+| Papel | Onde entra | Pode fazer |
+|-------|-----------|-----------|
+| `THERAPIST` (aluno) | App mobile | Vê e avalia **apenas os próprios** pacientes |
+| `ASSISTANT` (ajudante) | App + gerenciador | No painel: supervisiona alunos e pacientes como a professora, mas não gerencia ajudantes (aprovar, recusar, revogar) |
+| `ADMIN` (professora) | App + gerenciador | Visão transversal de toda a equipe; conta única, criada só pelo script `admin:set` da API |
 
-**Variável no front:** `VITE_STF_API_URL` → URL da API **sem barra final** (ver [.env.example](.env.example)).
-
-**CORS na API** (`stf-api/.env`): incluir a origem do gerenciador — ex. `CORS_ORIGINS=http://localhost:5173` em dev.
-
-### Autenticação (recarga F5)
-
-```
-Login POST /auth/login
-  → user.role === ADMIN ?
-       sim → sessionStorage.setItem('accessToken', …)  →  dashboard
-       não → erro de acesso (não persiste token)
-F5 / recarregar
-  → token ainda em sessionStorage  →  continua logado
-  → TanStack Query refaz fetch das listas
-Logout
-  → remove token + queryClient.clear()
-```
-
-Rotas admin consumidas pelo painel: **`/admin/*`** + **`/auth/*`** — spec em [docs/contracts/admin-api.md](docs/contracts/admin-api.md).
+Um ajudante é um aluno que pediu acesso ao painel e foi aprovado pela professora — é a mesma conta do app, promovida.
 
 ---
 
-## Público-alvo do gerenciador
+## O que o gerenciador oferece
 
-| Persona | Descrição |
+| Tela | Rota | Para quê |
+|------|------|---------|
+| Login, troca de senha, recuperação | `/login`, `/change-password`, `/forgot-password/*` | Acesso só para `ADMIN`/`ASSISTANT`; troca obrigatória da senha temporária no 1º login |
+| Início | `/dashboard` | Totais da equipe (fisioterapeutas, pacientes, avaliações) |
+| Fisioterapeutas | `/therapists`, `/therapists/:id` | Lista e detalhe de cada aluno, com seus pacientes; exclusão de conta |
+| Pacientes | `/patients`, `/patients/:id` | Perfil, histórico de avaliações, gráfico de evolução; transferir ou excluir paciente |
+| Detalhe da avaliação | `/patients/:id/assessment/:assessmentId` | Resultado e classificação; download do PDF |
+| Solicitações de acesso / Ajudantes | `/access-requests`, `/assistants` | Aprovar, recusar ou revogar ajudantes |
+| Auditoria | `/audit-logs` | Quem excluiu, transferiu, aprovou ou baixou relatório, e quando |
+| Relatórios PDF | `/reports` | PDF por avaliação e **relatório geral** por período (até 184 dias) |
+| Dúvidas sobre testes / Informações do sistema | `/testes/duvidas`, `/system-info` | Material de apoio sobre os instrumentos e o sistema |
+
+Toda exclusão ou transferência pede confirmação explícita e fica registrada na auditoria da API.
+
+---
+
+## Como rodar localmente
+
+**Pré-requisitos:** Node.js 20+, Docker (para o PostgreSQL da API) e `make`. Os três repositórios devem estar lado a lado.
+
+```bash
+# 1) API (primeira vez)
+cd ../stf-api
+make setup && make migrate
+npm run admin:set -- --email professora@exemplo.com --name "Profa. Fulana"   # cria a conta ADMIN
+
+# 2) Gerenciador
+cd ../stf-gerenciador-web
+make setup      # npm install + .env
+make start      # sobe a API (:3000) e o gerenciador (:5173) juntos
+```
+
+Abra <http://localhost:5173> e entre com o e-mail da professora e a senha temporária (enviada por e-mail ou exibida no terminal pelo `admin:set`).
+
+Se a API já estiver rodando em outro terminal, use só `make start-web`.
+
+### Configuração
+
+| Onde | Variável | Valor em dev |
+|------|----------|--------------|
+| `stf-gerenciador-web/.env` | `VITE_STF_API_URL` | `http://localhost:3000` (sem barra final) |
+| `stf-api/.env` | `CORS_ORIGINS` | `http://localhost:5173` |
+
+Em produção, `VITE_STF_API_URL` deve usar **HTTPS** e `CORS_ORIGINS` deve listar só o domínio real do painel.
+
+### Comandos
+
+| Comando | O que faz |
 |---------|-----------|
-| **Admin (fisioterapeuta chefe)** | Supervisiona a equipe, redistribui pacientes, exclui registros e acessa qualquer relatório |
-| **Fisioterapeuta comum** | Continua usando o **app mobile**; não é usuário primário deste painel |
+| `make start` / `make start-web` | API + painel / só o painel (Vite, `:5173`) |
+| `npm run lint` | ESLint |
+| `npm run typecheck` | TypeScript sem emitir arquivos |
+| `npm run test` | Testes unitários (Vitest + Testing Library) |
+| `npm run build` | Build de produção em `dist/` (estático — qualquer servidor web serve) |
+| `npm run generate:api-types` | Regenera tipos a partir do Swagger da API rodando |
 
 ---
 
-## Capacidades principais
+## Arquitetura do painel
 
-- Listar fisioterapeutas cadastrados e seus pacientes vinculados
-- Visualizar dados completos de qualquer paciente
-- Excluir pacientes (com confirmação e trilha de auditoria)
-- **Transferir pacientes** entre fisioterapeutas — incluindo histórico de avaliações
-- Excluir fisioterapeutas (com política de dados órfãos definida)
-- Gerar e baixar **relatórios PDF** de qualquer paciente, **sem** a restrição de propriedade do app
+```
+src/
+├── pages/       → telas (composição fina)
+├── features/    → hooks TanStack Query e regras de tela por domínio
+├── components/  → UI reutilizável, sem acesso direto à API
+├── lib/api/     → cliente HTTP tipado
+├── lib/auth/    → sessão (sessionStorage) e guarda de papel
+└── types/       → tipos da API
+```
+
+- **Sessão:** o JWT fica em `sessionStorage` (sobrevive ao F5, some ao fechar a aba); sair limpa o token e o cache de dados.
+- **LGPD:** nenhum token, senha ou dado clínico vai para logs; PDFs são baixados como arquivo temporário, sem ficar guardados no navegador; mensagens de erro são genéricas.
+- **Visual:** paleta oficial do STF via variáveis `--stf-*`, adaptada para densidade de painel (tabelas, sidebar).
 
 ---
 
 ## Documentação
 
-Índice completo: **[docs/README.md](docs/README.md)**
+Índice completo: [docs/README.md](docs/README.md)
 
 | Tema | Onde |
 |------|------|
-| Visão de produto | [docs/product/overview.md](docs/product/overview.md) |
-| PRD do gerenciador | [docs/product/PRD.md](docs/product/PRD.md) |
-| Personas e papéis | [docs/product/personas-and-roles.md](docs/product/personas-and-roles.md) |
-| Funcionalidades detalhadas | [docs/product/features.md](docs/product/features.md) |
+| PRD e funcionalidades (GW001–GW010) | [docs/product/PRD.md](docs/product/PRD.md) · [docs/product/features.md](docs/product/features.md) |
 | Regras de negócio | [docs/domain/business-rules.md](docs/domain/business-rules.md) |
-| Arquitetura | [docs/engineering/architecture.md](docs/engineering/architecture.md) |
-| Integração com STF | [docs/engineering/integration-with-stf.md](docs/engineering/integration-with-stf.md) |
-| **Endpoints admin (spec API)** | [docs/contracts/admin-api.md](docs/contracts/admin-api.md) |
-| Stack oficial | [docs/engineering/stack.md](docs/engineering/stack.md) |
-| Lacunas vs STF | [docs/engineering/gap-analysis-stf.md](docs/engineering/gap-analysis-stf.md) |
-| Diagramas UML | [docs/diagrams/](docs/diagrams/) |
-
----
-
-## Stack (decidida)
-
-| Camada | Tecnologia |
-|--------|------------|
-| Frontend | Vite + React + TypeScript + React Router |
-| Dados | TanStack Query + React Hook Form + Zod |
-| UI / layout | Template base adaptado ao admin STF — [docs/engineering/theming.md](docs/engineering/theming.md) |
-| Sessão | JWT em `sessionStorage` (sobrevive F5) |
-| Backend | API NestJS do STF + `AdminModule` ✅ (em `senior-test-funcional`) |
-
-Detalhes: [docs/engineering/stack.md](docs/engineering/stack.md)
-
----
-
-## Vínculo com o STF
-
-Repositório **separado**:
-
-- Remote: [`git@github.com:Alancfops/senior-test-funcional.git`](https://github.com/Alancfops/senior-test-funcional)
-- Caminho local padrão: `../senior-test-funcional`
-
-- API e banco: STF  
-- Código web admin: este repo  
-- Análise cruzada STF × gerenciador: [docs/engineering/gap-analysis-stf.md](docs/engineering/gap-analysis-stf.md)
-
----
-
-## Status
-
-| Componente | Fase |
-|------------|------|
-| STF mobile + API | Produto real entregue (pós-MVP) |
-| Documentação gerenciador | ✅ Completa |
-| API admin no STF | ✅ Implementada — ver [gap-analysis-stf.md](docs/engineering/gap-analysis-stf.md) |
-| Frontend Vite | Em andamento — UI aguarda template base |
-
----
-
-## Próximos passos
-
-1. Conectar template base (Figma MCP ou arquivo) e realinhar telas provisórias
-2. Completar GW002–GW009 consumindo `/admin/*`
-3. Configurar `CORS_ORIGINS` no STF ao deployar o front
+| Contrato da API admin (`/admin/*`) | [docs/contracts/admin-api.md](docs/contracts/admin-api.md) |
+| Arquitetura e integração | [docs/engineering/architecture.md](docs/engineering/architecture.md) · [docs/engineering/integration-with-stf.md](docs/engineering/integration-with-stf.md) |
+| LGPD no painel | [docs/rules/lgpd-admin-panel.md](docs/rules/lgpd-admin-panel.md) |
+| Diagramas | [docs/diagrams/](docs/diagrams/) |
+| API e banco | [stf-api/README.md](../stf-api/README.md) |
+| Especificação do produto e do app | [senior-test-funcional/docs/README.md](../senior-test-funcional/docs/README.md) |
