@@ -184,7 +184,8 @@ export type AdminAuditAction =
 
 export type AuditLogItem = {
   id: string;
-  adminId: string;
+  /** Nulo quando a conta autora foi excluída (a API exibe "Conta removida"). */
+  adminId: string | null;
   adminName: string;
   action: AdminAuditAction;
   targetType: 'Patient' | 'Therapist' | 'Assessment' | 'AccessRequest' | 'GeneralReport';
