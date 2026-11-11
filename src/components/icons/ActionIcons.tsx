@@ -46,14 +46,6 @@ export function IconDownload({ className = 'size-4', ...rest }: IconProps) {
   );
 }
 
-export function IconExternal({ className = 'size-4', ...rest }: IconProps) {
-  return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden {...rest}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M14 3h7v7M10 14 21 3M21 10v11H3V3h11" />
-    </svg>
-  );
-}
-
 export function IconChevronDown({ className = 'size-4', ...rest }: IconProps) {
   return (
     <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden {...rest}>

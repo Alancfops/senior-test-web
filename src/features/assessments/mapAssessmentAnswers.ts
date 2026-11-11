@@ -37,7 +37,9 @@ const CATEGORICAL_VALUE_LABELS: Record<string, string> = {
 
 function formatScalar(value: unknown): string {
   if (typeof value === 'number' && Number.isFinite(value)) {
-    return Number.isInteger(value) ? String(value) : value.toFixed(2).replace(/\.?0+$/, '');
+    return Number.isInteger(value)
+      ? String(value)
+      : value.toFixed(2).replace(/\.?0+$/, '').replace('.', ',');
   }
   if (typeof value === 'string') {
     return CATEGORICAL_VALUE_LABELS[value] ?? value;

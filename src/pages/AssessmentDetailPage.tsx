@@ -2,10 +2,16 @@ import { useState } from 'react';
 import { Link, useLocation, useParams } from 'react-router-dom';
 import { AppShell } from '@/components/layout/AppShell';
 import { IconDownload } from '@/components/icons/ActionIcons';
-import { MobileCard, MobileCardList } from '@/components/ui/MobileCardList';
+import {
+  MobileCard,
+  MobileCardField,
+  MobileCardFields,
+  MobileCardList,
+} from '@/components/ui/MobileCardList';
 import { ClassificationBadge } from '@/components/ui/ClassificationBadge';
 import { Button } from '@/components/ui/Button';
 import { ErrorState } from '@/components/ui/ErrorState';
+import { TableColGroup } from '@/components/ui/TableColGroup';
 import { Spinner } from '@/components/ui/Spinner';
 import { mapAssessmentPayloadToAnswers } from '@/features/assessments/mapAssessmentAnswers';
 import { useAssessment, usePatient } from '@/features/patients/usePatients';
@@ -179,23 +185,23 @@ export function AssessmentDetailPage() {
                 countLabel={formatCount(answers.length, 'item', 'itens')}
               >
                 {answers.map((row) => (
-                  <MobileCard
-                    key={`${row.title}-${row.question}`}
-                    title={row.title}
-                    aside={
-                      <span className="max-w-[45%] break-words pr-1.5 pt-1 text-right text-sm font-semibold text-[var(--stf-text)]">
-                        {row.value}
-                      </span>
-                    }
-                  >
-                    {row.question ? (
-                      <p className="mt-2 break-words text-sm text-[var(--stf-text-muted)]">{row.question}</p>
-                    ) : null}
+                  <MobileCard key={`${row.title}-${row.question}`} title={row.title}>
+                    <MobileCardFields>
+                      {row.question ? (
+                        <MobileCardField label="Pergunta / instrução" full>
+                          {row.question}
+                        </MobileCardField>
+                      ) : null}
+                      <MobileCardField label="Resposta" full strong>
+                        <span className="whitespace-nowrap">{row.value}</span>
+                      </MobileCardField>
+                    </MobileCardFields>
                   </MobileCard>
                 ))}
               </MobileCardList>
               <div className="hidden overflow-x-hidden md:block">
                 <table className="stf-table">
+                  <TableColGroup variant="assessment-answers" />
                   <caption className="sr-only">Respostas registradas na avaliação</caption>
                   <thead>
                     <tr>

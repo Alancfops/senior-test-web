@@ -6,6 +6,7 @@ type ColGroupProps = {
     | 'therapist-patients'
     | 'therapists-list'
     | 'patient-assessments'
+    | 'assessment-answers'
     | 'access-requests'
     | 'audit-logs';
 };
@@ -89,6 +90,14 @@ export function TableColGroup({ variant }: ColGroupProps) {
           <col className="stf-col-classification" />
           <col className="stf-col-date" />
           <col className="stf-col-actions" />
+        </colgroup>
+      );
+    case 'assessment-answers':
+      return (
+        <colgroup>
+          <col style={{ width: '28%' }} />
+          <col />
+          <col className="stf-col-actions-wide" />
         </colgroup>
       );
     case 'access-requests':
