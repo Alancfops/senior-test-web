@@ -17,7 +17,7 @@ myProjects/
 
 | Sistema | Quem usa | O que faz | Tecnologia |
 |---------|----------|-----------|------------|
-| **[STF API](https://github.com/Alancfops/stf-api)** (`stf-api`) | Ninguém diretamente — atende os dois clientes | Guarda contas, pacientes e avaliações; calcula pontuações e classificações dos instrumentos clínicos; gera os PDFs; controla permissões, auditoria e e-mails | NestJS · Prisma · PostgreSQL |
+| **[STF API](https://github.com/Alancfops/senior-test-api)** (`senior-test-api`, pasta `stf-api`) | Ninguém diretamente — atende os dois clientes | Guarda contas, pacientes e avaliações; calcula pontuações e classificações dos instrumentos clínicos; gera os PDFs; controla permissões, auditoria e e-mails | NestJS · Prisma · PostgreSQL |
 | **[App mobile](https://github.com/Alancfops/senior-test-funcional)** (`senior-test-funcional`) | Fisioterapeutas (alunos) | Cadastra pacientes, aplica os testes funcionais (TUG, Katz, Berg, Tinetti, MEEM) passo a passo, mostra histórico, gráfico de evolução e PDF de cada avaliação | Expo · React Native |
 | **Gerenciador web** (este repo) | Professora e ajudantes | Visão de toda a equipe: lista alunos e pacientes, transfere/exclui registros, aprova ajudantes, baixa relatórios (individuais e geral) e consulta a trilha de auditoria | Vite · React · TypeScript |
 
